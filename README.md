@@ -5,7 +5,7 @@ _cast.io_ is a service with transcoding possibility of video and audio from prov
 
 What is _cast.io_?
 
- - a headless service with a RESTful web API provided for client interaction.
+ - a headless service with a [RESTful web API](http://en.wikipedia.org/w/index.php?title=Representational_state_transfer) provided for client interaction.
  - developed using C and libevent for asynchronous usage.
  - service which hosts javascripts plugins named providers which sources
    media to be casted to your chromecast connected displays.
