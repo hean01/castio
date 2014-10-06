@@ -68,7 +68,6 @@ item. This can be anything from a description to genre.
 | description | string | read        | description, plot              |
 | keywords    | array  | read        | keywords                       |
 | image       | string | read        | image representing the item    |
-|             |        |             |                                |
 
 
 ## item_type
@@ -80,7 +79,6 @@ to perform on the item.
 |----------|------------------------|
 | "folder" | Item is a folder       |
 | "stream" | Item is a media stream |
-|          |                        |
 
 
 ## item_ref
@@ -91,7 +89,6 @@ in results of different _GET_ operations such as a search result.
 | member       | type     | access      | description                    |
 |--------------|----------|-------------|--------------------------------|
 | resource_uri | string   | read        | resource URI for the item      |
-|              |          |             |                                |
 
 
 ## item
@@ -104,7 +101,6 @@ the defined _item_type_ constants.
 | type         | item_type | read        | item type                      |
 | metadata     | metadata  | read        | item metadata                  |
 | stream_uri   | string    | read        | an uri to access the specific  |
-|              |           |             |                                |
 
 
 ## setting
@@ -118,7 +114,6 @@ providers will expose a list of setting objects for configuration.
 | name        | string | read        | a display name for the setting |
 | description | string | read        | a description of the setting   |
 | value       | any    | read, write | the specific setting value     |
-|             |        |             |                                |
 
 
 ## provider
