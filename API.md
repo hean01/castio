@@ -7,10 +7,24 @@ This section will clearly specify the change between protocol version
 for easy update of the client.
 
 
-# Result codes
+# Protocol
 
-The service will return the following HTTP error codes for web api
-requests.
+_cast.io_ web api tries to be as RESTful as it can. This section will describe the constraints as simple as possible;
+
+- There are only two verbs used, GET and PUT. This is because we try
+  to constraint with a RESTfull api and we can only fetch a resource
+  or update it.
+
+- All request and responses between server and client should be using
+  mime-type "application/json" and charset UTF-8 or a status code of
+  **400** is returned.
+
+- If a request method on a resource is not allowed, status code
+  **405** is returned.
+
+The service will use a subset of all HTTP status codes to indicate
+success or errors in the communication. Here follows a list of used
+status codes for the service and when they are used.
 
 	102 Processing
 	200 Success
@@ -28,14 +42,14 @@ requests.
 - A normal GET and PUT operation will return 200 if everything is ok.
 
 - If a GET or PUT operation on a resource is performed with bad data
-  such as URI attributes or request body, **400** is returned.
+  such as attributes or malformed request body, **400** is returned.
 
 - If requests are performed without a authorization, **401** is
   returned.
 
 - If a resource is not available, **404** is returned.
 
-- If a resource is read only and one tries to update it, **405** is
+- If a resource is read only and client tries to update it, **405** is
   returned.
 
 
