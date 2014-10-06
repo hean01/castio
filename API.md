@@ -148,7 +148,7 @@ _Favorites_, _Watch later_ etc.
 **returns:** A list of _item_ref_ objects.
 
 
-## /settings/<resource>
+## /settings/[resource]
 
 This resource provides a interface to settings for resources such as
 the service it self and available providers registered with the
@@ -175,7 +175,7 @@ Retreives a list of avilable providers registered with the service.
 **returns:** A list of _provider_ref_ objects.
 
 
-## /providers/<resource>
+## /providers/[resource]
 
 Get a _provider_ object for specified resource.
 
