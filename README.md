@@ -1,12 +1,12 @@
-cast.io
+CAST.IO
 =======
 
-_cast.io_ is a service with transcoding possibility of video and audio
+_CAST.IO_ is a service with transcoding possibility of video and audio
 from providers. A provider is a javascript plugin which hosts video /
 audio streams to be pushed through the transcoder to be casted to your
 TV.
 
-What is _cast.io_?
+What is _CAST.IO_?
 
  - a headless service with a [RESTful][] Web API provided for client
    interaction.
@@ -32,7 +32,7 @@ but the most commonly shared properties are login credentials.
 Search API is used by the global search function, this provides the
 functionality to search all your provider plugins for content. The
 length of search result a provider plugin should return is a global
-_cast.io_ service configuration.
+_CAST.IO_ service configuration.
 
 The browse function provides an interface to present folders with
 items for example categories, year's etc. anything that the service
@@ -43,20 +43,20 @@ playback.
 
 ## Web API
 
-The [Web API][] is the only external interface to the _cast.io_
+The [Web API][] is the only external interface to the _CAST.IO_
 service. Used to configure the service and available providers,
 search, browse and launch content for playback to a receiver.
 
-[web api]: https://github.com/hean01/castio/blob/master/API.md "cast.io Web API"
+[web api]: https://github.com/hean01/castio/blob/master/API.md "CAST.IO Rest API"
 
 
 ## Android Client
 
-The android client is the only _cast.io_ client this project will
-release. It will use the _cast.io_ web API to server as controller for
+The android client is the only _CAST.IO_ client this project will
+release. It will use the _CAST.IO_ web API to server as controller for
 playback of content from providers. It should be a simple task to
 create a new native client for another platform using the open and
-welldocumented _cast.io_ web API.
+welldocumented _CAST.IO_ web API.
 
 
 ## Version 1.0

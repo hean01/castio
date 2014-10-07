@@ -1,5 +1,5 @@
-cast.io RESTful Web API
-=======================
+CAST.IO Rest API
+================
 
 # Changelog
 
@@ -9,7 +9,7 @@ for easy update of the client.
 
 # Protocol
 
-_cast.io_ web api tries to be as RESTful as it can. This section will
+_CAST.IO_ web api tries to be as RESTful as it can. This section will
 describe the constraints as simple as possible;
 
 - There are only two verbs used, GET and PUT. This is because we try
