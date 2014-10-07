@@ -139,7 +139,12 @@ A json object which represents a provider.
 | member      | type     | access      | description                    |
 |-------------|----------|-------------|--------------------------------|
 | id          | string   | read        | id of the provider             |
-| metadata    | metadata | read        | item metadata                  |
+| name        | string   | read        | provider name                  |
+| description | string   | read        | a description of the provider  |
+| copyright   | string   | read        | copyright string               |
+| version     | string   | read        | provider version               |
+| homepage    | string   | read        | homepage uri                   |
+| icon        | string   | read        | uri for the provider icon      |
 
 
 ## searchResult
@@ -211,7 +216,7 @@ Retreives a list of available providers registered with the service.
 
 **accepted verbs:** GET
 
-**returns:** A list of _provider_ref_ objects.
+**returns:** A list of _provider_ objects.
 
 
 ## /providers/[resource]
