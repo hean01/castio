@@ -250,13 +250,15 @@ following list of items at its base path:
 		{
 			"type": "folder",
 			"item_uri: "/Top Rated",
-			"metadata": <<{_metadata_}>>
+			"metadata": <<{_metadata_}>>,
+			"actions": [<<{_action_}>>]
 		},
 
 		{
 			"type": "folder",
 			"item_uri: "/New",
 			"metadata": <<{_metadata_}>>
+			"actions": [<<{_action_}>>]
 		}
 	]
 
