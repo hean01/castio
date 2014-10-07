@@ -231,7 +231,7 @@ combination with _media_types_.
 See the following example usage of the search functionality and how to
 handle the status code on the client side:
 
-1. Create a GET request for `/search&query="A movie"`
+1. Create a GET request for `/search?query="A movie"`
 
 2. Server responds with a status code **302** and set's a "Location:"
    header were the temporary result is available to be fetched.
