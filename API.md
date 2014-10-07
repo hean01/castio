@@ -223,7 +223,10 @@ Get a _provider_ object for specified resource.
 
 ## /search
 
-Performs a search for items.
+Performs a search of items in all available providers.
+
+To narrow down the search you can use the attributes _providers_ in
+combination with _media_types_.
 
 See the following example usage of the search functionality and how to
 handle the status code on the client side:
@@ -234,7 +237,8 @@ handle the status code on the client side:
    header were the temporary result is available to be fetched.
 
 3. GET the temporary search result location URI until you get a HTTP
-   status code **200**.
+   status code **200**. This URI will return a _searchResult_ object
+   of current search result.
 
    - You will get a http status **102** and partial results of the
      search for interactive update of the query.
@@ -250,7 +254,9 @@ handle the status code on the client side:
 
 | attribute | description                                               |
 |-----------|-----------------------------------------------------------|
-| query     | A string containg comma separated keywords to search for. |
+| query     | A comma separated string with keywords                    |
+| providers | A comma separated string with provider id's               |
+| type      | A comma separated string with type constants              |
 
 **accepted_verbs:** GET
 
