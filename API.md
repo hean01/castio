@@ -72,6 +72,23 @@ If and object is not valid in a PUT operation, HTTP status code
 **400** will be returned.
 
 
+# action
+
+An action of an item. Actions are defined and differs from provider to
+providers and can be anything such as; _like_, _buy_ etc.
+
+The action uri is a combination of the item uri and the _action.id_
+like `providers/headweb/item2935292/buy`. Then create GET request for
+this action uri to instruct the provider to perform the specific
+action.
+
+| member      | type   | access      | description                            |
+|-------------|--------|-------------|----------------------------------------|
+| id          | string | read        | id of action                           |
+| name        | string | read        | action name, keep it short like "buy"  |
+| description | string | read        | description of the action              |
+
+
 ## metadata
 
 Metadata is a part of an _item_ and includes metadata for the
@@ -116,7 +133,7 @@ the defined _item_type_ constants.
 | type         | item_type | read        | item type                           |
 | item_uri     | string    | read        | an uri to access the specific item  |
 | metadata     | metadata  | read        | item metadata                       |
-
+| actions      | list      | read        | list of _action_ for the item       |
 
 
 ## setting
