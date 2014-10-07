@@ -141,6 +141,26 @@ A json object which represents a provider.
 | metadata    | metadata | read        | item metadata                  |
 
 
+## searchResult
+
+A json object with each providers search result as list of _item_'s.
+
+    {
+		"movies": [
+			{<<_item_>>}
+			.
+			.
+			.
+		],
+
+		"icecast": [
+			{<<_item_>>}
+			.
+			.
+			.
+		]
+    }
+
 # Resource URI's
 
 This section will provide a list of available resource URI and how to
@@ -200,3 +220,39 @@ Get a _provider_ object for specified resource.
 **accepted_verbs:** GET
 
 **returns:** A _provider_ object.
+
+## /search
+
+Performs a search for items.
+
+See the following example usage of the search functionality and how to
+handle the status code on the client side:
+
+1. Create a GET request for /search&query="A movie"
+
+2. Server responds with a status code **302** and set's a "Location:"
+   header were the temporary result is available to be fetched.
+
+3. GET the temporary search result location URI until you get a HTTP
+   status code **200**.
+
+   - You will get a http status **102** and partial results of the
+     search for interactive update of the query.
+
+   - Do not hammer the service and use a sleep of 2-5 seconds between
+	 the requests.
+
+4. When status code **200** is recived the search is finished, content
+   in response is the full result and the temporary search result
+   location URI is removed.
+
+**Attributes:**
+
+| attribute | description                                               |
+|-----------|-----------------------------------------------------------|
+| query     | A string containg comma separated keywords to search for. |
+
+**accepted_verbs:** GET
+
+**returns:** A location for search result. The temporary search result
+location returns a _searchResult_ object.
