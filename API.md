@@ -111,11 +111,12 @@ in results of different _GET_ operations such as a search result.
 A json object which represents an item. _item.type_ should be any of
 the defined _item_type_ constants.
 
-| member       | type      | access      | description                    |
-|--------------|-----------|-------------|--------------------------------|
-| type         | item_type | read        | item type                      |
-| metadata     | metadata  | read        | item metadata                  |
-| stream_uri   | string    | read        | an uri to access the specific  |
+| member       | type      | access      | description                         |
+|--------------|-----------|-------------|-------------------------------------|
+| type         | item_type | read        | item type                           |
+| item_uri     | string    | read        | an uri to access the specific item  |
+| metadata     | metadata  | read        | item metadata                       |
+
 
 
 ## setting
@@ -206,7 +207,7 @@ down _setting_ objects containing just the value to be updated:
 
 ## /providers
 
-Retreives a list of avilable providers registered with the service.
+Retreives a list of available providers registered with the service.
 
 **accepted verbs:** GET
 
@@ -215,11 +216,37 @@ Retreives a list of avilable providers registered with the service.
 
 ## /providers/[resource]
 
-Get a _provider_ object for specified resource.
+The base path for items of a specific provider which returns a list of
+_item_'s for the provider. This list provides items to build up a
+browsable tree of the provider plugin.
+
+
+As an example, suppose that a provider with id `youtube` returns the
+following list of items at its base path:
+
+    [
+		{
+			"type": "folder",
+			"item_uri: "/Top Rated",
+			"metadata": <<{_metadata_}>>
+		},
+
+		{
+			"type": "folder",
+			"item_uri: "/New",
+			"metadata": <<{_metadata_}>>
+		}
+	]
+
+You would travers the browsable tree folder `/Top Rated` by joining
+the base path with the item_uri as; `/providers/youtube/Top%20Rated`
+and then request a new item list from that uri.
+
+**resource:** provider id string
 
 **accepted_verbs:** GET
 
-**returns:** A _provider_ object.
+**returns:** A list of _item_ objects.
 
 ## /search
 
