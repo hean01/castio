@@ -9,7 +9,8 @@ for easy update of the client.
 
 # Protocol
 
-_cast.io_ web api tries to be as RESTful as it can. This section will describe the constraints as simple as possible;
+_cast.io_ web api tries to be as RESTful as it can. This section will
+describe the constraints as simple as possible;
 
 - There are only two verbs used, GET and PUT. This is because we try
   to constraint with a RESTfull api and we can only fetch a resource
@@ -19,19 +20,26 @@ _cast.io_ web api tries to be as RESTful as it can. This section will describe t
   mime-type "application/json" and charset UTF-8 or a status code of
   **400** is returned.
 
+- All requests are authenticated using standar HTTP digest
+  authentication in the realm _CAST.IO_. If not authorized using the
+  scheme a status code of **401** is retured.
+
 - If a request method on a resource is not allowed, status code
   **405** is returned.
 
-The service will use a subset of all HTTP status codes to indicate
-success or errors in the communication. Here follows a list of used
-status codes for the service and when they are used.
 
-	102 Processing
-	200 Success
-    400 Bad Request
-	401 Unauthorized
-    404 Not Found
-	405 Method Not Allowed
+# Status Codes
+
+The service will use a subset of all HTTP status codes to indicate
+success or errors in the web api. Here follows a list of used status
+codes for the service and when they are used;
+
+- 102 Processing
+- 200 Success
+- 400 Bad Request
+- 401 Unauthorized
+- 404 Not Found
+- 405 Method Not Allowed
 
 - If a temporary resources such as search result is not finished,
   **102** is returned. This indicates that you should continue to
@@ -53,13 +61,6 @@ status codes for the service and when they are used.
   returned.
 
 
-# Authentication
-
-All request are done using a standard http digest authentication, a
-user + password within the CAST.IO realm. The service only provides
-authentication for one user.
-
-
 # Definitions of data types
 
 There are a few defined data types. This means there are object that
@@ -67,8 +68,8 @@ must include specificly named memebers to be accepted. This section
 provides information for each defined object within the web API
 protocol.
 
-If and object is not valid in a PUT operation, result code 400 will be
-raised.
+If and object is not valid in a PUT operation, HTTP status code
+**400** will be returned.
 
 
 ## metadata
@@ -164,9 +165,17 @@ the service it self and available providers registered with the
 service.
 
 While updating settings you should first get the settings object from
-server then modify the values and PUT the same object back, this way
-errors will be minimized. However, it is possible to just PUT an
-object with a single _setting_ to update the specific value.
+server then modify the values and PUT the same object back. Doing it
+this way errors will be minimized.
+
+The web api does not support creating resources on the server, this
+means that we can simplify the api and use an object with stripped
+down _setting_ objects containing just the value to be updated:
+
+	{
+		"a" : { "value": "Value A" },
+		"b" : { "value": "Value B" }
+	}
 
 **resource:** _"service"_ or a provider id string
 
