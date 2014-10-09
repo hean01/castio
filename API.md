@@ -274,22 +274,30 @@ and then request a new item list from that uri.
 
 ## /search
 
-Performs a search of items in all available providers.
+Performs a search of items, use query attributes _providers_ and
+_type_ to narrow down the search.
 
-To narrow down the search you can use the attributes _providers_ in
-combination with _media_types_.
+A search is an asynchronous operation and when intiated the request
+will be redirected usin **302** to a temporary location where the
+client can gather the partial results of an ongoing search.
+
+The temporary location for the result can be fetched on timer basis
+and while the search continues, status code **102** will be returned.
+When the search is finished **200** will be returned and the temporary
+resource URI will be unavailable.
 
 See the following example usage of the search functionality and how to
 handle the status code on the client side:
 
-1. Create a GET request for `/search?query="A movie"`
+1. Create a GET request for `/search?keywords=the,movie`
 
 2. Server responds with a status code **302** and set's a "Location:"
-   header were the temporary result is available to be fetched.
+   header with the temporary resource URI which serves the result for
+   the initiated search.
 
-3. GET the temporary search result location URI until you get a HTTP
-   status code **200**. This URI will return a _searchResult_ object
-   of current search result.
+3. GET the temporary search result location URI until you get status
+   code **200**. This URI will return a _searchResult_ object of
+   current search result.
 
    - You will get a http status **102** and partial results of the
      search for interactive update of the query.
@@ -305,7 +313,7 @@ handle the status code on the client side:
 
 | attribute | description                                               |
 |-----------|-----------------------------------------------------------|
-| query     | A comma separated string with keywords                    |
+| keywords  | A comma separated string with search keywords             |
 | providers | A comma separated string with provider id's               |
 | type      | A comma separated string with type constants              |
 
