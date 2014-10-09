@@ -104,7 +104,7 @@ item. This can be anything from a description to genre.
 
 ## item_type
 
-A string constant which defines an item type. The _item.action_uri_ is the action
+A string constant which defines an item type. The _item.item_ref_ is the action
 to perform on the item.
 
 | value    | description            |
@@ -124,12 +124,12 @@ in results of different _GET_ operations such as a search result.
 A json object which represents an item. _item.type_ should be any of
 the defined _item_type_ constants.
 
-| member       | type      | access      | description                         |
-|--------------|-----------|-------------|-------------------------------------|
-| type         | item_type | read        | item type                           |
-| item_uri     | string    | read        | an uri to access the specific item  |
-| metadata     | metadata  | read        | item metadata                       |
-| actions      | list      | read        | list of _action_ for the item       |
+| member       | type      | access      | description                          |
+|--------------|-----------|-------------|--------------------------------------|
+| type         | item_type | read        | item type                            |
+| stream_uri   | string    | read        | an uri to access the specific stream |
+| metadata     | metadata  | read        | item metadata                        |
+| actions      | list      | read        | list of _action_ for the item        |
 
 
 ## setting
@@ -160,7 +160,32 @@ A json object which represents a provider.
 | icon        | string   | read        | uri for the provider icon      |
 
 
-## searchResult
+## front
+
+A json object with each stream result as a list of of _item_ref_'s.
+
+See the following example:
+
+    {
+		"Latest": [
+			"/provider/movies/item/23011289"
+			"/provider/movies/item/82727611"
+			"/provider/icecast/stream/1981287"
+		],
+
+		"Top Rated": [
+			"/provider/movies/item/23011289"
+			"/provider/youtube/item/28728"
+			"/provider/icecast/stream/1981287"
+		],
+
+		"Favorites": [
+			"/provider/icecast/stream/1981287"
+		]
+    }
+
+
+## search_result
 
 A json object with each providers search result as list of _item_ref_'s.
 
@@ -177,21 +202,25 @@ See the following example of what a result would look like;
 		]
     }
 
+
 # Resource URI's
 
-This section will provide a list of available resource URI and how to
-use them.
+This section will provide specification for each resource uri
+available and how to operate with them.
 
 
-## /
+## /front
 
-This resource returns a list of items to be shown as a front view of
-the server. It will include folders such as _Latest_, _Top rated_,
-_Favorites_, _Watch later_ etc.
+This resource is fetched to get the front view of the service. The
+front view host streams like _Latest_, _Top Rated_, _Favorites_,
+_Watch Later_.
+
+Streams are populated by provider's that implements support for each
+stream type. _Favorites_ is handled internally by the service.
 
 **accepted verbs:** GET
 
-**returns:** A list of _item_ref_ objects.
+**returns:** A _front_ object.
 
 
 ## /settings/[resource]
@@ -289,7 +318,7 @@ handle the status code on the client side:
    the initiated search.
 
 3. GET the temporary search result location URI until you get status
-   code **200**. This URI will return a _searchResult_ object of
+   code **200**. This URI will return a _search_result_ object of
    current search result.
 
    - You will get a http status **102** and partial results of the
@@ -312,5 +341,4 @@ handle the status code on the client side:
 
 **accepted_verbs:** GET
 
-**returns:** A location for search result. The temporary search result
-location returns a _searchResult_ object.
+**returns:** The temporary search result as a _search_result_ object.
