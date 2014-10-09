@@ -34,7 +34,7 @@ typedef struct _search_job_t
 {
   GMutex lock;
   gint providers;
-  JsonArray *result;
+  JsonObject *result;
 } _search_job_t;
 
 static _search_job_t *
@@ -42,7 +42,7 @@ _search_job_ctor()
 {
   _search_job_t *job;
   job = g_new0(_search_job_t, 1);
-  job->result = json_array_new();
+  job->result = json_object_new();
   g_mutex_init(&job->lock);
   return job;
 }
@@ -50,6 +50,7 @@ _search_job_ctor()
 static void
 _search_on_item_callback(cio_provider_descriptor_t *provider, JsonNode *item, gpointer user_data)
 {
+  JsonArray *array;
   _search_job_t *job;
 
   job = (_search_job_t *)user_data;
@@ -64,8 +65,16 @@ _search_on_item_callback(cio_provider_descriptor_t *provider, JsonNode *item, gp
     return;
   }
 
-  /* add item to array */
-  json_array_add_element(job->result, item);
+  /* add provide object if not exists */
+  if (!json_object_has_member(job->result, provider->id))
+  {
+    array = json_array_new();
+    json_object_set_array_member(job->result, provider->id, array);
+  }
+
+  /* add item to provider result array */
+  array = json_object_get_array_member(job->result, provider->id);
+  json_array_add_element(array, item);
   g_mutex_unlock(&job->lock);
 }
 
@@ -219,7 +228,7 @@ cio_search_request_handler(SoupServer *server, SoupMessage *msg,
     g_mutex_lock(&job->lock);
 
     node = json_node_alloc();
-    node = json_node_init_array(node, job->result);
+    node = json_node_init_object(node, job->result);
 
     gen = json_generator_new();
     json_generator_set_pretty(gen, TRUE);
@@ -236,14 +245,13 @@ cio_search_request_handler(SoupServer *server, SoupMessage *msg,
 
     /* free result and create new array */
     json_node_free(node);
-    job->result = json_array_new();
+    job->result = json_object_new();
 
     /* if job is finished, remove, cleanup and return 200 */
     if (job->providers == 0)
     {
       g_hash_table_remove(service->search->jobs, components[2]);
       g_mutex_unlock(&job->lock);
-      g_object_unref(job->result);
       g_free(job);
 
       soup_message_set_status(msg, SOUP_STATUS_OK);
