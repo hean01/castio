@@ -72,13 +72,13 @@ If and object is not valid in a PUT operation, HTTP status code
 **400** will be returned.
 
 
-# action
+## action
 
 An action of an item. Actions are defined and differs from provider to
 providers and can be anything such as; _like_, _buy_ etc.
 
 The action uri is a combination of the item uri and the _action.id_
-like `/providers/headweb/item2935292/buy`. Then create GET request for
+like `/providers/headweb/item/2935292/buy`. Then create GET request for
 this action uri to instruct the provider to perform the specific
 action.
 
