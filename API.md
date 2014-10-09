@@ -115,12 +115,8 @@ to perform on the item.
 
 ## item_ref
 
-A json object which defines an item resource uri. This object is used
+A json string with the _item_ resource uri. This string is used
 in results of different _GET_ operations such as a search result.
-
-| member       | type     | access      | description                    |
-|--------------|----------|-------------|--------------------------------|
-| resource_uri | string   | read        | resource URI for the item      |
 
 
 ## item
@@ -166,21 +162,18 @@ A json object which represents a provider.
 
 ## searchResult
 
-A json object with each providers search result as list of _item_'s.
+A json object with each providers search result as list of _item_ref_'s.
+
+See the following example of what a result would look like;
 
     {
 		"movies": [
-			{<<_item_>>}
-			.
-			.
-			.
+			"/provider/movies/item/23011289"
+			"/provider/movies/item/82727611"
 		],
 
 		"icecast": [
-			{<<_item_>>}
-			.
-			.
-			.
+			"/provider/icecast/stream/1981287"
 		]
     }
 
