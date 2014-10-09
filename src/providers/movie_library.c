@@ -65,6 +65,30 @@ _movie_library_items(const char *path)
   return array;
 }
 
+static void
+_movie_library_search(cio_provider_descriptor_t *provider,
+		      gchar *keywords,
+		      cio_provider_search_on_item_callback_t callback,
+		      gpointer user_data)
+{
+  JsonObject *object;
+  JsonNode *item;
+
+  item = NULL;
+
+  /* TODO: Search for keywords and push each item back through
+     callback, use a thread for the searcher */
+
+  /* create a empty test item and push to caller */
+  item = json_node_alloc();
+  object = json_object_new();
+  item = json_node_init_object(item, object);
+  callback(provider, item, user_data);
+
+  /* end the search by pushing a NULL item */
+  callback(provider, NULL, user_data);
+}
+
 static cio_provider_descriptor_t
 _movie_library_descriptor =
 {
@@ -79,6 +103,7 @@ _movie_library_descriptor =
 
   /* api */
   _movie_library_items,
+  _movie_library_search,
 };
 
 cio_provider_descriptor_t *

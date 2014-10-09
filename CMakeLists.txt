@@ -96,6 +96,7 @@ endif (SOUP_FOUND)
 set(CASTIO_SOURCES
   src/providers/movie_library.c
   src/provider.c
+  src/search.c
   src/service.c
   src/settings.c
   src/main.c

@@ -26,6 +26,10 @@
 #include <json-glib/json-glib.h>
 
 struct cio_service_t;
+struct cio_provider_descriptor_t;
+
+typedef void (*cio_provider_search_on_item_callback_t)(struct cio_provider_descriptor_t *self,
+						       JsonNode *item, gpointer user_data);
 
 typedef enum cio_provider_type_t
 {
@@ -53,6 +57,10 @@ typedef struct cio_provider_descriptor_t
   /** get a list of items for specified path */
   JsonArray *(*items)(const char *path);
 
+  void (*search)(struct cio_provider_descriptor_t *self,
+		 gchar *keywords,
+		 cio_provider_search_on_item_callback_t callback,
+		 gpointer user_data);
 } cio_provider_descriptor_t;
 
 cio_provider_descriptor_t *cio_provider_instance(struct cio_service_t *service,

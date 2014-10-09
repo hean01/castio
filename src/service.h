@@ -27,6 +27,7 @@ typedef struct cio_service_t
 {
   struct cio_service_priv_t *priv;
   struct cio_settings_t *settings;
+  struct cio_search_t *search;
   GHashTable *providers;
 } cio_service_t;
 

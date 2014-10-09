@@ -26,6 +26,7 @@
 
 #include "config.h"
 #include "service.h"
+#include "search.h"
 #include "settings.h"
 #include "provider.h"
 
@@ -237,6 +238,12 @@ _service_initialize_handler(cio_service_t *self)
 			  cio_settings_request_handler,
 			  self->settings, NULL);
 
+  /* add handler for search */
+  soup_server_add_handler(self->priv->server, "/search",
+			  cio_search_request_handler,
+			  self, NULL);
+
+
   /* add handler for providers */
   soup_server_add_handler(self->priv->server, "/providers",
 			  _service_providers_request_handler,
@@ -300,6 +307,9 @@ cio_service_destroy(struct cio_service_t *self)
   if (self->settings)
     cio_settings_destroy(self->settings);
 
+  if (self->search)
+    cio_search_destroy(self->search);
+
   g_free(self->priv);
   g_free(self);
 }
@@ -335,6 +345,9 @@ cio_service_initialize(struct cio_service_t *self,
 
   /* initialize internal and plugin providers */
   _service_initialize_providers(self);
+
+  /* intialize search */
+  self->search = cio_search_new();
 
   /* initialize soup server */
   self->priv->domain = soup_auth_domain_digest_new(SOUP_AUTH_DOMAIN_REALM, AUTH_REALM, NULL);
