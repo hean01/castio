@@ -104,8 +104,8 @@ item. This can be anything from a description to genre.
 
 ## item_type
 
-A string constant which defines an item type. The _item.item_ref_ is the action
-to perform on the item.
+A string constant which defines an item type. The _item.item_ref_ is
+the action to perform on the item.
 
 | value    | description            |
 |----------|------------------------|
@@ -272,15 +272,15 @@ following list of items at its base path:
 		{
 			"type": "folder",
 			"item_uri: "/Top Rated",
-			"metadata": <<{_metadata_}>>,
-			"actions": [<<{_action_}>>]
+			"metadata": <<_metadata_>>,
+			"actions": [<<_action_>>]
 		},
 
 		{
 			"type": "folder",
 			"item_uri: "/New",
-			"metadata": <<{_metadata_}>>
-			"actions": [<<{_action_}>>]
+			"metadata": <<_metadata_>>
+			"actions": [<<_action_>>]
 		}
 	]
 
