@@ -96,6 +96,7 @@ _service_initialize_providers(cio_service_t *self)
   GError *err;
   const gchar *filename;
   gchar *plugindir;
+  gchar plugin[4096];
   GDir *dir;
   cio_provider_descriptor_t *provider;
 
@@ -132,7 +133,8 @@ _service_initialize_providers(cio_service_t *self)
     if (g_strcmp0(filename + strlen(filename) - 4, ".zip") != 0)
       continue;
 
-    provider = cio_provider_instance(self, CIO_PROVIDER_JAVASCRIPT_PLUGIN, filename);
+    g_snprintf(plugin, sizeof(plugin), "%s/%s", plugindir, filename);
+    provider = cio_provider_instance(self, CIO_PROVIDER_JAVASCRIPT_PLUGIN, plugin);
     if (provider == NULL)
       continue;
 
