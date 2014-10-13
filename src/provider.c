@@ -113,7 +113,10 @@ _js_service_log(js_State *state)
 static void
 _js_plugin_search(js_State *state)
 {
-  g_warning("JavaScript: Register of search API function.");
+  _provider_js_t *js;
+  js = js_touserdata(state, 0, "instance");
+
+  g_warning("%s: Register of search API function.", js->provider->id);
 
   /* store search function in the registry */
   js_setregistry(state, "plugin.search");
@@ -254,6 +257,8 @@ _provider_js_plugin_init(cio_provider_descriptor_t *provider, gchar *content, gs
 
   /* create plugin object */
   js_newobject(js->state);
+  js_getproperty(js->state, 0, "prototype");
+  js_newuserdata(js->state, "instance", js);
   js_newcfunction(js->state, _js_plugin_search, 0);
   js_defproperty(js->state, -2, "search", 0);
   js_setglobal(js->state, "plugin");
