@@ -1,0 +1,10 @@
+{
+	"id":"icecast",
+	"name": "Icecast",
+	"description": "Icecast stream directory",
+	"copyright": "2014 - CAST.IO Development Team",
+	"version": [0, 0, 1],
+	"url": "http://local.domain/sample",
+	"icon": "icecast.png",
+	"plugin": "icecast.js"
+}

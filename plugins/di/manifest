@@ -1,0 +1,10 @@
+{
+	"id": "di",
+	"name": "Digitally Imported",
+	"description": "Addictive electronic music",
+	"copyright": "2014 - CAST.IO Development Team",
+	"version": [0, 0, 1],
+	"url": "http://local.domain/di",
+	"icon": "di.png",
+	"plugin": "di.js"
+}

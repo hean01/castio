@@ -1,0 +1,10 @@
+{
+	"id":"sample",
+	"name": "Sample Provider",
+	"description": "A sample provider",
+	"copyright": "2014 - CAST.IO Development Team",
+	"version": [0, 0, 1],
+	"url": "http://local.domain/sample",
+	"icon": "sample.png",
+	"plugin": "sample.js"
+}

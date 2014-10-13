@@ -1,0 +1,10 @@
+{
+	"id": "svtplay",
+	"name": "SVT Play",
+	"description": "Play service provided by Sveriges Television",
+	"copyright": "2014 - CAST.IO Development Team",
+	"version": [0, 0, 1],
+	"url": "http://local.domain/sample",
+	"icon": "svtplay.png",
+	"plugin": "svtplay.js"
+}

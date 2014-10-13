@@ -34,6 +34,7 @@ set(CMAKE_INSTALL_PREFIX "/usr" CACHE PATH "Installation prefix")
 include_directories("${CMAKE_BINARY_DIR}/")
 include_directories("${CMAKE_SOURCE_DIR}/include")
 include_directories("${CMAKE_SOURCE_DIR}/src")
+include_directories("${CMAKE_SOURCE_DIR}/external")
 
 configure_file("src/config.h.cmake" "${CMAKE_CURRENT_BINARY_DIR}/config.h" @ONLY)
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
@@ -56,15 +57,6 @@ if (LIBARCHIVE_FOUND)
 else (LIBARCHIVE_FOUND)
   message(FATAL_ERROR "libarchive is required.")
 endif (LIBARCHIVE_FOUND)
-
-pkg_check_modules(LIBJS libjs)
-if (LIBJS_FOUND)
-  link_directories(${LIBJS_LIBRARY_DIRS})
-  include_directories(${LIBJS_INCLUDE_DIRS})
-  set(LIBS ${LIBS} ${LIBJS_LIBRARIES})
-else (LIBJS_FOUND)
-  message(FATAL_ERROR "JS is required, install js-devel.")
-endif (LIBJS_FOUND)
 
 pkg_check_modules(GLIB glib-2.0)
 if (GLIB_FOUND)
@@ -106,7 +98,7 @@ set(CASTIO_SOURCES
 # Build cast.io binary
 #
 add_executable(castio ${CASTIO_SOURCES})
-target_link_libraries(castio ${LIBS})
+target_link_libraries(castio ${LIBS} mujs m)
 install(TARGETS castio
   RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR})
 
@@ -123,3 +115,6 @@ set(CPACK_SOURCE_IGNORE_FILES ".*~;/#;${CPACK_SOURCE_IGNORE_FILES}")
 set(CPACK_SOURCE_PACKAGE_FILE_NAME "${CMAKE_PROJECT_NAME}-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
 include (CPack)
 add_custom_target(dist COMMAND ${CMAKE_MAKE_PROGRAM} package_source)
+
+add_subdirectory(external)
+add_subdirectory(plugins)
