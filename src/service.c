@@ -20,6 +20,7 @@
 
 
 #include <string.h>
+#include <errno.h>
 
 #include <glib.h>
 #include <libsoup/soup.h>
@@ -363,9 +364,12 @@ cio_service_initialize(struct cio_service_t *self,
     return FALSE;
   }
 
-  addr = soup_address_new_any(SOUP_ADDRESS_FAMILY_IPV4, port);
-  self->priv->server = soup_server_new(SOUP_SERVER_INTERFACE, addr, NULL);
-  g_assert(self->priv->server != NULL);
+  self->priv->server = soup_server_new(SOUP_SERVER_PORT, port, NULL);
+  if (self->priv->server == NULL)
+  {
+    g_critical("Failed start server on port %d: %s",port, strerror(errno));
+    return FALSE;
+  }
 
   soup_server_add_auth_domain(self->priv->server, self->priv->domain);
 
