@@ -1,7 +1,7 @@
 CAST.IO Plugins
 ===============
 
-CAST.IO uses JavaScript (ECMA-263) as a script language for
+CAST.IO uses JavaScript (ECMA-262) as a script language for
 plugins. For now CAST.IO only supports one type of plugins which is
 providers.
 
