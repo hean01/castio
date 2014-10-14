@@ -1,3 +1,8 @@
+*~
+.gitignore
+*#*#
+*.html
+
 # Object files
 *.o
 *.ko
