@@ -20,6 +20,26 @@ What is _CAST.IO_?
 [RESTful]: http://en.wikipedia.org/w/index.php?title=Representational_state_transfer "REpresental State Transfer"
 
 
+## Building CAST.IO
+
+To build CAST.IO you need to fulfill a few dependencies, a c
+compilator, `cmake` and the development packages for the following
+libraries (names can differ between distributions);
+
+- json-glib
+- libarchive
+- libsoup
+
+If you are building from git repository you need to initialize a third
+party library MuJS which is available as a git submodule. This is done
+by issuing command `git submodule init` in your working copy. Then
+follow the steps below to build and install CAST.IO.
+
+    mkdir build && cd build
+    cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX=/opt/castio ..
+	make install
+
+
 ## Provider plugins
 
 A provider plugin is written using javascript and implements the
