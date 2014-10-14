@@ -42,10 +42,10 @@ follow the steps below to build and install CAST.IO.
 
 ## Provider plugins
 
-CAST.IO provider plugins are written using JavaScript (ecma-262) were
-each provider initializes and implements parts of the provider
-[Plugin API][]. This is done using global accesor objects for
-different purposes as you can read more about at [Plugin API][]
+CAST.IO provider plugins are written using JavaScript where each
+provider initializes and implements parts of the provider
+[Plugin API][]. This is done using global objects provided by CAST.IO
+for different purposes as you can read more about at the [Plugin API][]
 documentation.
 
 [Plugin API]: https://github.com/hean01/castio/blob/master/PLUGINS.md "CAST.IO Plugin API"
