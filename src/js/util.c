@@ -18,6 +18,7 @@
  *
  */
 
+#include <stdio.h>
 #include <js/js.h>
 
 void
@@ -61,4 +62,17 @@ js_util_tojsonnode(js_State *state, int idx)
   }
 
   return node;
+}
+
+
+void
+js_util_dumpstack(js_State *state, int depth)
+{
+  int idx;
+  const gchar *str;
+  for (idx = 0; idx > -depth; idx--)
+  {
+    str = js_tostring(state, idx);
+    fprintf(stderr, "[%d] - %s\n", idx, str);
+  }
 }
