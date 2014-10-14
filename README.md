@@ -42,24 +42,13 @@ follow the steps below to build and install CAST.IO.
 
 ## Provider plugins
 
-A provider plugin is written using javascript and implements the
-provider plugin API. The provider plugin API serves three functions,
-configuration, search and browse.
+CAST.IO provider plugins are written using JavaScript (ecma-262) were
+each provider initializes and implements parts of the provider
+[Plugin API][]. This is done using global accesor objects for
+different purposes as you can read more about at [Plugin API][]
+documentation.
 
-Configuration of a provider plugin are often specific to the service
-but the most commonly shared properties are login credentials.
-
-Search API is used by the global search function, this provides the
-functionality to search all your provider plugins for content. The
-length of search result a provider plugin should return is a global
-_CAST.IO_ service configuration.
-
-The browse function provides an interface to present folders with
-items for example categories, year's etc. anything that the service
-provides. Each item has properties of metadata and a launch uri which
-is the uri to the actual stream which is fed to the receiver for
-playback.
-
+[Plugin API]: https://github.com/hean01/castio/blob/master/PLUGINS.md "CAST.IO Plugin API"
 
 ## Web API
 
