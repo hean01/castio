@@ -154,13 +154,14 @@ _provider_plugin_search_proxy(struct cio_provider_descriptor_t *self,
   pkw = kw = g_strsplit(keywords, ",", -1);
   for (; *pkw != NULL; pkw++) {
     js_pushstring(js->state, *pkw);
-    js_setindex(js->state, -1, idx++);
+    js_setindex(js->state, -2, idx++);
   }
   js_setlength(js->state, -1, idx);
-  g_strfreev(kw);
 
   /* perform the function call */
   js_call(js->state, 1);
+
+  g_strfreev(kw);
 }
 
 cio_provider_descriptor_t *
