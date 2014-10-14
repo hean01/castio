@@ -25,6 +25,8 @@
 #include "service.h"
 #include "settings.h"
 
+#define DOMAIN "settings"
+
 static void
 _js_settings_define(js_State *state)
 {
@@ -42,8 +44,9 @@ _js_settings_define(js_State *state)
   value = js_util_tojsonnode(state, 4);
   if (value == NULL)
   {
-    g_warning("%s: Tried to create setting '%s' with unsupported value type.",
-	      js->provider->id, id);
+    g_log(DOMAIN, G_LOG_LEVEL_WARNING,
+	  "[%s]: Define setting '%s' failed: unsupported value type",
+	  js->provider->id, id);
     js_pushundefined(state);
   }
 

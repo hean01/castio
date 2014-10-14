@@ -20,13 +20,16 @@
 
 #include "js/js.h"
 
+#define DOMAIN "provider"
+
 static void
 _js_plugin_search(js_State *state)
 {
   js_provider_t *js;
   js = js_touserdata(state, 0, "instance");
 
-  g_warning("%s: Register of search API function.", js->provider->id);
+  g_log(DOMAIN, G_LOG_LEVEL_MESSAGE,
+	"[%s]: Register of search API function.", js->provider->id);
 
   /* store search function in the registry */
   js_setregistry(state, "plugin.search");

@@ -31,6 +31,8 @@
 #include "providers/plugin.h"
 #include "providers/movie_library.h"
 
+#define DOMAIN "provider"
+
 cio_provider_descriptor_t *
 cio_provider_instance(cio_service_t *service, cio_provider_type_t type, const gchar *args)
 {
@@ -48,7 +50,6 @@ cio_provider_instance(cio_service_t *service, cio_provider_type_t type, const gc
     break;
 
   default:
-    g_warning("Unhandled provider type %d", type);
     return NULL;
   }
 
@@ -95,7 +96,8 @@ cio_provider_request_handler(SoupServer *server, SoupMessage *msg, const char *p
   /* bail out if provider doesn't support items */
   if (provider->items == NULL)
   {
-    g_warning("Provider '%s' does not provide items.", provider->id);
+    g_log(DOMAIN, G_LOG_LEVEL_WARNING,
+	  "Provider '%s' does not provide items.", provider->id);
     soup_message_set_status(msg, SOUP_STATUS_NOT_FOUND);
     return;
   }

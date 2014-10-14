@@ -31,6 +31,8 @@
 #include "settings.h"
 #include "provider.h"
 
+#define DOMAIN "service"
+
 #define AUTH_REALM "CAST.IO"
 
 static gchar *g_option_config_file = CASTIO_INSTALL_PREFIX"/etc/castio.conf";
@@ -108,20 +110,23 @@ _service_initialize_providers(cio_service_t *self)
   if (provider)
     g_hash_table_insert(self->providers, provider->id, provider);
   else
-    g_warning("Failed to instantiate movie library provider.");
+    g_log(DOMAIN, G_LOG_LEVEL_WARNING,
+	  "Failed to instantiate internal Movie library provider.");
 
   /* load and instantiate available plugin providers */
   plugindir = cio_settings_get_string_value(self->settings, "service", "plugin_dir", &err);
   if (err)
   {
-    g_warning("No plugin directory specified in configuration.");
+    g_log(DOMAIN, G_LOG_LEVEL_WARNING,
+	  "No plugin directory specified in configuration.\n");
     return;
   }
 
   dir = g_dir_open(plugindir, 0, &err);
   if (err)
   {
-    g_warning("Failed to load plugins: %s", err->message);
+    g_log(DOMAIN, G_LOG_LEVEL_WARNING,
+	  "Failed to load plugins from directory: %s\n", err->message);
     g_free(plugindir);
     return;
   }
@@ -394,8 +399,8 @@ cio_service_main(cio_service_t *self)
 
   /* Store configuration from memory to file. */
   if (!cio_settings_save(self->settings, &err))
-    g_warning("Failed to save settings: %s", err->message);
-
+    g_log(DOMAIN, G_LOG_LEVEL_WARNING,
+	  "Failed to save settings: %s", err->message);
 }
 
 void

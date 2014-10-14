@@ -21,6 +21,8 @@
 #include <string.h>
 #include "settings.h"
 
+#define DOMAIN "settings"
+
 typedef struct cio_settings_t
 {
   char *filename;
@@ -64,7 +66,8 @@ _settings_validate(cio_settings_t *self, GError **err)
     members = json_object_get_members(settings);
     if (!members)
     {
-      g_warning("Settings section '%s' is empty, removing it.", (gchar *)sections->data);
+      g_log(DOMAIN, G_LOG_LEVEL_WARNING,
+	    "section '%s' is empty, removing it.", (gchar *)sections->data);
       json_object_remove_member(object, sections->data);
       continue;
     }
@@ -147,7 +150,8 @@ cio_settings_new(const char *filename)
 
   if (!cio_settings_load(settings, &err))
   {
-    g_warning("Failed to load settings: %s", err->message);
+    g_log(DOMAIN, G_LOG_LEVEL_WARNING,
+	  "Failed to load settings: %s", err->message);
     settings->root = json_node_alloc();
     settings->root = json_node_init_object(settings->root, json_object_new());
   }
@@ -240,7 +244,8 @@ cio_settings_update_section(struct cio_settings_t *self,
 
   if (!json_object_has_member(object, section))
   {
-    g_warning("Failed to update, settings section '%s' does not exists.", section);
+    g_log(DOMAIN, G_LOG_LEVEL_WARNING,
+	  "Failed to update section '%s', section does not exist.", section);
     return FALSE;
   }
 
@@ -252,7 +257,8 @@ cio_settings_update_section(struct cio_settings_t *self,
   /* FIXME: Do we need to do this ? */
   if (!JSON_NODE_HOLDS_OBJECT(node))
   {
-    g_warning("Failed to update, JSON node is not an object");
+    g_log(DOMAIN, G_LOG_LEVEL_WARNING,
+	  "Failed to update section '%s', json node is not an object", section);
     return FALSE;
   }
 
@@ -262,7 +268,8 @@ cio_settings_update_section(struct cio_settings_t *self,
   members = json_object_get_members(src);
   if (members == NULL)
   {
-    g_warning("Failed to update, section '%s', empty source object.", section);
+    g_log(DOMAIN, G_LOG_LEVEL_WARNING,
+	  "Failed to update section '%s', empty source object.", section);
     return FALSE;
   }
 
@@ -276,8 +283,9 @@ cio_settings_update_section(struct cio_settings_t *self,
     temp = json_object_get_member(src, members->data);
     if (!JSON_NODE_HOLDS_OBJECT(temp))
     {
-      g_warning("Failed to update, member '%s' in section '%s' is not an object.",
-		(gchar *)members->data, section);
+      g_log(DOMAIN, G_LOG_LEVEL_WARNING,
+	    "Failed to update section '%s' setting, member '%s' is not an setting object.",
+	    section, (gchar *)members->data);
       return FALSE;
     }
 
@@ -286,16 +294,18 @@ cio_settings_update_section(struct cio_settings_t *self,
     /* verify that setting has a value */
     if (!json_object_has_member(setting, "value"))
     {
-      g_warning("Setting object '%s' in section '%s' doesn't have any \"value\" member,"
-		" removing it from update", (gchar *)members->data, section);
+      g_log(DOMAIN, G_LOG_LEVEL_WARNING,
+	    "Failed to update section '%s' setting, '%s' does not have a \"value\" member.",
+	    section, (gchar *)members->data);
       return FALSE;
     }
 
     /* verify that destination has the same setting */
     if (!json_object_has_member(dest, members->data))
     {
-      g_warning("Failed to update, trying to update non existing setting '%s' in section '%s'",
-		(gchar *)members->data, section);
+      g_log(DOMAIN, G_LOG_LEVEL_WARNING,
+	    "Failed to update section '%s' setting, trying update of non existing setting '%s'.",
+	    section, (gchar *)members->data);
       return FALSE;
     }
 
@@ -305,8 +315,9 @@ cio_settings_update_section(struct cio_settings_t *self,
 
     if (json_node_get_value_type(sval) != json_node_get_value_type(dval))
     {
-      g_warning("Failed to update, value of '%s' in section '%s', differs in type.",
-		(gchar *)members->data, section);
+      g_log(DOMAIN, G_LOG_LEVEL_WARNING,
+	    "Failed to update section '%s' setting, value type of '%s' is different.",
+	    section, (gchar *)members->data);
       return FALSE;
     }
 
@@ -317,7 +328,8 @@ cio_settings_update_section(struct cio_settings_t *self,
   members = json_object_get_members(dest);
   if (members == NULL)
   {
-    g_warning("Failed to update, destination section '%s' doesn't have any settings.", section);
+    g_log(DOMAIN, G_LOG_LEVEL_WARNING,
+	  "Failed to update section, section '%s' is empty", section);
     return FALSE;
   }
 
@@ -333,7 +345,9 @@ cio_settings_update_section(struct cio_settings_t *self,
     /* update dest value with source value */
     json_object_set_member(json_object_get_object_member(dest, members->data),
 			   "value", json_node_copy(sval));
-    g_warning("Update value of '%s'", (gchar *)members->data);
+    g_log(DOMAIN, G_LOG_LEVEL_DEBUG,
+	  "Value of '%s' in section '%s' updated.",
+	  (gchar *)members->data, section);
   } while((members = g_list_next(members)) != NULL);
 
 

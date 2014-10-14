@@ -25,6 +25,8 @@
 #include "service.h"
 #include "provider.h"
 
+#define DOMAIN "search"
+
 typedef struct cio_search_t
 {
   GHashTable *jobs;
@@ -145,7 +147,8 @@ cio_search_request_handler(SoupServer *server, SoupMessage *msg,
     if (query == NULL)
     {
       soup_message_set_status(msg, SOUP_STATUS_BAD_REQUEST);
-      g_warning("Search failed, no query specified in the request.");
+      g_log(DOMAIN, G_LOG_LEVEL_WARNING,
+	    "Search failed, no query specified in the request.");
       return;
     }
 
@@ -153,7 +156,8 @@ cio_search_request_handler(SoupServer *server, SoupMessage *msg,
     if (keywords == NULL)
     {
       soup_message_set_status(msg, SOUP_STATUS_BAD_REQUEST);
-      g_warning("Search failed, no keywords specified in the request.");
+      g_log(DOMAIN, G_LOG_LEVEL_WARNING,
+	    "Search failed, no keywords specified in the request.");
       return;
     }
 
@@ -163,7 +167,8 @@ cio_search_request_handler(SoupServer *server, SoupMessage *msg,
     if (iter == NULL)
     {
       soup_message_set_status(msg, SOUP_STATUS_SERVICE_UNAVAILABLE);
-      g_warning("Search failed, no providers registered with the service.");
+      g_log(DOMAIN, G_LOG_LEVEL_WARNING,
+	    "Search failed, no providers registered with the service.");
       return;
     }
 
@@ -192,7 +197,8 @@ cio_search_request_handler(SoupServer *server, SoupMessage *msg,
     /* verify that we actually have a search job */
     if (job == NULL)
     {
-      g_warning("Search failed, no matching providers specified in query.");
+      g_log(DOMAIN, G_LOG_LEVEL_WARNING,
+	    "Search failed, no matching providers specified in query.");
       soup_message_set_status(msg, SOUP_STATUS_SERVICE_UNAVAILABLE);
       return;
     }
@@ -219,7 +225,7 @@ cio_search_request_handler(SoupServer *server, SoupMessage *msg,
     job = g_hash_table_lookup(service->search->jobs, components[2]);
     if (job == NULL)
     {
-      g_warning("No job in hashtable...");
+      g_log(DOMAIN, G_LOG_LEVEL_WARNING, "No search result available for '%s'", path);
       soup_message_set_status(msg, SOUP_STATUS_NOT_FOUND);
       return;
     }

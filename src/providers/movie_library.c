@@ -23,6 +23,8 @@
 #include "settings.h"
 #include "movie_library.h"
 
+#define DOMAIN "provider.movies"
+
 static JsonArray *
 _movie_library_items(const char *path)
 {
@@ -43,7 +45,8 @@ _movie_library_items(const char *path)
   dir = g_dir_open(fpath, 0, &err);
   if (dir == NULL)
   {
-    g_warning("Failed to read directory: %s", err->message);
+    g_log(DOMAIN, G_LOG_LEVEL_WARNING,
+	  "Failed to read directory: %s", err->message);
     return NULL;
   }
 
