@@ -87,6 +87,11 @@ endif (SOUP_FOUND)
 
 set(CASTIO_SOURCES
   src/providers/movie_library.c
+  src/providers/plugin.c
+  src/js/settings.c
+  src/js/service.c
+  src/js/plugin.c
+  src/js/util.c
   src/provider.c
   src/search.c
   src/service.c

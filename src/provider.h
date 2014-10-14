@@ -63,7 +63,7 @@ typedef struct cio_provider_descriptor_t
 		 gpointer user_data);
 
   void *opaque;
-  cio_service_t *service;
+  struct cio_service_t *service;
 } cio_provider_descriptor_t;
 
 cio_provider_descriptor_t *cio_provider_instance(struct cio_service_t *service,
