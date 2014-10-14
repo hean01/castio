@@ -1,8 +1,8 @@
 CAST.IO Plugins
 ===============
 
-CAST.IO uses JavaScript (ECMA-262) as a script language for
-plugins. For now CAST.IO only supports one type of plugins which is
+CAST.IO uses JavaScript (ECMA-262) as scripting language for
+plugins. For now, CAST.IO only supports one type of plugins which is
 providers.
 
 Plugins are bundled into a zip file with a _manifest_ which describes
@@ -20,12 +20,17 @@ below.
 		"plugin": "sample.js"
 	}
 
+The global scope of a plugin contains three objects to help the plugin
+developer to implement a plugin. These helper objects are;
 
-# Provider plugin
+- **_service_** provides core functionalities such as logging, http
+  client etc.
 
-The global scope of a provider plugin contains three objects to help
-the plugin developer to implement a provider plugin. These helper
-objects is named as following sections.
+- **_settings_** provides an interface to define and use plugin specific
+  settings which is stored in the service configuration file.
+
+- **_plugin_** provides is the interface between CAST.IO and the
+  provide plugin.
 
 Here is a sample plugin script which does nothing more than gets
 initialize and logs "Hello World!" using the _service_ object.
