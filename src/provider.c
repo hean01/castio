@@ -350,7 +350,7 @@ _provider_js_plugin_instance(cio_service_t *service, const gchar *filename)
     {
       len = archive_entry_size(entry);
       content = g_malloc(len + 1);
-      memset(content, 0, len);
+      memset(content, 0, len + 1);
       archive_read_data(ar, content, len);
       provider = _provider_js_plugin_manifest_parse(content, len, &icon, &plugin);
       g_free(content);
@@ -396,7 +396,7 @@ _provider_js_plugin_instance(cio_service_t *service, const gchar *filename)
     {
       len = archive_entry_size(entry);
       content = g_malloc(len + 1);
-      memset(content, 0, len);
+      memset(content, 0, len + 1);
       archive_read_data(ar, content, len);
       res = _provider_js_plugin_init(provider, content, len);
       g_free(content);
