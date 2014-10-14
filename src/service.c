@@ -323,7 +323,6 @@ cio_service_initialize(struct cio_service_t *self,
 		       int argc, char **argv)
 {
   guint port;
-  SoupAddress *addr;
   GOptionContext *option;
   GError *err;
 
