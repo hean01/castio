@@ -250,7 +250,7 @@ cio_provider_plugin_new(struct cio_service_t *service, const gchar *filename)
     {
       len = archive_entry_size(entry);
       content = g_malloc(len + 1);
-      memset(content, 0, len);
+      memset(content, 0, len + 1);
       archive_read_data(ar, content, len);
       res = _provider_plugin_init(provider, content, len);
       g_free(content);
