@@ -174,13 +174,64 @@ _provider_plugin_search_proxy(struct cio_provider_descriptor_t *self,
   {
     message =  js_tostring(js->state, -1);
     g_log(DOMAIN, G_LOG_LEVEL_CRITICAL,
-	  "[%s.plugin.search] %s", self->id, message);
+	  "[%s.search] %s", self->id, message);
   }
 
   /* end search for provider */
   callback(js->provider, NULL, user_data);
 
   g_strfreev(kw);
+}
+
+
+static JsonNode *
+_provider_plugin_items_proxy(struct cio_provider_descriptor_t *self, const gchar *path,
+			     gsize offset, gssize limit)
+{
+  gchar *fp;
+  JsonNode *node;
+  const gchar *message;
+  js_provider_t *js;
+
+  js = self->opaque;
+
+  fp = g_malloc(strlen(path) + 2);
+  fp[0] = 0;
+  g_snprintf(fp, strlen(path) + 2, "/%s", path);
+
+  g_log(DOMAIN, G_LOG_LEVEL_DEBUG,
+	"[%s.items] Fetching items for uri '%s'", self->id, fp);
+
+  /* fetch function from registry to stack  */
+  js_getregistry(js->state, fp);
+  if (!js_isdefined(js->state, 0))
+  {
+    g_log(DOMAIN, G_LOG_LEVEL_WARNING,
+	  "[%s.items] No handler function registered for path '%s'", self->id, path);
+    js_pop(js->state, 1);
+    return NULL;
+  }
+
+  /* add this object to stack */
+  js_newobject(js->state);
+
+  /* push arg: offset to stack */
+  js_newnumber(js->state, offset);
+
+  /* push arg: limit to stack */
+  js_newnumber(js->state, limit);
+
+  /* perform the function call */
+  if (js_pcall(js->state, 2) != 0)
+  {
+    message =  js_tostring(js->state, -1);
+    g_log(DOMAIN, G_LOG_LEVEL_CRITICAL,
+	  "[%s.items] %s", self->id, message);
+  }
+
+  /* get result array */
+  node = js_util_tojsonnode(js->state, -1);
+  return node;
 }
 
 cio_provider_descriptor_t *
@@ -244,6 +295,7 @@ cio_provider_plugin_new(struct cio_service_t *service, const gchar *filename)
   /* setup provider proxy functions */
   provider->service = service;
   provider->search = _provider_plugin_search_proxy;
+  provider->items = _provider_plugin_items_proxy;
 
   /* Reopen to read plugin script and icon */
   ar = archive_read_new();
