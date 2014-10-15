@@ -25,11 +25,13 @@
 
 #define DOMAIN "provider.movies"
 
-static JsonArray *
-_movie_library_items(const char *path)
+static JsonNode *
+_movie_library_items(cio_provider_descriptor_t *provider,
+		     const char *path, gsize offset, gssize limit)
 {
   GDir *dir;
   GError *err;
+  JsonNode *node;
   JsonObject *object;
   JsonArray *array;
 
@@ -50,7 +52,9 @@ _movie_library_items(const char *path)
     return NULL;
   }
 
+  node = json_node_alloc();
   array = json_array_new();
+  json_node_init_array(node, array);
   while((fn = g_dir_read_name(dir)) != NULL)
   {
     if (g_strcmp0(fn, ".") == 0)
@@ -65,7 +69,7 @@ _movie_library_items(const char *path)
     json_array_add_object_element(array, object);
   }
 
-  return array;
+  return node;
 }
 
 static void

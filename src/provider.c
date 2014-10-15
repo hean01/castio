@@ -72,8 +72,7 @@ cio_provider_request_handler(SoupServer *server, SoupMessage *msg, const char *p
   cio_service_t *service;
   cio_provider_descriptor_t *provider;
   JsonGenerator *generator;
-  JsonArray *result;
-  JsonNode *root;
+  JsonNode *result;
 
   service = (cio_service_t *)user_data;
 
@@ -104,18 +103,16 @@ cio_provider_request_handler(SoupServer *server, SoupMessage *msg, const char *p
 
   /* get items from provider */
   spath = g_strjoinv("/", components + 3);
-  result = provider->items(spath);
+  result = provider->items(provider, spath, 0, 10);
   if (result)
   {
     /* convert result into json text */
-    root = json_node_alloc();
-    root = json_node_init_array(root, result);
     generator = json_generator_new();
     json_generator_set_pretty(generator, TRUE);
-    json_generator_set_root(generator, root);
+    json_generator_set_root(generator, result);
     content = json_generator_to_data(generator, NULL);
     g_object_unref(generator);
-    json_node_free(root);
+    json_node_free(result);
 
     /* send result */
     soup_message_set_response(msg,

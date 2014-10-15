@@ -55,7 +55,8 @@ typedef struct cio_provider_descriptor_t
    */
 
   /** get a list of items for specified path */
-  JsonArray *(*items)(const char *path);
+  JsonNode *(*items)(struct cio_provider_descriptor_t *self,
+		      const char *path, gsize offset, gssize limit);
 
   void (*search)(struct cio_provider_descriptor_t *self,
 		 gchar *keywords,
