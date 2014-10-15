@@ -33,6 +33,9 @@ _js_plugin_search(js_State *state)
 
   /* store search function in the registry */
   js_setregistry(state, "plugin.search");
+
+  /* return value */
+  js_pushundefined(state);
 }
 
 static void
@@ -49,6 +52,9 @@ _js_plugin_register(js_State *state)
 
   /* store uri in the registry */
   js_setregistry(state, uri);
+
+  /* return value */
+  js_pushundefined(state);
 }
 
 
