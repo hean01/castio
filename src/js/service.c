@@ -31,8 +31,8 @@ _js_service_log(js_State *state)
   js = js_touserdata(state, 0, "instance");
   message = js_tostring(state, 1);
 
-  g_log(DOMAIN, G_LOG_LEVEL_MESSAGE,
-	"[%s]: %s", js->provider->id, message);
+  g_log(DOMAIN, G_LOG_LEVEL_INFO,
+	"[%s.service.log]: %s", js->provider->id, message);
 
   js_pushundefined(state);
 }

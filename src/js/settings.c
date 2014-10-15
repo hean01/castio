@@ -45,7 +45,7 @@ _js_settings_define(js_State *state)
   if (value == NULL)
   {
     g_log(DOMAIN, G_LOG_LEVEL_WARNING,
-	  "[%s]: Define setting '%s' failed: unsupported value type",
+	  "[%s.settings.define]: Define setting '%s' failed: unsupported value type",
 	  js->provider->id, id);
     js_pushundefined(state);
   }

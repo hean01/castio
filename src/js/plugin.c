@@ -28,8 +28,8 @@ _js_plugin_search(js_State *state)
   js_provider_t *js;
   js = js_touserdata(state, 0, "instance");
 
-  g_log(DOMAIN, G_LOG_LEVEL_MESSAGE,
-	"[%s]: register handler function for search.", js->provider->id);
+  g_log(DOMAIN, G_LOG_LEVEL_INFO,
+	"[%s.plugin.search]: register handler function for search.", js->provider->id);
 
   /* store search function in the registry */
   js_setregistry(state, "plugin.search");
@@ -44,8 +44,8 @@ _js_plugin_register(js_State *state)
 
   uri = js_tostring(state, 1);
 
-  g_log(DOMAIN, G_LOG_LEVEL_MESSAGE,
-	"[%s]: register handler function for uri '%s'", js->provider->id, uri);
+  g_log(DOMAIN, G_LOG_LEVEL_INFO,
+	"[%s.plugin.register]: register uri '%s'", js->provider->id, uri);
 
   /* store uri in the registry */
   js_setregistry(state, uri);
