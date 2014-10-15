@@ -24,7 +24,6 @@
 #include <errno.h>
 
 #include <glib.h>
-#include <libsoup/soup.h>
 
 #include "config.h"
 #include "service.h"
@@ -454,6 +453,12 @@ cio_service_new()
 
   service->providers = g_hash_table_new(g_str_hash, g_str_equal);
   service->priv->backlog = g_queue_new();
+
+  /* initialize soup cache for plugin http requests */
+  service->cache = soup_cache_new(CASTIO_INSTALL_PREFIX"/var/cache/castio",
+				  SOUP_CACHE_SINGLE_USER);
+  soup_cache_set_max_size(service->cache, 200L*1024L*1024L);
+  soup_cache_load(service->cache);
 
   g_log_set_default_handler(_service_log_handler, service);
 

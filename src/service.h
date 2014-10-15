@@ -21,6 +21,7 @@
 #ifndef _service_h
 #define _service_h
 
+#include <libsoup/soup.h>
 #include <json-glib/json-glib.h>
 
 typedef struct cio_service_t
@@ -29,6 +30,7 @@ typedef struct cio_service_t
   struct cio_settings_t *settings;
   struct cio_search_t *search;
   GHashTable *providers;
+  SoupCache *cache;
 } cio_service_t;
 
 struct cio_service_t *cio_service_new();
