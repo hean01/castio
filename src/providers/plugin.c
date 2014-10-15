@@ -113,6 +113,11 @@ _provider_plugin_init(cio_provider_descriptor_t *provider, gchar *content, gssiz
   js_plugin_init(js->state, js);
   js_setglobal(js->state, "plugin");
 
+  /* add http object */
+  js_http_init(js->state, js);
+  js_setglobal(js->state, "http");
+
+
   /* read and parse the javascript */
   if (js_ploadstring(js->state, "script.js", content) != 0)
   {

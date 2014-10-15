@@ -1,5 +1,9 @@
 (function() {
 
+    var result = http.get("http://www.google.se");
+    service.log("Status " + result.status);
+    service.log("Content " + JSON.stringify(result.headers));
+
     /*
      * Define plugin settings
      */

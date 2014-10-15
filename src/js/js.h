@@ -35,6 +35,7 @@ typedef struct js_provider_t
 void js_service_init(js_State *state, js_provider_t *instance);
 void js_settings_init(js_State *state, js_provider_t *instance);
 void js_plugin_init(js_State *state, js_provider_t *instance);
+void js_http_init(js_State *state, js_provider_t *instance);
 
 /* util */
 void js_util_pushjsonnode(js_State *state, JsonNode *node);
