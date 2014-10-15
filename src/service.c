@@ -18,7 +18,8 @@
  *
  */
 
-
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <errno.h>
 
@@ -49,7 +50,87 @@ typedef struct cio_service_priv_t
   gchar *config_file;
   SoupServer *server;
   SoupAuthDomain *domain;
+  GQueue *backlog;
 } cio_service_priv_t;
+
+static JsonNode *
+_service_log_entry(const gchar *log_domain,
+		   GLogLevelFlags log_level,
+		   const gchar *message)
+{
+  gchar *level;
+  JsonNode *node;
+  JsonObject *object;
+  node = json_node_alloc();
+  object = json_object_new();
+  json_node_init_object(node, object);
+
+  json_object_set_string_member(object, "domain", log_domain);
+
+  level = "undefined";
+  if (log_level & G_LOG_LEVEL_ERROR)
+    level = "error";
+  else if (log_level & G_LOG_LEVEL_CRITICAL)
+    level = "critical";
+  else if (log_level & G_LOG_LEVEL_WARNING)
+    level = "warning";
+  if (log_level & G_LOG_LEVEL_MESSAGE)
+    level = "message";
+  else if (log_level & G_LOG_LEVEL_INFO)
+    level = "info";
+  else if (log_level &  G_LOG_LEVEL_DEBUG)
+    level = "debug";
+
+  json_object_set_string_member(object, "level", level);
+  json_object_set_string_member(object, "message", message);
+
+  return node;
+}
+
+static void
+_service_log_handler(const gchar *log_domain,
+		     GLogLevelFlags log_level,
+		     const gchar *message,
+		     gpointer user_data)
+{
+  gchar *level;
+  FILE *o;
+  cio_service_t *service;
+  service = (cio_service_t *)user_data;
+
+  /* add log entry to backlog, pop head item if full */
+  g_queue_push_tail(service->priv->backlog,
+		    _service_log_entry(log_domain, log_level, message));
+
+  if (g_queue_get_length(service->priv->backlog) >= 100)
+    json_node_free(g_queue_pop_head(service->priv->backlog));
+
+  /* print the log message */
+  if (log_level & (G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL
+		   | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_INFO))
+    o = stderr;
+  else
+    o = stdout;
+
+  level = "Undefined";
+  if (log_level & G_LOG_LEVEL_ERROR)
+    level = "Error";
+  else if (log_level & G_LOG_LEVEL_CRITICAL)
+    level = "Critical";
+  else if (log_level & G_LOG_LEVEL_WARNING)
+    level = "Warning";
+  if (log_level & G_LOG_LEVEL_MESSAGE)
+    level = "Message";
+  else if (log_level & G_LOG_LEVEL_INFO)
+    level = "Info";
+  else if (log_level &  G_LOG_LEVEL_DEBUG)
+    level = "Debug";
+
+  fprintf(o, "%s [%s] %s\n", level, log_domain, message);
+
+  if (log_level & (G_LOG_FLAG_FATAL))
+    abort();
+}
 
 /** setup default values for missing keys in configuration */
 static void
@@ -150,6 +231,42 @@ _service_initialize_providers(cio_service_t *self)
   g_free(plugindir);
 }
 
+/** create json array of backlog */
+static gchar *
+_service_backlog_to_json(cio_service_t *self, gsize *length)
+{
+  int i, len;
+  gchar *content;
+  JsonNode *node;
+  JsonNode *item;
+  JsonArray *array;
+  JsonGenerator *gen;
+
+  node = json_node_alloc();
+  array = json_array_new();
+  json_node_init_array(node, array);
+
+  len = g_queue_get_length(self->priv->backlog);
+
+  for (i = 0; i < len; i++)
+  {
+    item = g_queue_peek_nth(self->priv->backlog, i);
+
+    if (item == NULL)
+      continue;
+
+    json_array_add_element(array, json_node_copy(item));
+  }
+
+  /* stringify json node */
+  gen = json_generator_new();
+  json_generator_set_pretty(gen, TRUE);
+  json_generator_set_root(gen, node);
+  content = json_generator_to_data(gen, length);
+  json_node_free(node);
+  g_object_unref(gen);
+  return content;
+}
 
 /** create json array of available providers */
 static gchar *
@@ -232,6 +349,33 @@ _service_providers_request_handler(SoupServer *server, SoupMessage *msg, const c
   soup_message_set_status(msg, 200);
 }
 
+/** handler for /backlog api request */
+static void
+_service_backlog_request_handler(SoupServer *server, SoupMessage *msg, const char *path,
+				 GHashTable *query, SoupClientContext *client, gpointer user_data)
+{
+  cio_service_t *service;
+  gsize length;
+  char *content;
+
+  service = (cio_service_t *)user_data;
+
+  if (msg->method != SOUP_METHOD_GET)
+  {
+    soup_message_set_status(msg, SOUP_STATUS_BAD_REQUEST);
+    return;
+  }
+
+  content = _service_backlog_to_json(service, &length);
+  soup_message_set_response(msg,
+			    "application/json",
+			    SOUP_MEMORY_TAKE,
+			    content,
+			    length);
+
+  soup_message_set_status(msg, 200);
+}
+
 
 static void
 _service_initialize_handler(cio_service_t *self)
@@ -239,6 +383,11 @@ _service_initialize_handler(cio_service_t *self)
   GList *item;
   cio_provider_descriptor_t *provider;
   gchar path[512];
+
+  /* add handler for backlog */
+  soup_server_add_handler(self->priv->server, "/backlog",
+			  _service_backlog_request_handler,
+			  self, NULL);
 
   /* add handler for configuration */
   soup_server_add_handler(self->priv->server, "/settings",
@@ -304,6 +453,9 @@ cio_service_new()
   memset(service->priv, 0, sizeof(cio_service_priv_t));
 
   service->providers = g_hash_table_new(g_str_hash, g_str_equal);
+  service->priv->backlog = g_queue_new();
+
+  g_log_set_default_handler(_service_log_handler, service);
 
   return service;
 }
