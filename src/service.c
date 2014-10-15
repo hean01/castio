@@ -127,7 +127,7 @@ _service_log_handler(const gchar *log_domain,
 
   fprintf(o, "%s [%s] %s\n", level, log_domain, message);
 
-  if (log_level & (G_LOG_FLAG_FATAL))
+  if (log_level & (G_LOG_FLAG_FATAL) && !(log_level & G_LOG_LEVEL_ERROR))
     abort();
 }
 
