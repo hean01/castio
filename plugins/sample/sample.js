@@ -17,4 +17,8 @@
 
     });
 
+    plugin.register("/items", function(offset, limit) {
+	return ["item 1", "item 2"];
+    });
+
 }) (this);
