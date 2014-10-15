@@ -240,7 +240,6 @@ _service_initialize_handler(cio_service_t *self)
   cio_provider_descriptor_t *provider;
   gchar path[512];
 
-
   /* add handler for configuration */
   soup_server_add_handler(self->priv->server, "/settings",
 			  cio_settings_request_handler,
@@ -322,6 +321,16 @@ cio_service_destroy(struct cio_service_t *self)
   g_free(self);
 }
 
+static void
+_service_request_read_handler(SoupServer *server,
+			      SoupMessage *message,
+			      SoupClientContext *client,
+			      gpointer opaque)
+{
+  g_log(DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s %s",
+	soup_client_context_get_host(client), message->method,
+	soup_uri_get_path(soup_message_get_uri(message)));
+}
 
 gboolean
 cio_service_initialize(struct cio_service_t *self,
@@ -333,12 +342,16 @@ cio_service_initialize(struct cio_service_t *self,
 
   err = NULL;
 
+  g_log(DOMAIN, G_LOG_LEVEL_INFO,
+	"Initialize of CAST.IO service.");
+
   /* Parse and handle arguments */
-  option = g_option_context_new("- cast.io service");
+  option = g_option_context_new("- CAST.IO service");
   g_option_context_add_main_entries(option, entries, NULL);
   if (!g_option_context_parse(option, &argc, &argv, &err))
   {
-    g_print("Parse options failed: %s\n", err->message);
+    g_log(DOMAIN, G_LOG_LEVEL_ERROR,
+	"Failed to parse option: %s", err->message);
     return FALSE;
   }
   g_option_context_free(option);
@@ -364,18 +377,25 @@ cio_service_initialize(struct cio_service_t *self,
   port = cio_settings_get_int_value(self->settings, "service", "port", &err);
   if (err)
   {
-    g_print("ERROR: Failed to get service port from settings: %s\n", err->message);
+    g_log(DOMAIN, G_LOG_LEVEL_CRITICAL,
+	  "Failed to get service port from settings: %s", err->message);
     return FALSE;
   }
 
   self->priv->server = soup_server_new(SOUP_SERVER_PORT, port, NULL);
   if (self->priv->server == NULL)
   {
-    g_critical("Failed start server on port %d: %s",port, strerror(errno));
+    g_log(DOMAIN, G_LOG_LEVEL_CRITICAL,
+	  "Failed to start HTTP server: %s", err->message);
     return FALSE;
   }
 
+  g_log(DOMAIN, G_LOG_LEVEL_INFO,
+	"Using port %d for connections.", port);
+
   soup_server_add_auth_domain(self->priv->server, self->priv->domain);
+  g_signal_connect(self->priv->server, "request-read",
+		   G_CALLBACK(_service_request_read_handler), self);
 
   /* initialize service handler */
   _service_initialize_handler(self);
@@ -389,6 +409,9 @@ cio_service_main(cio_service_t *self)
   GError *err;
 
   err = NULL;
+
+  g_log(DOMAIN, G_LOG_LEVEL_INFO,
+	"Web service ready for handling clients.");
 
   /* start run the soup server */
   soup_server_run_async(self->priv->server);
@@ -406,5 +429,7 @@ cio_service_main(cio_service_t *self)
 void
 cio_service_quit(cio_service_t *self)
 {
+  g_log(DOMAIN, G_LOG_LEVEL_DEBUG,
+	"Existing main loop.");
   g_main_loop_quit(self->priv->loop);
 }
