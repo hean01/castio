@@ -65,6 +65,15 @@ should register a search function and a path function for path `/`.
 | plugin.register(path, function) | Registers a function with a path |
 | plugin.search(function)         | Registers a function with search |
 
+The prototype for register function is `function(results, offset,
+limit) {}`. The _offset_ and _limit_ are used for pagination and
+_offset_ specifies a offset to request items from and were limit is
+how many items the plugin needs to request.
+
+The prototype for search function is `function(results,
+keywords)`. The _keywords_ argument is a list of keywords to search
+the service for.
+
 **Example of usage:**
 
 	(function() {
