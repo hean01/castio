@@ -121,8 +121,7 @@ _provider_plugin_init(cio_provider_descriptor_t *provider, gchar *content, gssiz
   /* read and parse the javascript */
   if (js_ploadstring(js->state, "script.js", content) != 0)
   {
-    js_getproperty(js->state, 1, "message");
-    message =  js_tostring(js->state, 3);
+    message =  js_tostring(js->state, -1);
     g_log(DOMAIN, G_LOG_LEVEL_WARNING,
 	  "[%s] %s",
 	  provider->id, message);
@@ -144,13 +143,17 @@ _provider_plugin_search_proxy(struct cio_provider_descriptor_t *self,
 			      gpointer user_data)
 {
   int idx;
+  const gchar *message;
   char **kw, **pkw;
   js_provider_t *js;
 
   js = self->opaque;
 
-  /* push functiona and this object to stack  */
+  /* push function and this object to stack  */
   js_getregistry(js->state, "plugin.search");
+  js_newobject(js->state);
+
+  /* push result object to stack */
   js_newobject(js->state);
 
   /* push arg keywords array to stack  */
@@ -163,8 +166,19 @@ _provider_plugin_search_proxy(struct cio_provider_descriptor_t *self,
   }
   js_setlength(js->state, -1, idx);
 
+  /* push limit number to stack */
+  js_pushnumber(js->state, 10);
+
   /* perform the function call */
-  js_call(js->state, 1);
+  if (js_pcall(js->state, 3) != 0)
+  {
+    message =  js_tostring(js->state, -1);
+    g_log(DOMAIN, G_LOG_LEVEL_CRITICAL,
+	  "[%s.plugin.search] %s", self->id, message);
+  }
+
+  /* end search for provider */
+  callback(js->provider, NULL, user_data);
 
   g_strfreev(kw);
 }

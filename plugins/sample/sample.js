@@ -1,9 +1,5 @@
 (function() {
 
-    var result = http.get("http://www.google.se");
-    service.log("Status " + result.status);
-    service.log("Content " + JSON.stringify(result.headers));
-
     /*
      * Define plugin settings
      */
@@ -15,7 +11,7 @@
     /*
      * Implementation of search function
      */
-    plugin.search(function(keywords) {
+    plugin.search(function(result, keywords, limit) {
 
 	service.log("Keywords: " + JSON.stringify(keywords));
 
