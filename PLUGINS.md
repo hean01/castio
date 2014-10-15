@@ -71,7 +71,7 @@ _offset_ specifies a offset to request items from and were limit is
 how many items the plugin needs to request.
 
 The prototype for search function is `function(results,
-keywords)`. The _keywords_ argument is a list of keywords to search
+keywords) {}`. The _keywords_ argument is a list of keywords to search
 the service for.
 
 **Example of usage:**
