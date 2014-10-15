@@ -47,14 +47,47 @@ JsonNode *
 js_util_tojsonnode(js_State *state, int idx)
 {
   JsonNode *node;
+  JsonNode *tmp;
+  JsonArray *array;
+  unsigned int i, length;
+
   node = json_node_alloc();
 
   if (js_isstring(state, idx))
+  {
     json_node_init_string(node, g_strdup(js_tostring(state, idx)));
+  }
+
   else if (js_isnumber(state, idx))
+  {
     json_node_init_int(node, js_tointeger(state, idx));
+  }
+
   else if (js_isboolean(state, idx))
+  {
     json_node_init_boolean(node, js_toboolean(state, idx));
+  }
+
+  else if (js_isarray(state, idx))
+  {
+    length = js_getlength(state, idx);
+
+    array = json_array_new();
+    json_node_init_array(node, array);
+
+    for (i = 0; i < length; i++)
+    {
+      js_getindex(state, idx, i);
+      js_util_dumpstack(state, 5);
+      tmp = js_util_tojsonnode(state, idx);
+
+      if (tmp)
+	json_array_add_element(array, tmp);
+
+      js_remove(state, idx);
+    }
+  }
+
   else
   {
     json_node_free(node);
