@@ -48,6 +48,7 @@ js_util_tojsonnode(js_State *state, int idx)
 {
   JsonNode *node;
   JsonNode *tmp;
+  JsonObject *object;
   JsonArray *array;
   unsigned int i, length;
 
@@ -78,7 +79,6 @@ js_util_tojsonnode(js_State *state, int idx)
     for (i = 0; i < length; i++)
     {
       js_getindex(state, idx, i);
-      js_util_dumpstack(state, 5);
       tmp = js_util_tojsonnode(state, idx);
 
       if (tmp)
@@ -86,6 +86,14 @@ js_util_tojsonnode(js_State *state, int idx)
 
       js_remove(state, idx);
     }
+  }
+
+  else if (js_isobject(state, idx))
+  {
+    object = json_object_new();
+    json_node_init_object(node, object);
+
+    /* todo: enumerate keys in object */
   }
 
   else
