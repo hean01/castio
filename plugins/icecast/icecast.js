@@ -78,6 +78,10 @@
 	    str =  getValue(doc, "<p class=\"stream-description\">","</p>");
 	    if (str) item.metadata.description = str;
 
+	    // uri
+	    str = getValue(doc, "<p>[ <a href=\"", "\" ");
+	    item.uri = constants.base_uri + str;
+
 	    result.push(item);
 	    limit = limit - 1;
 	}
@@ -93,7 +97,7 @@
 	    var item = {};
 	    item.type = "folder";
 	    item.metadata = {};
-	    item.uri = "/" + entry;
+	    item.uri = plugin.URI_PREFIX + "/" + entry;
 	    item.metadata.title = entry;
 	    result.push(item);
 	});
