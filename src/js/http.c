@@ -46,6 +46,9 @@ _js_http_get(js_State *state)
 					  SOUP_SESSION_FEATURE(js->provider->service->cache),
 					  NULL);
 
+  g_log(DOMAIN, G_LOG_LEVEL_DEBUG,
+	"[%s.http.get] resource '%s'", js->provider->id, uri);
+
   msg = soup_message_new("GET", uri);
   soup_message_headers_append(msg->request_headers, "Accept-Charset", "utf-8");
 
