@@ -60,44 +60,50 @@ The following properties and methods can be used with service object
 This object provides the actual plugin api for a provider. A provider
 should register a search function and a path function for path `/`.
 
-| Property / Method   | Description                                       |
-|---------------------|---------------------------------------------------|
-| plugin.register(path, function) | Registers a function with a path |
-| plugin.search(function)         | Registers a function with search |
+| Property / Method               | Description                           |
+|---------------------------------|---------------------------------------|
+| plugin.URI_PREFIX               | The prefix for internal plugin uris   |
+| plugin.register(path, function) | Registers a function with a path      |
+| plugin.search(function)         | Registers a function with search      |
 
-The prototype for register function is `function(results, offset,
-limit) {}`. The _offset_ and _limit_ are used for pagination and
-_offset_ specifies a offset to request items from and were limit is
-how many items the plugin needs to request.
 
-The prototype for search function is `function(results,
-keywords) {}`. The _keywords_ argument is a list of keywords to search
-the service for.
+The prototype for register function is `function(offset, limit)
+{}`. The _offset_ and _limit_ are used for pagination and _offset_
+specifies a offset to request items from and were limit is how many
+items the plugin needs to request.
+
+The prototype for search function is `function(keywords, limit)
+{}`. The _keywords_ argument is a list of keywords to search on and
+_limit_ is the amount of items that is requested.
 
 **Example of usage:**
 
 	(function() {
 
-	    plugin.register("/", function(result, offset, limit) {
-		    result.append(JSON.stringify({
-				type: "folder",
-				metadata: {
-					name: "Latest",
-					description: "Latest additions",
-				},
-				uri: "/latest"
-			}));
+	    plugin.register("/", function(offset, limit) {
+			return [
+				{
+					type: "folder",
+					metadata: {
+						name: "Latest",
+							description: "Latest additions",
+	                },
+					uri: plugin.URI_PREFIX + "/latest"
+				}
+			];
 		});
 
-		plugin.register("/latest", function(result, offset, limit) {
-			result.append(JSON.stringify({
-				type: "radiostation",
-				metadata: {
-					name: "Endless drone",
-					description: "FM3 Buddag Machine simulation example"
-				},
-				uri: "http://dir.xiph.org/listen/10799/listen.m3u"
-			}));
+		plugin.register("/latest", function(offset, limit) {
+			return [
+				{
+					type: "radiostation",
+					metadata: {
+						name: "Endless drone",
+							description: "FM3 Buddag Machine simulation example"
+	                },
+					uri: "http://dir.xiph.org/listen/10799/listen.m3u"
+				}
+			];
 		});
 
 	}) (this)
