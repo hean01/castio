@@ -46,6 +46,7 @@ js_util_pushjsonnode(js_State *state, JsonNode *node)
 JsonNode *
 js_util_tojsonnode(js_State *state, int idx)
 {
+  const char *s;
   JsonNode *node;
   JsonNode *tmp;
   JsonObject *object;
@@ -79,7 +80,7 @@ js_util_tojsonnode(js_State *state, int idx)
     for (i = 0; i < length; i++)
     {
       js_getindex(state, idx, i);
-      tmp = js_util_tojsonnode(state, idx);
+      tmp = js_util_tojsonnode(state, -1);
 
       if (tmp)
 	json_array_add_element(array, tmp);
@@ -93,7 +94,18 @@ js_util_tojsonnode(js_State *state, int idx)
     object = json_object_new();
     json_node_init_object(node, object);
 
-    /* todo: enumerate keys in object */
+    js_pushiterator(state, idx, 1);
+    while((s = js_nextiterator(state, -1)) != NULL)
+    {
+      js_getproperty(state, -2, s);
+      tmp = js_util_tojsonnode(state, -1);
+      if (tmp)
+	json_object_set_member(object, s, tmp);
+
+      js_pop(state, 1);
+    }
+
+    js_pop(state, 1);
   }
 
   else
