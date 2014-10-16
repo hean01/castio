@@ -93,7 +93,7 @@
 	    var item = {};
 	    item.type = "folder";
 	    item.metadata = {};
-	    item.uri = "/genre/" + entry;
+	    item.uri = "/" + entry;
 	    item.metadata.title = entry;
 	    result.push(item);
 	});
@@ -104,7 +104,7 @@
     /* add handlers for each genre */
     genres.forEach(function(entry) {
 	/* register each entry point */
-	plugin.register("/genre/" + entry, function(path, offset, limit) {
+	plugin.register("/" + entry, function(path, offset, limit) {
 
 	    res = http.get(constants.base_uri + "/by_genre/" + entry);
 	    if (res.status != 200) return [];
@@ -115,8 +115,7 @@
 
 
     plugin.search(function(result, keywords, limit) {
-	kw = keywords.join("+");
-	res = http.get(constants.base_uri + "?search=" + kw);
+	res = http.get(constants.base_uri + "?search=" + keywords.join("+"));
 	scrape_page(res.body, limit);
     });
 
