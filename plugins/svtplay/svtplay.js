@@ -118,7 +118,10 @@
     });
 
 
-    plugin.search(function(result, keywords, limit) {
+    plugin.search(function(keywords, limit) {
+	res = http.get(constants.base_uri + "/sok?q=" + keywords.join("+"));
+	if (res.status != 200) return [];
+	return scrape_page(res.body, limit);
     });
 
 }) (this);

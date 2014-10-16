@@ -11,14 +11,12 @@
     /*
      * Implementation of search function
      */
-    plugin.search(function(result, keywords, limit) {
-
-	service.log("Keywords: " + JSON.stringify(keywords));
-
+    plugin.search(function(keywords, limit) {
+	return ["test1", "test2"]
     });
 
     plugin.register("/items", function(offset, limit) {
-	return ["item 1", "item 2"];
+	return [[true, 232.1, ["string", false]], ["item 1", "item 2"]];
     });
 
 }) (this);

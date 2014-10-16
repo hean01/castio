@@ -114,9 +114,9 @@
     });
 
 
-    plugin.search(function(result, keywords, limit) {
-	res = http.get(constants.base_uri + "?search=" + keywords.join("+"));
-	scrape_page(res.body, limit);
+    plugin.search(function(keywords, limit) {
+	res = http.get(constants.base_uri + "/search?search=" + keywords.join("+"));
+	return scrape_page(res.body, limit);
     });
 
 }) (this);

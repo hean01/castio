@@ -143,17 +143,17 @@ _provider_plugin_search_proxy(struct cio_provider_descriptor_t *self,
 			      gpointer user_data)
 {
   int idx;
+  GList *l, *it;
   const gchar *message;
   char **kw, **pkw;
   js_provider_t *js;
+  JsonNode *node;
+  JsonArray *array;
 
   js = self->opaque;
 
   /* push function and this object to stack  */
   js_getregistry(js->state, "plugin.search");
-  js_newobject(js->state);
-
-  /* push result object to stack */
   js_newobject(js->state);
 
   /* push arg keywords array to stack  */
@@ -170,13 +170,36 @@ _provider_plugin_search_proxy(struct cio_provider_descriptor_t *self,
   js_pushnumber(js->state, 10);
 
   /* perform the function call */
-  if (js_pcall(js->state, 3) != 0)
+  if (js_pcall(js->state, 2) != 0)
   {
     message =  js_tostring(js->state, -1);
     g_log(DOMAIN, G_LOG_LEVEL_CRITICAL,
 	  "[%s.search] %s", self->id, message);
+    goto bail_out;
   }
 
+  /* get and process plugin search result */
+  if (!js_isarray(js->state, -1))
+  {
+    g_log(DOMAIN, G_LOG_LEVEL_CRITICAL,
+	  "[%s.search] result is not an array.", self->id);
+    goto bail_out;
+  }
+
+  node = js_util_tojsonnode(js->state, -1);
+  array = json_node_get_array(node);
+
+  l = it = json_array_get_elements(array);
+  while (it)
+  {
+    callback(js->provider, it->data, user_data);
+    it = g_list_next(it);
+  }
+
+  if (l)
+    g_list_free(l);
+
+bail_out:
   /* end search for provider */
   callback(js->provider, NULL, user_data);
 
