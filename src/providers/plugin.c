@@ -151,9 +151,18 @@ _provider_plugin_search_proxy(struct cio_provider_descriptor_t *self,
   JsonArray *array;
 
   js = self->opaque;
+  kw = NULL;
 
   /* push function and this object to stack  */
   js_getregistry(js->state, "plugin.search");
+  if (js_isundefined(js->state, -1))
+  {
+    g_log(DOMAIN, G_LOG_LEVEL_INFO,
+	  "[%s.search] Plugin do not support search.", self->id);
+    goto bail_out;
+  }
+
+  /* push this object to stack */
   js_newobject(js->state);
 
   /* push arg keywords array to stack  */
@@ -202,8 +211,8 @@ _provider_plugin_search_proxy(struct cio_provider_descriptor_t *self,
 bail_out:
   /* end search for provider */
   callback(js->provider, NULL, user_data);
-
-  g_strfreev(kw);
+  if (kw)
+    g_strfreev(kw);
 }
 
 
