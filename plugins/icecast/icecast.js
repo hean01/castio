@@ -53,14 +53,15 @@
 
     function scrape_page(doc, limit)
     {
-	var item = {};
 	var result = [];
-
-	item.type = "radiostation";
-	item.metadata = {};
 
 	while(1 && limit != 0)
 	{
+	    var item = {};
+
+	    item.type = "radiostation";
+	    item.metadata = {};
+
 	    var str = "<tr class=\"row";
 	    var s = doc.indexOf(str, 2);
 	    if (s < 0) break;
@@ -86,19 +87,18 @@
 
     /* setup start page */
     plugin.register("/", function(path, offset, limit) {
-	var res = [];
-	var item = {};
-
-	item.type = "folder";
-	item.metadata = {};
+	var result = [];
 
 	genres.forEach(function(entry) {
+	    var item = {};
+	    item.type = "folder";
+	    item.metadata = {};
 	    item.uri = "/genre/" + entry;
 	    item.metadata.title = entry;
-	    res.push(item);
+	    result.push(item);
 	});
 
-	return res;
+	return result;
     });
 
     /* add handlers for each genre */
