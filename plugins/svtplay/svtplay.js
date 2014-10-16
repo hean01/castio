@@ -63,7 +63,7 @@
 		metadata: {
 		    title: "Poplärast just nu"
 		},
-		uri: "/populara"
+		uri: plugin.URI_PREFIX + "/populara"
 	    },
 
 	    {
@@ -71,7 +71,7 @@
 		metadata: {
 		    title: "Senaste program"
 		},
-		uri: "/senaste"
+		uri: plugin.URI_PREFIX + "/senaste"
 	    },
 
 	    {
@@ -79,7 +79,7 @@
 		metadata: {
 		    title: "Sista chansen"
 		},
-		uri: "/sista-chansen"
+		uri: plugin.URI_PREFIX + "/sista-chansen"
 	    },
 
 	    {
@@ -87,7 +87,7 @@
 		metadata: {
 		    title: "Live"
 		},
-		uri: "/live"
+		uri: plugin.URI_PREFIX + "/live"
 	    },
 
 	];
