@@ -22,7 +22,7 @@
     function scrape_page(doc, limit) {
 	result = [];
 
-	while(1) {
+	while(1 && limit != 0) {
 
 	    var item = {};
 	    item.type = "video";
@@ -52,6 +52,7 @@
 		item.metadata.image = str;
 
 	    result.push(item);
+	    limit--;
 	}
 	return result;
     }
