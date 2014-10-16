@@ -107,10 +107,14 @@ item. This can be anything from a description to genre.
 A string constant which defines an item type. The _item.item_ref_ is
 the action to perform on the item.
 
-| value    | description            |
-|----------|------------------------|
-| "folder" | Item is a folder       |
-| "stream" | Item is a media stream |
+| value          | description              |
+|----------------|--------------------------|
+| "folder"       | Item is a folder         |
+| "radiostation" | Item is a radio stations |
+| "movie"        | Item is a movie          |
+| "video"        | Item is a video          |
+| "tvserie"      | Item is a tv serie       |
+| "musictrack"   | Item is a music track    |
 
 
 ## item_ref
@@ -127,9 +131,11 @@ the defined _item_type_ constants.
 | member       | type      | access      | description                          |
 |--------------|-----------|-------------|--------------------------------------|
 | type         | item_type | read        | item type                            |
-| stream_uri   | string    | read        | an uri to access the specific stream |
+| uri          | string    | read        | an uri to access the specific item   |
 | metadata     | metadata  | read        | item metadata                        |
 | actions      | list      | read        | list of _action_ for the item        |
+
+An _uri_ have different meaning dependent of item _type_.
 
 
 ## setting
