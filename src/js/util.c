@@ -84,7 +84,7 @@ js_util_tojsonnode(js_State *state, int idx)
       if (tmp)
 	json_array_add_element(array, tmp);
 
-      js_remove(state, idx);
+      js_pop(state, 1);
     }
   }
 
