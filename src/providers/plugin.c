@@ -204,7 +204,7 @@ _provider_plugin_items_proxy(struct cio_provider_descriptor_t *self, const gchar
 
   /* fetch function from registry to stack  */
   js_getregistry(js->state, fp);
-  if (!js_isdefined(js->state, 0))
+  if (!js_isdefined(js->state, -1))
   {
     g_log(DOMAIN, G_LOG_LEVEL_WARNING,
 	  "[%s.items] No handler function registered for path '%s'", self->id, path);
