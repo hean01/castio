@@ -573,7 +573,7 @@ cio_service_main(cio_service_t *self)
   /* start run the soup server */
   soup_server_run_async(self->priv->server);
 
-  /* star running main loop */
+  /* start running main loop */
   self->priv->loop = g_main_loop_new(NULL, FALSE);
   g_main_loop_run(self->priv->loop);
 
@@ -581,6 +581,9 @@ cio_service_main(cio_service_t *self)
   if (!cio_settings_save(self->settings, &err))
     g_log(DOMAIN, G_LOG_LEVEL_WARNING,
 	  "Failed to save settings: %s", err->message);
+
+  /* dump soup cache index */
+  soup_cache_dump(self->cache);
 }
 
 void
