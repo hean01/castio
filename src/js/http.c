@@ -86,6 +86,7 @@ _js_http_get(js_State *state)
     js_defproperty(state, -2, "body", JS_READONLY);
   }
 
+  soup_cache_flush(js->provider->service->cache);
   g_object_unref(session);
   g_object_unref(msg);
 }
