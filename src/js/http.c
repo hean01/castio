@@ -60,6 +60,12 @@ _js_http_get(js_State *state)
 
   status = soup_session_send_message(session, msg);
 
+  g_log(DOMAIN, G_LOG_LEVEL_INFO,
+	"[%s.http.get] GET '%s' %d, %s bytes '%s'",
+	js->provider->id, uri, status,
+	soup_message_headers_get_one(msg->response_headers, "Content-Length"),
+	soup_message_headers_get_one(msg->response_headers, "Content-Type"));
+
   /* push result object */
   js_newobject(state);
   {
