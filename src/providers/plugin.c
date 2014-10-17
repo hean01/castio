@@ -128,8 +128,16 @@ _provider_plugin_init(cio_provider_descriptor_t *provider, gchar *content, gssiz
 
     return FALSE;
   }
+
   js_newobject(js->state);
-  js_call(js->state, 0);
+  if (js_pcall(js->state, 0) != 0)
+  {
+    message = js_tostring(js->state, -1);
+    g_log(DOMAIN, G_LOG_LEVEL_WARNING,
+	  "[%s] Failed to initialize: %s",
+	  provider->id, message);
+    return FALSE;
+  }
 
   provider->opaque = js;
 
@@ -359,11 +367,12 @@ cio_provider_plugin_new(struct cio_service_t *service, const gchar *filename)
       res = _provider_plugin_init(provider, content, len);
       g_free(content);
       if (res == FALSE)
-	return NULL;
+	goto cleanup;
     }
 
   }
 
+cleanup:
   archive_read_close(ar);
   archive_read_free(ar);
 
