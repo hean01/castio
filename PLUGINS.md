@@ -146,6 +146,8 @@ services.
 All content fetched through this object are cached accordingly to
 standards.
 
+Methods throws exception upon failures.
+
 The following properties and methods can be used on http object and
 it's result.
 
@@ -161,10 +163,14 @@ it's result.
 **Example of usage:**
 
 	uri = "http://www.google.se"
-    res = http.get(uri);
-	if (res.status != 200) {
-		service.log("Failed to get uri '" + uri + "',status " + res.status);
-		return;
-	}
 
-	service.log("Content: " + res.body);
+	try {
+		res = http.get(uri);
+		if (res.status != 200) {
+			service.log("Failed to get uri '" + uri + "',status " + res.status);
+			return;
+	    }
+		service.log("Content: " + res.body);
+	} catch(e) {
+		service.log("Failed to fetch data: " + e.message);
+	}

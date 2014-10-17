@@ -50,7 +50,13 @@ _js_http_get(js_State *state)
 	"[%s.http.get] resource '%s'", js->provider->id, uri);
 
   msg = soup_message_new("GET", uri);
-  soup_message_headers_append(msg->request_headers, "Accept-Charset", "utf-8");
+  if (msg == NULL)
+  {
+    js_error(state, "Invalid uri '%s'", uri);
+    return;
+  }
+
+  soup_message_headers_replace(msg->request_headers, "Accept-Charset", "utf-8");
 
   status = soup_session_send_message(session, msg);
 
