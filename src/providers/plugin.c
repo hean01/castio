@@ -321,11 +321,7 @@ cio_provider_plugin_new(struct cio_service_t *service, const gchar *filename)
       provider = _provider_plugin_manifest_parse(content, len, &icon, &plugin);
       g_free(content);
       if (provider == NULL)
-      {
-	archive_read_close(ar);
-	archive_read_free(ar);
-	return NULL;
-      }
+	goto cleanup;
     }
   }
 
@@ -376,7 +372,7 @@ cleanup:
   archive_read_close(ar);
   archive_read_free(ar);
 
-  if (provider->opaque == NULL)
+  if (provider == NULL || provider->opaque == NULL)
   {
     g_log(DOMAIN, G_LOG_LEVEL_WARNING,
 	  "Failed to instantiate plugin '%s'", provider->name);
