@@ -290,6 +290,9 @@ cio_provider_plugin_new(struct cio_service_t *service, const gchar *filename)
   provider = NULL;
   plugin = icon = NULL;
 
+  g_log(DOMAIN, G_LOG_LEVEL_INFO,
+	"Creating instance of: %s", filename);
+
   /* read manifest and javascript of plugin */
   ar = archive_read_new();
   archive_read_set_format(ar, ARCHIVE_FORMAT_ZIP);
@@ -370,19 +373,37 @@ cio_provider_plugin_new(struct cio_service_t *service, const gchar *filename)
       res = _provider_plugin_init(provider, content, len);
       g_free(content);
       if (res == FALSE)
+      {
+	g_log(DOMAIN, G_LOG_LEVEL_WARNING,
+	      "Provider '%s' failed to initialize.", filename);
 	goto cleanup;
+      }
     }
-
   }
+
+  if (provider->opaque == NULL)
+  {
+    g_log(DOMAIN, G_LOG_LEVEL_WARNING,
+	  "[%s] JavaScript plugin specified by manifest was not found.", provider->id);
+  }
+
 
 cleanup:
   archive_read_close(ar);
   archive_read_free(ar);
 
-  if (provider == NULL || provider->opaque == NULL)
+  if (provider == NULL)
   {
     g_log(DOMAIN, G_LOG_LEVEL_WARNING,
-	  "Failed to instantiate plugin '%s'", provider->name);
+	  "Failed to load plugin '%s'", filename);
+    g_free(provider);
+    return NULL;
+  }
+
+  if (provider->opaque == NULL)
+  {
+    g_log(DOMAIN, G_LOG_LEVEL_WARNING,
+	  "[%s] failed to create instance of plugin", provider->id);
     g_free(provider);
     return NULL;
   }
