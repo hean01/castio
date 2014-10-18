@@ -208,6 +208,31 @@ See the following example of what a result would look like;
 		]
     }
 
+## log_level
+
+A string constant which defines the log severity level for a _log_entry_.
+
+| value       | description              |
+|-------------|--------------------------|
+| "undefined" | |
+| "error"     | |
+| "critical"  | |
+| "warning"   | |
+| "message"   | |
+| "info"      | |
+| "debug"     | |
+
+
+## log_entry
+
+A log entry for the CAST.IO service.
+
+| member  | type        | access | description                 |
+|---------|-------------|--------|-----------------------------|
+| domain  | string      | read   | log entry domain            |
+| level   | _log_level_ | read   | severity of the log message |
+| message | string      | read   | the log message             |
+
 
 # Resource URI's
 
@@ -348,3 +373,11 @@ handle the status code on the client side:
 **accepted_verbs:** GET
 
 **returns:** The temporary search result as a _search_result_ object.
+
+# /backlog
+
+Retreives a list of last _N_ _log_entry_ objects from the service backlog.
+
+**accepted_verbs:** GET
+
+**returns:** A json array with _log_entry_ objects.
