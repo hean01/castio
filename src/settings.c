@@ -429,7 +429,8 @@ cio_settings_create_value(cio_settings_t *self,
   /* create section if not exists */
   if (!json_object_has_member(object, section))
   {
-    g_debug("Creating new section '%s'", section);
+    g_log(DOMAIN, G_LOG_LEVEL_INFO,
+	  "Creating new section '%s'", section);
     settings = json_object_new();
     json_object_set_object_member(object, section, settings);
   }
@@ -450,7 +451,8 @@ cio_settings_create_value(cio_settings_t *self,
   json_object_set_string_member(setting, "description", description);
   json_object_set_member(setting, "value", value);
 
-  g_debug("Created setting '%s' in section '%s'.", id, section);
+  g_log(DOMAIN, G_LOG_LEVEL_INFO,
+	"Created setting '%s' in section '%s'.", id, section);
 
   return TRUE;
 }
