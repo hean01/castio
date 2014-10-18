@@ -195,6 +195,9 @@ _service_initialize_providers(cio_service_t *self)
 
   err = NULL;
 
+  g_log(DOMAIN, G_LOG_LEVEL_INFO,
+	"Initialize of provider plugins.");
+
   /* instantiate internal providers */
   provider = cio_provider_instance(self, CIO_PROVIDER_MOVIE_LIBRARY, NULL);
   if (provider)
