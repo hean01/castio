@@ -1,0 +1,10 @@
+{
+	"id":"hvsc",
+	"name": "High Voltage SID Collection",
+	"description": "The High Voltage SID Collection (HVSC) is a freeware hobby project which organises Commodore 64 music (also known as SID music) into an archive for both musicians and fans alike. The work on the collection is done completely in the Team and contributors' spare time and is proudly one of the largest and most accurate computer music collections known.",
+	"copyright": "2014 - CAST.IO Development Team",
+	"version": [0, 0, 1],
+	"url": "http://http://www.hvsc.c64.org/",
+	"icon": "hvsc.png",
+	"plugin": "hvsc.js"
+}
