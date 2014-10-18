@@ -325,6 +325,13 @@ cio_provider_plugin_new(struct cio_service_t *service, const gchar *filename)
     }
   }
 
+  if (provider == NULL)
+  {
+    g_log(DOMAIN, G_LOG_LEVEL_WARNING,
+	  "Provider plugin '%s' does not contain a manifest.", filename);
+    return NULL;
+  }
+
   archive_read_close(ar);
   archive_read_free(ar);
 
