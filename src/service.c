@@ -22,7 +22,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-
+#include <sys/time.h>
 #include <glib.h>
 
 #include "config.h"
@@ -53,7 +53,8 @@ typedef struct cio_service_priv_t
 } cio_service_priv_t;
 
 static JsonNode *
-_service_log_entry(const gchar *log_domain,
+_service_log_entry(const char *timestamp,
+		   const gchar *log_domain,
 		   GLogLevelFlags log_level,
 		   const gchar *message)
 {
@@ -64,6 +65,7 @@ _service_log_entry(const gchar *log_domain,
   object = json_object_new();
   json_node_init_object(node, object);
 
+  json_object_set_string_member(object, "timestamp", timestamp);
   json_object_set_string_member(object, "domain", log_domain);
 
   level = "undefined";
@@ -94,12 +96,19 @@ _service_log_handler(const gchar *log_domain,
 {
   gchar *level;
   FILE *o;
+  struct timeval tv;
+  gchar timestamp[512];
+
   cio_service_t *service;
   service = (cio_service_t *)user_data;
 
+  gettimeofday(&tv, NULL);
+
+  g_snprintf(timestamp, sizeof(timestamp), "%d.%d", (int)tv.tv_sec, (int)tv.tv_usec);
+
   /* add log entry to backlog, pop head item if full */
   g_queue_push_tail(service->priv->backlog,
-		    _service_log_entry(log_domain, log_level, message));
+		    _service_log_entry(timestamp, log_domain, log_level, message));
 
   if (g_queue_get_length(service->priv->backlog) >= 100)
     json_node_free(g_queue_pop_head(service->priv->backlog));
@@ -113,19 +122,20 @@ _service_log_handler(const gchar *log_domain,
 
   level = "Undefined";
   if (log_level & G_LOG_LEVEL_ERROR)
-    level = "Error";
+    level = "ERROR";
   else if (log_level & G_LOG_LEVEL_CRITICAL)
-    level = "Critical";
+    level = "CRITICAL";
   else if (log_level & G_LOG_LEVEL_WARNING)
-    level = "Warning";
+    level = "WARNING";
   if (log_level & G_LOG_LEVEL_MESSAGE)
-    level = "Message";
+    level = "MESSAGE";
   else if (log_level & G_LOG_LEVEL_INFO)
-    level = "Info";
+    level = "INFO";
   else if (log_level &  G_LOG_LEVEL_DEBUG)
-    level = "Debug";
+    level = "DEBUG";
 
-  fprintf(o, "%s [%s] %s\n", level, log_domain, message);
+  //strftime(timestamp, sizeof(timestamp), "%F %T", (time_t*)&tv.tv_sec);
+  fprintf(o, "%s: %s: [%s] %s\n",timestamp, level, log_domain, message);
 
   if (log_level & (G_LOG_FLAG_FATAL) && !(log_level & G_LOG_LEVEL_ERROR))
     abort();

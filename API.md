@@ -227,11 +227,12 @@ A string constant which defines the log severity level for a _log_entry_.
 
 A log entry for the CAST.IO service.
 
-| member  | type        | access | description                 |
-|---------|-------------|--------|-----------------------------|
-| domain  | string      | read   | log entry domain            |
-| level   | _log_level_ | read   | severity of the log message |
-| message | string      | read   | the log message             |
+| member    | type        | access | description                 |
+|-----------|-------------|--------|-----------------------------|
+| timestamp | string      | read   | unix timestamp sec.usec     |
+| domain    | string      | read   | log entry domain            |
+| level     | _log_level_ | read   | severity of the log message |
+| message   | string      | read   | the log message             |
 
 
 # Resource URI's
