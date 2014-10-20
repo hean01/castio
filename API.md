@@ -34,15 +34,15 @@ The service will use a subset of all HTTP status codes to indicate
 success or errors in the web api. Here follows a list of used status
 codes for the service and when they are used;
 
-- 102 Processing
 - 200 Success
+- 206 Partial Content
 - 400 Bad Request
 - 401 Unauthorized
 - 404 Not Found
 - 405 Method Not Allowed
 
 - If a temporary resources such as search result is not finished,
-  **102** is returned. This indicates that you should continue to
+  **206** is returned. This indicates that you should continue to
   request the temporary resource until you get a **200** return code.
   When you have received a **200** return code the temporary resource
   becomes  unavailable.
@@ -336,7 +336,7 @@ will be redirected usin **302** to a temporary location where the
 client can gather the partial results of an ongoing search.
 
 The temporary location for the result can be fetched on timer basis
-and while the search continues, status code **102** will be returned.
+and while the search continues, status code **206** will be returned.
 When the search is finished **200** will be returned and the temporary
 resource URI will be unavailable.
 
@@ -353,7 +353,7 @@ handle the status code on the client side:
    code **200**. This URI will return a _search_result_ object of
    current search result.
 
-   - You will get a http status **102** and partial results of the
+   - You will get a http status **206** and partial results of the
      search for interactive update of the query.
 
    - Do not hammer the service and use a sleep of 2-5 seconds between
