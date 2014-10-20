@@ -45,8 +45,6 @@
 	    s = doc.indexOf(str);
 	    doc = doc.slice(s);
 
-	    service.log("Item: " + item.metadata.title);
-
 	    // artist
 	    var str = getValue(doc, "<td>", "</td>");
 	    if (str == null) continue;
