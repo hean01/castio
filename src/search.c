@@ -34,7 +34,6 @@ typedef struct cio_search_t
 
 typedef struct _search_job_t
 {
-  GMutex lock;
   gint providers;
   JsonObject *result;
 } _search_job_t;
@@ -45,7 +44,6 @@ _search_job_ctor()
   _search_job_t *job;
   job = g_new0(_search_job_t, 1);
   job->result = json_object_new();
-  g_mutex_init(&job->lock);
   return job;
 }
 
@@ -57,13 +55,10 @@ _search_on_item_callback(cio_provider_descriptor_t *provider, JsonNode *item, gp
 
   job = (_search_job_t *)user_data;
 
-  g_mutex_lock(&job->lock);
-
   /* check if provider is finished */
   if (item == NULL)
   {
     job->providers--;
-    g_mutex_unlock(&job->lock);
     return;
   }
 
@@ -77,7 +72,6 @@ _search_on_item_callback(cio_provider_descriptor_t *provider, JsonNode *item, gp
   /* add item to provider result array */
   array = json_object_get_array_member(job->result, provider->id);
   json_array_add_element(array, item);
-  g_mutex_unlock(&job->lock);
 }
 
 cio_search_t *
@@ -230,9 +224,7 @@ cio_search_request_handler(SoupServer *server, SoupMessage *msg,
       return;
     }
 
-    /* lock job and generate json from result as content */
-    g_mutex_lock(&job->lock);
-
+    /* generate json from result as content */
     node = json_node_alloc();
     node = json_node_init_object(node, job->result);
 
@@ -257,14 +249,11 @@ cio_search_request_handler(SoupServer *server, SoupMessage *msg,
     if (job->providers == 0)
     {
       g_hash_table_remove(service->search->jobs, components[2]);
-      g_mutex_unlock(&job->lock);
       g_free(job);
-
       soup_message_set_status(msg, SOUP_STATUS_OK);
       return;
     }
 
-    g_mutex_unlock(&job->lock);
     soup_message_set_status(msg, SOUP_STATUS_PROCESSING);
     return;
   }
