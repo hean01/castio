@@ -34,6 +34,7 @@ typedef struct cio_search_t
 
 typedef struct _search_job_t
 {
+  gchar *keywords;
   gint providers;
   JsonObject *result;
 } _search_job_t;
@@ -47,6 +48,14 @@ _search_job_ctor()
   return job;
 }
 
+typedef struct _search_provider_job_t
+{
+  gchar *keywords;
+  cio_provider_descriptor_t *provider;
+  _search_job_t *sj;
+} _search_provider_job_t;
+
+
 static void
 _search_on_item_callback(cio_provider_descriptor_t *provider, JsonNode *item, gpointer user_data)
 {
@@ -55,12 +64,8 @@ _search_on_item_callback(cio_provider_descriptor_t *provider, JsonNode *item, gp
 
   job = (_search_job_t *)user_data;
 
-  /* check if provider is finished */
   if (item == NULL)
-  {
-    job->providers--;
     return;
-  }
 
   /* add provide object if not exists */
   if (!json_object_has_member(job->result, provider->id))
@@ -72,6 +77,33 @@ _search_on_item_callback(cio_provider_descriptor_t *provider, JsonNode *item, gp
   /* add item to provider result array */
   array = json_object_get_array_member(job->result, provider->id);
   json_array_add_element(array, item);
+}
+
+static _search_provider_job_t *
+_search_provider_job_ctor(cio_provider_descriptor_t *provider,
+			  gchar *keywords, _search_job_t *job)
+{
+  _search_provider_job_t *j;
+  j = g_malloc(sizeof(_search_provider_job_t));
+  j->provider = provider;
+  j->keywords = g_strdup(keywords);
+  j->sj = job;
+  return j;
+}
+
+static gboolean
+_search_provider_job(gpointer user_data)
+{
+  _search_provider_job_t *job;
+  job = user_data;
+  job->provider->search(job->provider, job->keywords,
+			_search_on_item_callback, job->sj);
+
+  job->sj->providers--;
+
+  g_free(job->keywords);
+  g_free(job);
+  return FALSE;
 }
 
 cio_search_t *
@@ -184,7 +216,9 @@ cio_search_request_handler(SoupServer *server, SoupMessage *msg,
 
       job->providers++;
 
-      provider->search(provider, keywords, _search_on_item_callback, job);
+      /* create a job for each search on main thread */
+      g_idle_add(_search_provider_job,
+		 _search_provider_job_ctor(provider, keywords, job));
 
     } while((iter = g_list_next(iter)) != NULL);
 
@@ -254,7 +288,7 @@ cio_search_request_handler(SoupServer *server, SoupMessage *msg,
       return;
     }
 
-    soup_message_set_status(msg, SOUP_STATUS_PROCESSING);
+    soup_message_set_status(msg, SOUP_STATUS_PARTIAL_CONTENT);
     return;
   }
 
