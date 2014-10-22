@@ -556,7 +556,7 @@ cio_service_initialize(struct cio_service_t *self,
   if (self->priv->server == NULL)
   {
     g_log(DOMAIN, G_LOG_LEVEL_CRITICAL,
-	  "Failed to start HTTP server: %s", err->message);
+	  "Failed to instantiate HTTP server.");
     return FALSE;
   }
 
