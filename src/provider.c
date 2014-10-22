@@ -116,7 +116,7 @@ cio_provider_request_handler(SoupServer *server, SoupMessage *msg, const char *p
 
     /* send result */
     soup_message_set_response(msg,
-			      "application/json",
+			      "application/json; charset=utf-8",
 			      SOUP_MEMORY_TAKE,
 			      content,
 			      strlen(content));
