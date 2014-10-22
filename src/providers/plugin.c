@@ -27,6 +27,56 @@
 
 #define DOMAIN "plugin"
 
+inline gboolean
+_provider_plugin_match(const char *l, const char *r, const char **arg)
+{
+  const gchar *pl, *pr;
+
+  g_assert(l != NULL);
+  g_assert(r != NULL);
+
+  pl = l;
+  pr = r;
+
+  while (*pl)
+  {
+    if (*pl == '*')
+    {
+      *arg = pr;
+      return TRUE;
+    }
+
+    if (*pl != *pr)
+      break;
+
+    pl++;
+    pr++;
+  }
+
+  if (*pl == '\0' && *pr == '\0')
+    return TRUE;
+
+  return FALSE;
+}
+
+static const gchar *
+_provider_plugin_match_handler(js_provider_t *js, const char *path, const gchar **arg)
+{
+  GList *it;
+
+  it = g_list_first(js->paths);
+  *arg = NULL;
+  while(it)
+  {
+    if (_provider_plugin_match(it->data, path, arg) == TRUE)
+      return it->data;
+
+    it = g_list_next(it);
+  }
+
+  return NULL;
+}
+
 static cio_provider_descriptor_t *
 _provider_plugin_manifest_parse(gchar *manifest, gssize len, gchar **icon, gchar **plugin)
 {
@@ -229,6 +279,8 @@ _provider_plugin_items_proxy(struct cio_provider_descriptor_t *self, const gchar
 			     gsize offset, gssize limit)
 {
   gchar *fp;
+  const gchar *arg;
+  const gchar *handler;
   JsonNode *node;
   const gchar *message;
   js_provider_t *js;
@@ -242,12 +294,22 @@ _provider_plugin_items_proxy(struct cio_provider_descriptor_t *self, const gchar
   g_log(DOMAIN, G_LOG_LEVEL_DEBUG,
 	"[%s.items] Fetching items for uri '%s'", self->id, fp);
 
-  /* fetch function from registry to stack  */
-  js_getregistry(js->state, fp);
-  if (!js_isdefined(js->state, -1))
+  /* do have have a path match */
+  handler = _provider_plugin_match_handler(js, fp, &arg);
+  if (handler == NULL)
   {
     g_log(DOMAIN, G_LOG_LEVEL_WARNING,
-	  "[%s.items] No handler function registered for path '%s'", self->id, path);
+	  "[%s.items] No matching handler for path '%s' found",
+	  self->id, fp);
+    return NULL;
+  }
+
+  /* fetch function from registry to stack  */
+  js_getregistry(js->state, handler);
+  if (!js_isdefined(js->state, -1))
+  {
+    g_log(DOMAIN, G_LOG_LEVEL_CRITICAL,
+	  "[%s.items] Handler function '%s' not found", self->id, handler);
     js_pop(js->state, 1);
     return NULL;
   }
@@ -261,8 +323,12 @@ _provider_plugin_items_proxy(struct cio_provider_descriptor_t *self, const gchar
   /* push arg: limit to stack */
   js_newnumber(js->state, limit);
 
+  /* push arg: match arg to stack */
+  if (arg)
+    js_newstring(js->state, arg);
+
   /* perform the function call */
-  if (js_pcall(js->state, 2) != 0)
+  if (js_pcall(js->state, (arg != NULL) ? 3 : 2) != 0)
   {
     message =  js_tostring(js->state, -1);
     g_log(DOMAIN, G_LOG_LEVEL_CRITICAL,

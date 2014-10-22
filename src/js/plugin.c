@@ -18,6 +18,7 @@
  *
  */
 
+#include <string.h>
 #include "js/js.h"
 
 #define DOMAIN "provider"
@@ -43,12 +44,24 @@ _js_plugin_register(js_State *state)
 {
   const gchar *uri;
   js_provider_t *js;
-  js = js_touserdata(state, 0, "instance");
 
+  js = js_touserdata(state, 0, "instance");
   uri = js_tostring(state, 1);
 
   g_log(DOMAIN, G_LOG_LEVEL_INFO,
-	"[%s.plugin.register]: register uri '%s'", js->provider->id, uri);
+	"[%s.plugin.register]: register enumeration uri '%s'", js->provider->id, uri);
+
+  /* verify that wildcard is used correctly */
+  if (strrchr(uri, '*') != NULL && uri[strlen(uri) - 1] != '*')
+  {
+    g_log(DOMAIN, G_LOG_LEVEL_WARNING,
+	  "[%s.plugin.register]: wildcard is not at the end of uri", js->provider->id);
+    js_pushundefined(state);
+    return;
+  }
+
+  /* add uri to paths match */
+  js->paths = g_list_append(js->paths, g_strdup(uri));
 
   /* store uri in the registry */
   js_setregistry(state, uri);

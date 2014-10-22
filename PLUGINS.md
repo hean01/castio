@@ -67,10 +67,17 @@ should register a search function and a path function for path `/`.
 | plugin.search(function)         | Registers a function with search      |
 
 
-The prototype for register function is `function(offset, limit)
+The prototype for register function is `function(offset, limit, [arg])
 {}`. The _offset_ and _limit_ are used for pagination and _offset_
 specifies a offset to request items from and were limit is how many
 items the plugin needs to request.
+
+The path specified in register call supports simple case of
+wildcard. A wildcard can _ONLY_ exists at the end of a path. As an
+example of usage, suppose you register a handler for path
+`"/genres/*"`, this handler will be used for both `/genres/80s` and
+`genres/Trance`. The arg argument to handler function will be string
+`80s` or `Trance` for the example described.
 
 The prototype for search function is `function(keywords, limit)
 {}`. The _keywords_ argument is a list of keywords to search on and
@@ -104,6 +111,10 @@ _limit_ is the amount of items that is requested.
 					uri: "http://dir.xiph.org/listen/10799/listen.m3u"
 				}
 			];
+		});
+
+        plugin.register("/genre/*", function(offset, limit, genre) {
+		    service.log("Items for genre: " + genre);
 		});
 
 	}) (this)

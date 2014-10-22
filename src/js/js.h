@@ -29,6 +29,7 @@
 typedef struct js_provider_t
 {
   js_State *state;
+  GList *paths;
   cio_provider_descriptor_t *provider;
 } js_provider_t;
 
