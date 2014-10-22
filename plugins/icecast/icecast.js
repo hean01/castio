@@ -89,8 +89,8 @@
 	return result;
     };
 
-    /* setup start page */
-    plugin.register("/", function(path, offset, limit) {
+    /* fill start page with genres */
+    plugin.register("/", function(offset, limit) {
 	var result = [];
 
 	genres.forEach(function(entry) {
@@ -105,18 +105,12 @@
 	return result;
     });
 
-    /* add handlers for each genre */
-    genres.forEach(function(entry) {
-	/* register each entry point */
-	plugin.register("/" + entry, function(path, offset, limit) {
-
-	    res = http.get(constants.base_uri + "/by_genre/" + entry);
-	    if (res.status != 200) return [];
-
-	    return scrape_page(res.body, limit);
-	});
+    /* add handler for genres */
+    plugin.register("/*", function(offset, limit, genre) {
+	res = http.get(constants.base_uri + "/by_genre/" + genre);
+	if (res.status != 200) return [];
+	return scrape_page(res.body, limit);
     });
-
 
     plugin.search(function(keywords, limit) {
 	res = http.get(constants.base_uri + "/search?search=" + keywords.join("+"));
