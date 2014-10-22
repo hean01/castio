@@ -78,6 +78,10 @@
 	    str =  getValue(doc, "<p class=\"stream-description\">","</p>");
 	    if (str) item.metadata.description = str;
 
+	    // currently on air
+	    str = getValue(doc, "<p class=\"stream-onair\"><strong>On Air:</strong> ", "</p>");
+	    if (str) item.metadata.on_air = str;
+
 	    // uri
 	    str = getValue(doc, "<p>[ <a href=\"", "\" ");
 	    item.uri = constants.base_uri + str;
