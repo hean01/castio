@@ -1,0 +1,10 @@
+{
+	"id":"soundcloud",
+	"name": "SoundCloud",
+	"description": "Hear the world's sounds",
+	"copyright": "2014 - CAST.IO Development Team",
+	"version": [0, 0, 1],
+	"url": "http://soundcloud.com/",
+	"icon": "soundcloud.png",
+	"plugin": "soundcloud.js"
+}
