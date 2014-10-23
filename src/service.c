@@ -353,7 +353,7 @@ _service_providers_request_handler(SoupServer *server, SoupMessage *msg, const c
 
   content = _service_providers_to_json(service, &length);
   soup_message_set_response(msg,
-			    "application/json",
+			    "application/json; charset=utf-8",
 			    SOUP_MEMORY_TAKE,
 			    content,
 			    length);
@@ -380,7 +380,7 @@ _service_backlog_request_handler(SoupServer *server, SoupMessage *msg, const cha
 
   content = _service_backlog_to_json(service, &length);
   soup_message_set_response(msg,
-			    "application/json",
+			    "application/json; charset=utf-8",
 			    SOUP_MEMORY_TAKE,
 			    content,
 			    length);

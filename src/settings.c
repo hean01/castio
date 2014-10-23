@@ -545,7 +545,7 @@ void cio_settings_request_handler(SoupServer *server, SoupMessage *msg,
     g_object_unref(gen);
 
     soup_message_set_response(msg,
-			      "application/json",
+			      "application/json; charset=utf-8",
 			      SOUP_MEMORY_TAKE,
 			      content,
 			      length);
@@ -559,7 +559,7 @@ void cio_settings_request_handler(SoupServer *server, SoupMessage *msg,
   {
     /* only support requests with content-type application/json */
     mime_type = soup_message_headers_get_content_type(msg->request_headers, NULL);
-    if (g_strcmp0(mime_type, "application/json") != 0)
+    if (strncmp(mime_type, "application/json", strlen("application/json")) != 0)
     {
       soup_message_set_status(msg, SOUP_STATUS_BAD_REQUEST);
       return;
