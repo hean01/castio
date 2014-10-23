@@ -2,7 +2,7 @@
 
     var constants = {
 	'base_uri': 'https://api.soundcloud.com',
-	'client_id': 'hijuflqxoOqzLdtr6W4NA'
+	'client_id': 'b0479634e56c0feaa933fffa85c7b33b'
     };
 
     function urlencode(parameters) {
