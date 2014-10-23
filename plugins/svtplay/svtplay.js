@@ -36,12 +36,12 @@
 	    // get title
 	    str = getValue(doc, "data-title=\"", "\"");
 	    if (str == null) continue;
-	    item.metadata.title = str;
+	    item.metadata.title = http.unescapeHTML(str);
 
 	    // get station name
 	    str = getValue(doc, "data-description=\"", "\"");
 	    if (str)
-		item.metadata.description = decodeURI(str);
+		item.metadata.description = http.unescapeHTML(str);
 
 	    str = getValue(doc, "data-length=\"", "\"");
 	    if (str)

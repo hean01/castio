@@ -72,15 +72,15 @@
 	    if (str == null) continue;
 	    s = str.indexOf("<a href=");
 	    if (s > -1) str = getValue(str, "');\">", "</a>");
-	    item.metadata.title = str;
+	    item.metadata.title = http.unescapeHTML(str);
 
 	    // description [optional]
 	    str =  getValue(doc, "<p class=\"stream-description\">","</p>");
-	    if (str) item.metadata.description = str;
+	    if (str) item.metadata.description = http.unescapeHTML(str);
 
 	    // currently on air
 	    str = getValue(doc, "<p class=\"stream-onair\"><strong>On Air:</strong> ", "</p>");
-	    if (str) item.metadata.on_air = str;
+	    if (str) item.metadata.on_air = http.unescapeHTML(str);
 
 	    // uri
 	    str = getValue(doc, "<p>[ <a href=\"", "\" ");
