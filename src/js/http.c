@@ -77,9 +77,6 @@ _unescape_buffer(gchar *buffer)
       continue;
     }
 
-    g_log(DOMAIN, G_LOG_LEVEL_DEBUG,
-	  "Found unicode value %ul named '%s'", desc->value, desc->name);
-
     res = g_unichar_to_utf8(desc->value, out);
     out += res;
     in = pe + 1;
