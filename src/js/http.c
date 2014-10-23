@@ -20,6 +20,7 @@
 
 #include <stdio.h>
 #include <libsoup/soup.h>
+#include <libxml/HTMLparser.h>
 
 #include "service.h"
 #include "provider.h"
@@ -27,6 +28,74 @@
 #include "js/js.h"
 
 #define DOMAIN "provider"
+
+static gchar *
+_unescape_buffer(gchar *buffer)
+{
+  int res;
+  gchar name[128];
+  gchar *in, *out, *pe;
+  const htmlEntityDesc *desc;
+
+  in = out = buffer;
+
+  while(*in)
+  {
+    if (*in != '&')
+    {
+      *out = *in;
+      in++;
+      out++;
+      continue;
+    }
+
+    in++;
+
+    pe = in;
+    while (*pe && *pe != ';') pe++;
+
+    desc = NULL;
+    if (*in != '#')
+    {
+      g_snprintf(name, 1 + pe - in, "%s", in);
+      /* TODO: do our own implementation so we can drop libxml2
+	 dependency.*/
+      desc = htmlEntityLookup((const xmlChar *)name);
+    }
+    else
+    {
+      res = g_ascii_strtoll(in + 1, NULL, 10);
+      desc = htmlEntityValueLookup(res);
+    }
+
+    /* if we couldn't lookup the entity to a unicode value
+       just copy over the string. */
+    if (desc == NULL)
+    {
+      *out = '&';
+      out++;
+      continue;
+    }
+
+    g_log(DOMAIN, G_LOG_LEVEL_DEBUG,
+	  "Found unicode value %ul named '%s'", desc->value, desc->name);
+
+    res = g_unichar_to_utf8(desc->value, out);
+    out += res;
+    in = pe + 1;
+  }
+
+  *out = '\0';
+  return buffer;
+}
+
+static void
+_js_http_unescape_html(js_State *state)
+{
+  gchar *buffer;
+  buffer = (gchar *)js_tostring(state, 1);
+  js_pushstring(state, _unescape_buffer(buffer));
+}
 
 static void
 _js_http_get(js_State *state)
@@ -102,5 +171,8 @@ js_http_init(js_State *state, js_provider_t *instance)
 
     js_newcfunction(state, _js_http_get, 1);
     js_defproperty(state, -2, "get", JS_READONLY);
+
+    js_newcfunction(state, _js_http_unescape_html, 1);
+    js_defproperty(state, -2, "unescapeHTML", JS_READONLY);
   }
 }
