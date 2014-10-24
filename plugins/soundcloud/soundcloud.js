@@ -27,6 +27,7 @@
 
 	    tracks.forEach(function(track) {
 		var item = {};
+		item.type = "musictrack";
 		item.metadata = {};
 		item.metadata.title = track.title;
 		item.metadata.description = track.description;
