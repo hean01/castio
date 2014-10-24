@@ -36,6 +36,7 @@
 cio_provider_descriptor_t *
 cio_provider_instance(cio_service_t *service, cio_provider_type_t type, const gchar *args)
 {
+  JsonNode *value;
   cio_provider_descriptor_t *provider;
 
   /* get provider instance */
@@ -53,9 +54,22 @@ cio_provider_instance(cio_service_t *service, cio_provider_type_t type, const gc
     return NULL;
   }
 
-  if (provider)
+  if (provider == NULL)
+    return NULL;
+
+
+  provider->service = service;
+
+  /* add provider setting 'enabled' if not exists */
+  if (!cio_settings_has_value(service->settings,
+			      provider->id, "enabled"))
   {
-    provider->service = service;
+    value = json_node_init_boolean(json_node_alloc(), TRUE);
+    cio_settings_create_value(service->settings,
+			      provider->id, "enabled",
+			      "Enabled",
+			      "Toggle if provider should be enabled of not.",
+			      value, NULL);
   }
 
   return provider;
