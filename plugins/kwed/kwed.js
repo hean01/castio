@@ -84,7 +84,7 @@
 		title: "Latest",
 		description: "Latest submissions of remixes."
 	    },
-	    uri: plugin.URL_PREFIX + "/latest"
+	    uri: plugin.URI_PREFIX + "/latest"
 	});
 
 	return result;
