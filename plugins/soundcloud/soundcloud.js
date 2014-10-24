@@ -27,7 +27,7 @@
 
 	    tracks.forEach(function(track) {
 		var item = {};
-		item.type = "musictrack";
+		item.type = plugin.item.TYPE_MUSIC_TRACK;
 		item.metadata = {};
 		item.metadata.title = track.title;
 		item.metadata.description = track.description;

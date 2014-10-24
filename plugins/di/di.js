@@ -23,7 +23,7 @@
 	while(1) {
 
 	    var item = {};
-	    item.type = "radiostation";
+	    item.type = plugin.item.TYPE_RADIO_STATION;
 	    item.metadata = {};
 
 	    var str = "<li data-channel-id=\"";

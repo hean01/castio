@@ -25,7 +25,7 @@
 	    var item_id = -1;
 	    var item = {};
 
-	    item.type = "musictrack";
+	    item.type = plugin.item.TYPE_MUSIC_TRACK;
 	    item.metadata = {};
 
 	    /* skip to next entry */

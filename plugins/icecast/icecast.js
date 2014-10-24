@@ -59,7 +59,7 @@
 	{
 	    var item = {};
 
-	    item.type = "radiostation";
+	    item.type = plugin.item.TYPE_RADIO_STATION;
 	    item.metadata = {};
 
 	    var str = "<tr class=\"row";

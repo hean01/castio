@@ -25,7 +25,7 @@
 	while(1 && limit != 0) {
 
 	    var item = {};
-	    item.type = "video";
+	    item.type = plugin.item.TYPE_VIDEO;
 	    item.metadata = {};
 
 	    var str = "<article class=\"";
