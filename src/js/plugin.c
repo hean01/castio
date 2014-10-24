@@ -85,6 +85,23 @@ js_plugin_init(js_State *state, js_provider_t *instance)
     js_pushstring(state, uri_prefix);
     js_defproperty(state, -2, "URI_PREFIX", JS_READONLY);
 
+    js_newobject(state);
+    {
+      js_pushstring(state, "folder");
+      js_defproperty(state, -2, "TYPE_FOLDER", JS_READONLY);
+      js_pushstring(state, "radiostation");
+      js_defproperty(state, -2, "TYPE_RADIO_STATION", JS_READONLY);
+      js_pushstring(state, "musictrack");
+      js_defproperty(state, -2, "TYPE_MUSICTRACK", JS_READONLY);
+      js_pushstring(state, "video");
+      js_defproperty(state, -2, "TYPE_VIDEO", JS_READONLY);
+      js_pushstring(state, "movie");
+      js_defproperty(state, -2, "TYPE_MOVIE", JS_READONLY);
+      js_pushstring(state, "tvserie");
+      js_defproperty(state, -2, "TYPE_TVSERIE", JS_READONLY);
+     }
+    js_defproperty(state, -2, "item", JS_READONLY);
+
     js_newcfunction(state, _js_plugin_search, 0);
     js_defproperty(state, -2, "search", 0);
     js_newcfunction(state, _js_plugin_register, 0);
