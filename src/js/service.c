@@ -23,7 +23,7 @@
 #define DOMAIN "provider"
 
 static void
-_js_service_log(js_State *state)
+_js_service_info(js_State *state)
 {
   js_provider_t *js;
   const char *message;
@@ -37,6 +37,21 @@ _js_service_log(js_State *state)
   js_pushundefined(state);
 }
 
+static void
+_js_service_warning(js_State *state)
+{
+  js_provider_t *js;
+  const char *message;
+
+  js = js_touserdata(state, 0, "instance");
+  message = js_tostring(state, 1);
+
+  g_log(DOMAIN, G_LOG_LEVEL_WARNING,
+	"[%s.service.warning]: %s", js->provider->id, message);
+
+  js_pushundefined(state);
+}
+
 void
 js_service_init(js_State *state, js_provider_t *instance)
 {
@@ -46,7 +61,10 @@ js_service_init(js_State *state, js_provider_t *instance)
     js_getproperty(state, 0, "prototype");
     js_newuserdata(state, "instance", instance);
 
-    js_newcfunction(state, _js_service_log, 1);
-    js_defproperty(state, -2, "log", JS_READONLY);
+    js_newcfunction(state, _js_service_info, 1);
+    js_defproperty(state, -2, "info", JS_READONLY);
+
+    js_newcfunction(state, _js_service_warning, 1);
+    js_defproperty(state, -2, "warning", JS_READONLY);
   }
 }

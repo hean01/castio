@@ -30,7 +30,7 @@ a web page and logs the heades as json string.
 
 	    result = http.get("http://www.google.com");
 
-	    service.log("Headers: ", JSON.stringify(result.headers));
+	    service.info("Headers: ", JSON.stringify(result.headers));
 
 	}) (this)
 
@@ -46,13 +46,14 @@ This object provides access to core functionalities.
 
 The following properties and methods can be used with service object
 
-| Property / Method   | Description                 |
-|---------------------|-----------------------------|
-| service.log(string) | Adds a entry to service log |
+| Property / Method       | Description                          |
+|-------------------------|--------------------------------------|
+| service.info(string)    | Adds an info entry to service log    |
+| service.warning(string) | Adds a warning  entry to service log |
 
 **Example of usage:**
 
-	service.log("Hello World!");
+	service.info("Hello World!");
 
 
 ## plugin
@@ -114,7 +115,7 @@ _limit_ is the amount of items that is requested.
 		});
 
         plugin.register("/genre/*", function(offset, limit, genre) {
-		    service.log("Items for genre: " + genre);
+		    service.info("Items for genre: " + genre);
 		});
 
 	}) (this)
@@ -162,9 +163,9 @@ The following properties and methods can be used on settings object.
 	                "A sample option to show how this works", false);
 
 	if (settings.get("option"))
-		service.log("Option value is: false");
+		service.info("Option value is: false");
 	else
-		service.log("Option value is: true");
+		service.info("Option value is: true");
 
 
 ## http
@@ -198,10 +199,10 @@ it's result.
 	try {
 		res = http.get(uri, headers);
 		if (res.status != 200) {
-			service.log("Failed to get uri '" + uri + "',status " + res.status);
+			service.warning("Failed to get uri '" + uri + "',status " + res.status);
 			return;
 	    }
-		service.log("Content: " + res.body);
+		service.info("Content: " + res.body);
 	} catch(e) {
-		service.log("Failed to fetch data: " + e.message);
+		service.info("Failed to fetch data: " + e.message);
 	}
