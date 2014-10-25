@@ -183,7 +183,7 @@ it's result.
 
 | Property / Method         | Description                                                  |
 |---------------------------|--------------------------------------------------------------|
-| http.get(uri)             | HTTP Get request of the current uri, returns a result object |
+| http.get(uri, headers)    | HTTP Get request of the current uri, returns a result object |
 | http.unescapeHTML(buffer) | Unescapes HTML entities in buffer and returns the result     |
 | result.status             | HTTP status code of the request                              |
 | result.headers            | Object with headers from response                            |
@@ -192,10 +192,10 @@ it's result.
 
 **Example of usage:**
 
-	uri = "http://www.google.se"
-
+	uri = "http://www.google.se";
+	headers = {"Accept-Content": "gzip"};
 	try {
-		res = http.get(uri);
+		res = http.get(uri, headers);
 		if (res.status != 200) {
 			service.log("Failed to get uri '" + uri + "',status " + res.status);
 			return;

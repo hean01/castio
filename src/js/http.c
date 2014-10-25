@@ -104,9 +104,16 @@ _js_http_get(js_State *state)
   SoupMessage *msg;
   SoupMessageHeadersIter iter;
   const gchar *name, *value;
+  GList *keys;
+  JsonNode *headers;
+  JsonObject *object;
 
+  headers = NULL;
   js = js_touserdata(state, 0, "instance");
+
   uri = js_tostring(state, 1);
+  if (!js_isundefined(state, 2))
+    headers = js_util_tojsonnode(state, 2);
 
   session = soup_session_new_with_options(SOUP_SESSION_ADD_FEATURE,
 					  SOUP_SESSION_FEATURE(js->provider->service->cache),
@@ -122,7 +129,23 @@ _js_http_get(js_State *state)
     return;
   }
 
+  /* setup headers for request */
   soup_message_headers_replace(msg->request_headers, "Accept-Charset", "utf-8");
+  if (headers)
+  {
+    object = json_node_get_object(headers);
+    keys = json_object_get_members(object);
+    while (keys)
+    {
+      value = json_object_get_string_member(object, keys->data);
+      fprintf(stderr, "'%s' = '%s'", keys->data, value);
+      if (value)
+        soup_message_headers_replace(msg->request_headers, (char *)keys->data, value);
+      keys = g_list_next(keys);
+    }
+    json_node_free(headers);
+  }
+
 
   status = soup_session_send_message(session, msg);
 
@@ -148,7 +171,7 @@ _js_http_get(js_State *state)
     }
     js_defproperty(state, -2, "headers", JS_READONLY);
 
-    js_pushstring(state, msg->response_body->data);
+    js_pushstring(state, (msg->response_body->data ? msg->response_body->data : ""));
     js_defproperty(state, -2, "body", JS_READONLY);
   }
 
@@ -166,7 +189,7 @@ js_http_init(js_State *state, js_provider_t *instance)
     js_getproperty(state, 0, "prototype");
     js_newuserdata(state, "instance", instance);
 
-    js_newcfunction(state, _js_http_get, 1);
+    js_newcfunction(state, _js_http_get, 2);
     js_defproperty(state, -2, "get", JS_READONLY);
 
     js_newcfunction(state, _js_http_unescape_html, 1);
