@@ -97,7 +97,9 @@ js_util_tojsonnode(js_State *state, int idx)
     js_pushiterator(state, idx, 1);
     while((s = js_nextiterator(state, -1)) != NULL)
     {
-      js_getproperty(state, -2, s);
+      if (idx > 0) js_getproperty(state, idx, s);
+      else js_getproperty(state, idx - 1, s);
+
       tmp = js_util_tojsonnode(state, -1);
       if (tmp)
 	json_object_set_member(object, s, tmp);
