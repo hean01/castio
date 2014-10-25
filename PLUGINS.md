@@ -90,7 +90,7 @@ _limit_ is the amount of items that is requested.
 	    plugin.register("/", function(offset, limit) {
 			return [
 				{
-					type: "folder",
+					type: plugin.item.TYPE_FOLDER,
 					metadata: {
 						name: "Latest",
 							description: "Latest additions",
@@ -103,7 +103,7 @@ _limit_ is the amount of items that is requested.
 		plugin.register("/latest", function(offset, limit) {
 			return [
 				{
-					type: "radiostation",
+					type: plugin.item.TYPE_RADIO_STATION,
 					metadata: {
 						name: "Endless drone",
 							description: "FM3 Buddag Machine simulation example"
@@ -118,6 +118,25 @@ _limit_ is the amount of items that is requested.
 		});
 
 	}) (this)
+
+
+## plugin.item
+
+This object provides constants for item types used for creating item
+in response to a query.
+
+| Property / Method       | Description             |
+|-------------------------|-------------------------|
+| item.TYPE_FOLDER        | Item is a folder        |
+| item.TYPE_RADIO_STATION | Item is a radio station |
+| item.TYPE_MOVIE         | Item is a movie         |
+| item.TYPE_VIDEO         | Item is a video clip    |
+| item.TYPE_TVSERIE       | Item is a tv serie      |
+| item.TYPE_MUSIC_TRACK   | Item is a music track   |
+
+**Example of usage:**
+
+    item.type = plugin.item.TYPE_MUSIC_STATION;
 
 
 ## settings
