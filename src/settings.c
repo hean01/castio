@@ -485,6 +485,20 @@ cio_settings_get_int_value(cio_settings_t *self,
   return json_node_get_int(node);
 }
 
+gboolean
+cio_settings_get_boolean_value(struct cio_settings_t *self,
+			       const char *section,
+			       const char *id,
+			       GError **err)
+{
+  JsonNode *node;
+  node = cio_settings_get_value(self, section, id, err);
+  if (node == NULL)
+    return FALSE;
+
+  return json_node_get_boolean(node);
+}
+
 
 void cio_settings_request_handler(SoupServer *server, SoupMessage *msg,
 				  const char *path, GHashTable *query,

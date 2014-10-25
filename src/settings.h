@@ -67,6 +67,11 @@ int cio_settings_get_int_value(struct cio_settings_t *self,
 			       const char *id,
 			       GError **err);
 
+gboolean cio_settings_get_boolean_value(struct cio_settings_t *self,
+					const char *section,
+					const char *id,
+					GError **err);
+
 void cio_settings_request_handler(SoupServer *server, SoupMessage *msg,
 				  const char *path, GHashTable *query,
 				  SoupClientContext *client, gpointer user_data);
