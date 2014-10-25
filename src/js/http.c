@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <libsoup/soup.h>
 #include <libxml/HTMLparser.h>
+#include <string.h>
 
 #include "service.h"
 #include "provider.h"
@@ -138,7 +139,6 @@ _js_http_get(js_State *state)
     while (keys)
     {
       value = json_object_get_string_member(object, keys->data);
-      fprintf(stderr, "'%s' = '%s'", keys->data, value);
       if (value)
         soup_message_headers_replace(msg->request_headers, (char *)keys->data, value);
       keys = g_list_next(keys);
@@ -180,6 +180,101 @@ _js_http_get(js_State *state)
   g_object_unref(msg);
 }
 
+static void
+_js_http_post(js_State *state)
+{
+  guint status;
+  js_provider_t *js;
+  const char *uri;
+  SoupSession *session;
+  SoupMessage *msg;
+  SoupMessageHeadersIter iter;
+  const gchar *name, *value;
+  GList *keys;
+  JsonNode *headers;
+  JsonObject *object;
+  const gchar *content;
+
+  headers = NULL;
+  content = NULL;
+
+  js = js_touserdata(state, 0, "instance");
+
+  uri = js_tostring(state, 1);
+
+  if (!js_isundefined(state, 2))
+    headers = js_util_tojsonnode(state, 2);
+
+  if (!js_isundefined(state, 3))
+    content = js_tostring(state, 3);
+
+  session = soup_session_new_with_options(SOUP_SESSION_ADD_FEATURE,
+					  SOUP_SESSION_FEATURE(js->provider->service->cache),
+					  NULL);
+
+  g_log(DOMAIN, G_LOG_LEVEL_DEBUG,
+	"[%s.http.post] resource '%s'", js->provider->id, uri);
+
+  msg = soup_message_new("POST", uri);
+  if (msg == NULL)
+  {
+    js_error(state, "Invalid uri '%s'", uri);
+    return;
+  }
+
+  /* set request body if specified */
+  if (content)
+    soup_message_set_request(msg, "text/plain", SOUP_MEMORY_COPY, content, strlen(content));
+
+  /* setup headers for request */
+  if (headers)
+  {
+    object = json_node_get_object(headers);
+    keys = json_object_get_members(object);
+    while (keys)
+    {
+      value = json_object_get_string_member(object, keys->data);
+      if (value)
+        soup_message_headers_replace(msg->request_headers, (char *)keys->data, value);
+      keys = g_list_next(keys);
+    }
+    json_node_free(headers);
+  }
+
+  /* send the request */
+  status = soup_session_send_message(session, msg);
+
+  g_log(DOMAIN, G_LOG_LEVEL_INFO,
+	"[%s.http.post] POST '%s' %d, %s bytes '%s'",
+	js->provider->id, uri, status,
+	soup_message_headers_get_one(msg->response_headers, "Content-Length"),
+	soup_message_headers_get_one(msg->response_headers, "Content-Type"));
+
+  /* push result object */
+  js_newobject(state);
+  {
+    js_pushnumber(state, status);
+    js_defproperty(state, -2, "status", JS_READONLY);
+
+    /* add response headers */
+    js_newobject(state);
+    soup_message_headers_iter_init(&iter,msg->response_headers);
+    while (soup_message_headers_iter_next(&iter, &name, &value))
+    {
+      js_pushstring(state, value);
+      js_defproperty(state, -2, name, JS_READONLY);
+    }
+    js_defproperty(state, -2, "headers", JS_READONLY);
+
+    js_pushstring(state, (msg->response_body->data ? msg->response_body->data : ""));
+    js_defproperty(state, -2, "body", JS_READONLY);
+  }
+
+  soup_cache_flush(js->provider->service->cache);
+  g_object_unref(session);
+  g_object_unref(msg);
+}
+
 void
 js_http_init(js_State *state, js_provider_t *instance)
 {
@@ -191,6 +286,9 @@ js_http_init(js_State *state, js_provider_t *instance)
 
     js_newcfunction(state, _js_http_get, 2);
     js_defproperty(state, -2, "get", JS_READONLY);
+
+    js_newcfunction(state, _js_http_post, 3);
+    js_defproperty(state, -2, "post", JS_READONLY);
 
     js_newcfunction(state, _js_http_unescape_html, 1);
     js_defproperty(state, -2, "unescapeHTML", JS_READONLY);

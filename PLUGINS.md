@@ -181,13 +181,14 @@ Methods throws exception upon failures.
 The following properties and methods can be used on http object and
 it's result.
 
-| Property / Method         | Description                                                  |
-|---------------------------|--------------------------------------------------------------|
-| http.get(uri, headers)    | HTTP Get request of the current uri, returns a result object |
-| http.unescapeHTML(buffer) | Unescapes HTML entities in buffer and returns the result     |
-| result.status             | HTTP status code of the request                              |
-| result.headers            | Object with headers from response                            |
-| result.body               | Response body                                                |
+| Property / Method             | Description                                                  |
+|-------------------------------|--------------------------------------------------------------|
+| http.get(uri, headers)        | HTTP Get request of the current uri, returns a result object |
+| http.port(uri, headers, body) | HTTP Post request with body, returns a result object         |
+| http.unescapeHTML(buffer)     | Unescapes HTML entities in buffer and returns the result     |
+| result.status                 | HTTP status code of the request                              |
+| result.headers                | Object with headers from response                            |
+| result.body                   | Response body                                                |
 
 
 **Example of usage:**
