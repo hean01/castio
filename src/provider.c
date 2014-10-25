@@ -80,6 +80,8 @@ cio_provider_request_handler(SoupServer *server, SoupMessage *msg, const char *p
 			     GHashTable *query, SoupClientContext *client,
 			     gpointer user_data)
 {
+  GError *err;
+  gboolean enabled;
   gchar *spath;
   gchar **components;
   static gchar *content = "{}";
@@ -89,6 +91,7 @@ cio_provider_request_handler(SoupServer *server, SoupMessage *msg, const char *p
   JsonNode *result;
 
   service = (cio_service_t *)user_data;
+  err = NULL;
 
   /* this handler only supports GET methods */
   if (msg->method != SOUP_METHOD_GET)
@@ -111,6 +114,18 @@ cio_provider_request_handler(SoupServer *server, SoupMessage *msg, const char *p
   {
     g_log(DOMAIN, G_LOG_LEVEL_WARNING,
 	  "Provider '%s' does not provide items.", provider->id);
+    soup_message_set_status(msg, SOUP_STATUS_NOT_FOUND);
+    return;
+  }
+
+  /* bail out if provider is disabled */
+  g_clear_error(&err);
+  enabled = cio_settings_get_boolean_value(service->settings,
+					   provider->id, "enabled", &err);
+  if (err == NULL && enabled == FALSE)
+  {
+    g_log(DOMAIN, G_LOG_LEVEL_INFO,
+	  "Provider '%s' is disabled.", provider->id);
     soup_message_set_status(msg, SOUP_STATUS_NOT_FOUND);
     return;
   }

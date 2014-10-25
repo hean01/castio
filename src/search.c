@@ -23,6 +23,7 @@
 
 #include "search.h"
 #include "service.h"
+#include "settings.h"
 #include "provider.h"
 
 #define DOMAIN "search"
@@ -143,9 +144,12 @@ cio_search_request_handler(SoupServer *server, SoupMessage *msg,
   gchar location[512];
   JsonGenerator *gen;
   JsonNode *node;
+  GError *err;
+  gboolean enabled;
   cio_provider_descriptor_t *provider;
 
   job = NULL;
+  err = NULL;
   service = (cio_service_t *)user_data;
 
   /* we will only handle /settings and /settings/<jobid> paths */
@@ -206,6 +210,18 @@ cio_search_request_handler(SoupServer *server, SoupMessage *msg,
 
       if (provider->search == NULL)
 	continue;
+
+      /* continue with next if provider is disabled */
+      g_clear_error(&err);
+      enabled = cio_settings_get_boolean_value(service->settings,
+					       provider->id, "enabled", &err);
+      if (err == NULL && enabled == FALSE)
+      {
+	g_log(DOMAIN, G_LOG_LEVEL_INFO,
+	      "Provider '%s' is disabled.", provider->id);
+	continue;
+      }
+
 
       /* lookup provider in specified providers list from query */
       if (providers && g_strrstr(providers, provider->id) == NULL)
