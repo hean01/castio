@@ -176,7 +176,7 @@ _service_configuration_defaults(cio_service_t *self)
   value = json_node_alloc();
   value = json_node_init_string(value, digest);
   cio_settings_create_value(self->settings, "service", "auth_digest",
-			    "Authenticatoin digest",
+			    "Authentication digest",
 			    "The encoded authentication digest used for accessing the web api.",
 			    value, &err);
 
