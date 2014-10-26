@@ -322,6 +322,13 @@ and then request a new item list from that uri.
 
 **resource:** provider id string
 
+**Attributes:**
+
+| attribute | description                                      |
+|-------- --|--------------------------------------------------|
+| offset    | Offset used for iteration over parts of a result |
+| limit     | Limit result set to specific count               |
+
 **accepted_verbs:** GET
 
 **returns:** A list of _item_ objects.

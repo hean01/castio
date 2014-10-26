@@ -89,6 +89,8 @@ cio_provider_request_handler(SoupServer *server, SoupMessage *msg, const char *p
   cio_provider_descriptor_t *provider;
   JsonGenerator *generator;
   JsonNode *result;
+  gsize offset, limit;
+  gchar *value;
 
   service = (cio_service_t *)user_data;
   err = NULL;
@@ -130,9 +132,22 @@ cio_provider_request_handler(SoupServer *server, SoupMessage *msg, const char *p
     return;
   }
 
+  /* get offset and limit from query */
+  offset = 0;
+  limit = 10;
+
+  value = g_hash_table_lookup(query, "offset");
+  if (value)
+    offset = g_ascii_strtoll(value, NULL, 10);
+
+  value = g_hash_table_lookup(query, "limit");
+  if (value)
+    limit = g_ascii_strtoll(value, NULL, 10);
+
+
   /* get items from provider */
   spath = g_strjoinv("/", components + 3);
-  result = provider->items(provider, spath, 0, 10);
+  result = provider->items(provider, spath, offset, limit);
   if (result)
   {
     /* convert result into json text */
