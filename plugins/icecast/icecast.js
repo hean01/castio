@@ -1,7 +1,8 @@
 (function() {
 
     var constants = {
-	'base_uri': 'http://dir.xiph.org'
+	'base_uri': 'http://dir.xiph.org',
+	'items_per_page': 20
     };
 
     var genres = [
@@ -51,9 +52,10 @@
 	return content.slice(s);
     };
 
-    function scrape_page(doc, limit)
+    function scrape_page(doc, offset, limit)
     {
 	var result = [];
+	cnt = 0;
 
 	while(1 && limit != 0)
 	{
@@ -66,6 +68,9 @@
 	    var s = doc.indexOf(str, 2);
 	    if (s < 0) break;
 	    doc = doc.slice(s);
+	    cnt++;
+
+	    if (offset >= cnt) continue;
 
 	    // title
 	    var str = getValue(doc, "<span class=\"name\">", "</span>");
@@ -93,6 +98,31 @@
 	return result;
     };
 
+    function get_items(uri, offset, limit) {
+	result = [];
+	start_page = Math.floor(offset / constants.items_per_page);
+	end_page = Math.floor((offset + limit) / constants.items_per_page);
+	page_offset = offset - (start_page * constants.items_per_page);
+
+	for (page = start_page; page <= end_page; page++) {
+
+	    res = http.get(uri + "?page=" + page);
+	    if (res.status != 200)
+		return result;
+
+	    if (page != start_page)
+		page_offset = 0;
+
+	    r = scrape_page(res.body, page_offset, limit - result.length);
+
+	    Array.prototype.push.apply(result, r);
+
+	    if (limit == result.length)
+		break;
+	}
+	return result;
+    }
+
     /* fill start page with genres */
     plugin.register("/", function(offset, limit) {
 	var result = [];
@@ -111,14 +141,13 @@
 
     /* add handler for genres */
     plugin.register("/*", function(offset, limit, genre) {
-	res = http.get(constants.base_uri + "/by_genre/" + genre);
-	if (res.status != 200) return [];
-	return scrape_page(res.body, limit);
+	uri = constants.base_uri + "/by_genre/" + genre;
+	return get_items(uri, offset, limit);
     });
 
     plugin.search(function(keywords, limit) {
 	res = http.get(constants.base_uri + "/search?search=" + keywords.join("+"));
-	return scrape_page(res.body, limit);
+	return scrape_page(res.body, 0, limit);
     });
 
 }) (this);
