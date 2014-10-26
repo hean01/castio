@@ -109,7 +109,7 @@
 	result = [];
 
 	result.push({
-	    type: "musictrack",
+	    type: "folder",
 	    metadata: {
 		title: "Latest",
 		description: "Latest submissions of remixes."
@@ -117,11 +117,25 @@
 	    uri: plugin.URI_PREFIX + "/latest"
 	});
 
+	result.push({
+	    type: "folder",
+	    metadata: {
+		title: "Top Rated",
+		description: "Top rated remixes."
+	    },
+	    uri: plugin.URI_PREFIX + "/toprated"
+	});
+
 	return result;
     });
 
     plugin.register("/latest", function(offset, limit) {
 	uri = constants.base_uri + "/?view=date";
+	return get_items(uri, offset, limit);
+    });
+
+    plugin.register("/toprated", function(offset, limit) {
+	uri = constants.base_uri + "/?view=rating";
 	return get_items(uri, offset, limit);
     });
 
