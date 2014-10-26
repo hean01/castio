@@ -172,7 +172,8 @@ _js_http_get(js_State *state)
   if (charset && msg->response_body->data)
   {
     g_log(DOMAIN, G_LOG_LEVEL_DEBUG,
-	  "Converting response body from '%s' to 'utf-8'", charset);
+	  "[%s.http.get] Converting response body from '%s' to 'utf-8'",
+	  js->provider->id, charset);
 
     temp = g_convert(msg->response_body->data, msg->response_body->length,
 			"utf-8", charset, NULL, &len, &err);
