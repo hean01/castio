@@ -324,10 +324,13 @@ and then request a new item list from that uri.
 
 **Attributes:**
 
-| attribute | description                                      |
-|-----------|--------------------------------------------------|
-| offset    | Offset used for iteration over parts of a result |
-| limit     | Limit result set to specific count               |
+| attribute | default | description                                      |
+|-----------|---------|--------------------------------------------------|
+| offset    |       0 | Offset used for iteration over parts of a result |
+| limit     |      10 | Limit result set to specific count               |
+
+The use of the attributes are optional and if not specified default
+values will be used.
 
 **accepted_verbs:** GET
 
@@ -377,6 +380,8 @@ handle the status code on the client side:
 | keywords  | A comma separated string with search keywords             |
 | providers | A comma separated string with provider id's               |
 | type      | A comma separated string with type constants              |
+
+Attributes _providers_ and _type_ are optional.
 
 **accepted_verbs:** GET
 
