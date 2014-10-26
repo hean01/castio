@@ -136,14 +136,16 @@ cio_provider_request_handler(SoupServer *server, SoupMessage *msg, const char *p
   offset = 0;
   limit = 10;
 
-  value = g_hash_table_lookup(query, "offset");
-  if (value)
-    offset = g_ascii_strtoll(value, NULL, 10);
+  if (query)
+  {
+    value = g_hash_table_lookup(query, "offset");
+    if (value)
+      offset = g_ascii_strtoll(value, NULL, 10);
 
-  value = g_hash_table_lookup(query, "limit");
-  if (value)
-    limit = g_ascii_strtoll(value, NULL, 10);
-
+    value = g_hash_table_lookup(query, "limit");
+    if (value)
+      limit = g_ascii_strtoll(value, NULL, 10);
+  }
 
   /* get items from provider */
   spath = g_strjoinv("/", components + 3);
