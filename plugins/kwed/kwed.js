@@ -1,7 +1,8 @@
 (function() {
 
     var constants = {
-	'base_uri': 'http://remix.kwed.org'
+	'base_uri': 'http://remix.kwed.org',
+	'items_per_page': 50
     };
 
     function getValue(content, start, end) {
@@ -16,9 +17,10 @@
 	return content.slice(s);
     };
 
-    function scrape_page(doc, limit)
+    function scrape_page(doc, offset, limit)
     {
 	var result = [];
+	cnt = 0;
 
 	while(1 && limit != 0)
 	{
@@ -32,6 +34,9 @@
 	    var s = doc.indexOf("<tr class=\"", 2);
 	    if (s < 0) break;
 	    doc = doc.slice(s);
+	    cnt++;
+
+	    if (offset >= cnt) continue;
 
 	    // id
 	    var str = getValue(doc, "?search_id=", "\"");
@@ -69,10 +74,35 @@
 	return result;
     };
 
+    function get_items(uri, offset, limit) {
+	result = [];
+	start_page = 1 + Math.floor(offset / constants.items_per_page);
+	end_page = 1 + Math.floor((offset + limit) / constants.items_per_page);
+	page_offset = offset - ((start_page - 1) * constants.items_per_page);
+
+	for (page = start_page; page <= end_page; page++) {
+
+	    res = http.get(uri + "&page=" + page);
+	    if (res.status != 200)
+		return result;
+
+	    if (page != start_page)
+		page_offset = 0;
+
+	    r = scrape_page(res.body, page_offset, limit - result.length);
+
+	    Array.prototype.push.apply(result, r);
+
+	    if (limit == result.length)
+		break;
+	}
+	return result;
+    }
+
     plugin.search(function(keywords, limit) {
 	res = http.get(constants.base_uri + "/index.php?search=" + keywords.join("+"));
 	if (res.status != 200) return [];
-	return scrape_page(res.body, limit);
+	return scrape_page(res.body, 0, limit);
     });
 
     plugin.register("/", function(offset, limit) {
@@ -90,10 +120,9 @@
 	return result;
     });
 
-    plugin.register("/latest", function(offest, limit) {
-	res = http.get(constants.base_uri + "/");
-	if (res.status != 200) return [];
-	return scrape_page(res.body, limit);
+    plugin.register("/latest", function(offset, limit) {
+	uri = constants.base_uri + "/?view=date";
+	return get_items(uri, offset, limit);
     });
 
 }) (this);
