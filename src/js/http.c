@@ -98,6 +98,10 @@ _js_http_unescape_html(js_State *state)
 static void
 _js_http_get(js_State *state)
 {
+  GError *err;
+  const gchar *content;
+  gchar *temp, *charset;
+  gsize len;
   guint status;
   js_provider_t *js;
   const char *uri;
@@ -108,8 +112,13 @@ _js_http_get(js_State *state)
   GList *keys;
   JsonNode *headers;
   JsonObject *object;
+  GHashTable *params;
+  const gchar *ctype;
 
+  err = NULL;
+  temp = NULL;
   headers = NULL;
+  params = NULL;
   js = js_touserdata(state, 0, "instance");
 
   uri = js_tostring(state, 1);
@@ -149,11 +158,30 @@ _js_http_get(js_State *state)
 
   status = soup_session_send_message(session, msg);
 
+  params = NULL;
+  ctype = soup_message_headers_get_content_type(msg->response_headers, &params);
+
   g_log(DOMAIN, G_LOG_LEVEL_INFO,
 	"[%s.http.get] GET '%s' %d, %s bytes '%s'",
-	js->provider->id, uri, status,
-	soup_message_headers_get_one(msg->response_headers, "Content-Length"),
+	js->provider->id, uri, status, ctype,
 	soup_message_headers_get_one(msg->response_headers, "Content-Type"));
+
+  /* convertion of body encoding to utf-8 */
+  charset = g_hash_table_lookup(params, "charset");
+  content = msg->response_body->data ? msg->response_body->data : "";
+  if (charset && msg->response_body->data)
+  {
+    g_log(DOMAIN, G_LOG_LEVEL_DEBUG,
+	  "Converting response body from '%s' to 'utf-8'", charset);
+
+    temp = g_convert(msg->response_body->data, msg->response_body->length,
+			"utf-8", charset, NULL, &len, &err);
+
+    if (err)
+      g_log(DOMAIN, G_LOG_LEVEL_WARNING,
+	    "Failed to convert: %s", err->message);
+    content = temp;
+  };
 
   /* push result object */
   js_newobject(state);
@@ -171,13 +199,14 @@ _js_http_get(js_State *state)
     }
     js_defproperty(state, -2, "headers", JS_READONLY);
 
-    js_pushstring(state, (msg->response_body->data ? msg->response_body->data : ""));
+    js_pushstring(state, content);
     js_defproperty(state, -2, "body", JS_READONLY);
   }
 
   soup_cache_flush(js->provider->service->cache);
   g_object_unref(session);
   g_object_unref(msg);
+  g_free(temp);
 }
 
 static void
