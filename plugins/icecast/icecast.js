@@ -79,6 +79,10 @@
 	    if (s > -1) str = getValue(str, "');\">", "</a>");
 	    item.metadata.title = http.unescapeHTML(str);
 
+	    // listeners
+	    str = getValue(doc, "<span class=\"listeners\">[", "&nbsp;listeners]</span>");
+	    if (str) item.metadata.listeners = parseInt(str);
+
 	    // description [optional]
 	    str =  getValue(doc, "<p class=\"stream-description\">","</p>");
 	    if (str) item.metadata.description = http.unescapeHTML(str);
