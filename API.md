@@ -325,7 +325,7 @@ and then request a new item list from that uri.
 **Attributes:**
 
 | attribute | description                                      |
-|-------- --|--------------------------------------------------|
+|-----------|--------------------------------------------------|
 | offset    | Offset used for iteration over parts of a result |
 | limit     | Limit result set to specific count               |
 
