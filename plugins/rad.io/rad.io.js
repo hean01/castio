@@ -48,31 +48,33 @@
 		uri: station.streamUrl
 	    };
 
-
 	    if (station.currentTrack != "")
 		item.metadata.on_air =  station.currentTrack;
 
-	    // lookup station info
-	    res = get_data("/broadcast/getbroadcastembedded", {
-		broadcast: station.id
-	    });
+	    // lookup station either from cache or online
+	    var data = cache.get(plugin.URI_PREFIX+"/item"+station.id);
+	    if (!data) {
+		data = get_data("/broadcast/getbroadcastembedded", {
+		    broadcast: station.id
+		});
+	    }
 
-	    if (res == undefined)
+	    if (data == undefined)
 		return;
 
 	    // parse station info
 	    try {
-		var bce = JSON.parse(res);
-
-		item.metadata.description = bce.description;
-		item.uri = bce.streamURL;
-
-		result.push(item);
-
+		bce = JSON.parse(data);
+		cache.store(plugin.URI_PREFIX+"/item"+station.id, data);
 	    } catch(e) {
 		service.warning("Failed to parse station info: " + e.message);
 		service.info("Object: " + res);
+		return;
 	    }
+
+	    item.metadata.description = bce.description;
+	    item.uri = bce.streamURL;
+	    result.push(item);
 	});
 
 	return result;
