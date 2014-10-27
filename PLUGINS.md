@@ -167,6 +167,32 @@ The following properties and methods can be used on settings object.
 	else
 		service.info("Option value is: true");
 
+## cache
+
+The _cache_ is used to speed up things the CAST.IO service provides an
+filebased cache. Use the cache when you need to perform iterative
+lookups of information, a good example of use is in the rad.io plugin.
+
+To prevent key clashes make sure to make them uniq using
+_plugin.URI_PREFIX_ string in combination with a uniq item id.
+
+| Property / Method      | Description                                   |
+|------------------------|-----------------------------------------------|
+| cache.store(key, blob) | Stores the blob string with a key in cache    |
+| cache.get(key)         | Fetch a string associated with key from cache |
+
+
+**Example of usage:**
+    data = cache.get(plugin.URI_PREFIX + "/item" + item_id);
+
+    if (!data) {
+		res = http.get("http://get.the.item?id=" + item_id);
+		cache.store(plugin.URI_PREFIX + "/item" + item_id, res.body);
+		data = res.body;
+	}
+
+	parse(data);
+
 
 ## http
 
