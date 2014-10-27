@@ -1,0 +1,10 @@
+{
+	"id":"rad.io",
+	"name": "rad.io",
+	"description": "The online radio with over 10.000 radio stations, internet radio stations and Podcasts live. Simply listen to web radio and streams, and discover favorite stations from rock and pop, to jazz and classical.",
+	"copyright": "2014 - CAST.IO Development Team",
+	"version": [0, 0, 1],
+	"url": "http://rad.io/",
+	"icon": "rad.io.png",
+	"plugin": "rad.io.js"
+}
