@@ -353,7 +353,7 @@ resource URI will be unavailable.
 See the following example usage of the search functionality and how to
 handle the status code on the client side:
 
-1. Create a GET request for `/search?keywords=the,movie`
+1. Create a GET request for `/search?keywords=the+movie`
 
 2. Server responds with a status code **302** and set's a "Location:"
    header with the temporary resource URI which serves the result for
@@ -375,11 +375,11 @@ handle the status code on the client side:
 
 **Attributes:**
 
-| attribute | description                                               |
-|-----------|-----------------------------------------------------------|
-| keywords  | A comma separated string with search keywords             |
-| providers | A comma separated string with provider id's               |
-| type      | A comma separated string with type constants              |
+| attribute | description                                                  |
+|-----------|--------------------------------------------------------------|
+| keywords  | A list of keywords separated using _+_ sign                  |
+| providers | A list of provider id's to search separated using _+_ sign   |
+| type      | A list of _type_ constants to search separated using _+_sign |
 
 Attributes _providers_ and _type_ are optional.
 

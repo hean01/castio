@@ -226,7 +226,7 @@ _provider_plugin_search_proxy(struct cio_provider_descriptor_t *self,
   /* push arg keywords array to stack  */
   idx = 0;
   js_newarray(js->state);
-  pkw = kw = g_strsplit(keywords, ",", -1);
+  pkw = kw = g_strsplit(keywords, "+", -1);
   for (; *pkw != NULL; pkw++) {
     js_pushstring(js->state, *pkw);
     js_setindex(js->state, -2, idx++);
