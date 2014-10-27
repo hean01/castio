@@ -183,6 +183,7 @@ _plugin.URI_PREFIX_ string in combination with a uniq item id.
 
 
 **Example of usage:**
+
     data = cache.get(plugin.URI_PREFIX + "/item" + item_id);
 
     if (!data) {
