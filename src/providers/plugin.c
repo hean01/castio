@@ -155,6 +155,10 @@ _provider_plugin_init(cio_provider_descriptor_t *provider, gchar *content, gssiz
   js_service_init(js->state, js);
   js_setglobal(js->state, "service");
 
+  /* blob cache object */
+  js_cache_init(js->state, js);
+  js_setglobal(js->state, "cache");
+
   /* settings object */
   js_settings_init(js->state, js);
   js_setglobal(js->state, "settings");

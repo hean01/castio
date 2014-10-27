@@ -18,42 +18,59 @@
  *
  */
 
+#include <string.h>
+
 #include "js/js.h"
+#include "service.h"
+#include "blobcache.h"
 
 #define DOMAIN "provider"
 
 static void
-_js_service_info(js_State *state)
+_js_cache_store(js_State *state)
 {
   js_provider_t *js;
-  const char *message;
+  const char *key;
+  const char *data;
 
   js = js_touserdata(state, 0, "instance");
-  message = js_tostring(state, 1);
+  key = js_tostring(state, 1);
+  data = js_tostring(state, 2);
 
-  g_log(DOMAIN, G_LOG_LEVEL_INFO,
-	"[%s.service.log]: %s", js->provider->id, message);
+  g_log(DOMAIN, G_LOG_LEVEL_DEBUG,
+	"[%s.cache.store]: %s", js->provider->id, key);
+
+  cio_blobcache_store(js->provider->service->blobcache, 0, g_str_hash(key),
+		      data, strlen(data));
 
   js_pushundefined(state);
 }
 
 static void
-_js_service_warning(js_State *state)
+_js_cache_get(js_State *state)
 {
   js_provider_t *js;
-  const char *message;
+  const char *key;
+  void *content;
 
   js = js_touserdata(state, 0, "instance");
-  message = js_tostring(state, 1);
+  key = js_tostring(state, 1);
 
-  g_log(DOMAIN, G_LOG_LEVEL_WARNING,
-	"[%s.service.warning]: %s", js->provider->id, message);
+  g_log(DOMAIN, G_LOG_LEVEL_DEBUG,
+	"[%s.cache.get]: %s", js->provider->id, key);
 
-  js_pushundefined(state);
+  if (cio_blobcache_get(js->provider->service->blobcache, g_str_hash(key),
+			&content, NULL) == 0)
+  {
+    js_pushstring(state, content);
+    g_free(content);
+  }
+  else
+    js_pushnull(state);
 }
 
 void
-js_service_init(js_State *state, js_provider_t *instance)
+js_cache_init(js_State *state, js_provider_t *instance)
 {
   js_newobject(state);
   {
@@ -61,11 +78,10 @@ js_service_init(js_State *state, js_provider_t *instance)
     js_getproperty(state, 0, "prototype");
     js_newuserdata(state, "instance", instance);
 
-    js_newcfunction(state, _js_service_info, 1);
-    js_defproperty(state, -2, "info", JS_READONLY);
+    js_newcfunction(state, _js_cache_store, 2);
+    js_defproperty(state, -2, "store", JS_READONLY);
 
-    js_newcfunction(state, _js_service_warning, 1);
-    js_defproperty(state, -2, "warning", JS_READONLY);
-
+    js_newcfunction(state, _js_cache_get, 1);
+    js_defproperty(state, -2, "get", JS_READONLY);
   }
 }

@@ -26,6 +26,7 @@
 #include <glib.h>
 
 #include "config.h"
+#include "blobcache.h"
 #include "service.h"
 #include "search.h"
 #include "settings.h"
@@ -464,6 +465,8 @@ cio_service_new()
   service->priv = g_malloc(sizeof(cio_service_priv_t));
   memset(service->priv, 0, sizeof(cio_service_priv_t));
 
+  g_log_set_default_handler(_service_log_handler, service);
+
   service->providers = g_hash_table_new(g_str_hash, g_str_equal);
   service->priv->backlog = g_queue_new();
 
@@ -473,7 +476,8 @@ cio_service_new()
   soup_cache_set_max_size(service->cache, 200L*1024L*1024L);
   soup_cache_load(service->cache);
 
-  g_log_set_default_handler(_service_log_handler, service);
+  /* initialize blobcache */
+  service->blobcache = cio_blobcache_new();
 
   return service;
 }

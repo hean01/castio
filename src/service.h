@@ -29,6 +29,7 @@ typedef struct cio_service_t
   struct cio_service_priv_t *priv;
   struct cio_settings_t *settings;
   struct cio_search_t *search;
+  struct cio_blobcache_t *blobcache;
   GHashTable *providers;
   SoupCache *cache;
 } cio_service_t;

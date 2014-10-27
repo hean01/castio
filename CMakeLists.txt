@@ -102,6 +102,8 @@ set(CASTIO_SOURCES
   src/js/service.c
   src/js/plugin.c
   src/js/util.c
+  src/js/cache.c
+  src/blobcache.c
   src/provider.c
   src/search.c
   src/service.c
