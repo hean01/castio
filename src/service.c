@@ -64,7 +64,7 @@ _service_log_entry(const char *timestamp,
   JsonObject *object;
   node = json_node_alloc();
   object = json_object_new();
-  json_node_init_object(node, object);
+  json_node_take_object(node, object);
 
   json_object_set_string_member(object, "timestamp", timestamp);
   json_object_set_string_member(object, "domain", log_domain);
@@ -498,7 +498,9 @@ cio_service_destroy(struct cio_service_t *self)
   if (self->cache)
     g_object_unref(self->cache);
 
-  g_queue_free_full(self->priv->backlog, json_node_free);
+  while(!g_queue_is_empty(self->priv->backlog))
+    json_node_free(g_queue_pop_head(self->priv->backlog));
+  g_queue_free(self->priv->backlog);
 
   g_free(self->priv);
   g_free(self);
