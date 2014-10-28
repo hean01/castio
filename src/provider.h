@@ -50,6 +50,8 @@ typedef struct cio_provider_descriptor_t
   gchar *homepage;
   gchar *icon;
 
+  void (*destroy)(struct cio_provider_descriptor_t *self);
+
   /*
    * api
    */
@@ -70,6 +72,8 @@ typedef struct cio_provider_descriptor_t
 cio_provider_descriptor_t *cio_provider_instance(struct cio_service_t *service,
 						 cio_provider_type_t type,
 						 const gchar *args);
+
+void cio_provider_destroy(struct cio_provider_descriptor_t *provider);
 
 void cio_provider_request_handler(SoupServer *server, SoupMessage *msg, const char *path,
 				  GHashTable *query, SoupClientContext *client, gpointer user_data);

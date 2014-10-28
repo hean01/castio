@@ -471,7 +471,7 @@ cio_service_new()
 
   g_log_set_default_handler(_service_log_handler, service);
 
-  service->providers = g_hash_table_new(g_str_hash, g_str_equal);
+  service->providers = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, cio_provider_destroy);
   service->priv->backlog = g_queue_new();
 
   /* initialize soup cache for plugin http requests */
@@ -506,6 +506,8 @@ cio_service_destroy(struct cio_service_t *self)
   while(!g_queue_is_empty(self->priv->backlog))
     json_node_free(g_queue_pop_head(self->priv->backlog));
   g_queue_free(self->priv->backlog);
+
+  g_hash_table_destroy(self->providers);
 
   g_free(self->priv);
   g_free(self);

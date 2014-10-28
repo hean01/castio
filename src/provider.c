@@ -76,6 +76,13 @@ cio_provider_instance(cio_service_t *service, cio_provider_type_t type, const gc
 }
 
 void
+cio_provider_destroy(struct cio_provider_descriptor_t *provider)
+{
+  if (provider->destroy)
+    provider->destroy(provider);
+}
+
+void
 cio_provider_request_handler(SoupServer *server, SoupMessage *msg, const char *path,
 			     GHashTable *query, SoupClientContext *client,
 			     gpointer user_data)

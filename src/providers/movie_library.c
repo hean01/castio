@@ -110,6 +110,8 @@ _movie_library_descriptor =
   "http://github.com/hean01/castio",
   "http://raw.githubusercontent.com/hean01/castio/master/images/movie_library_provider.png",
 
+  NULL,
+
   /* api */
   _movie_library_items,
   _movie_library_search,

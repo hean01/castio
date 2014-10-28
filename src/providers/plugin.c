@@ -199,6 +199,25 @@ _provider_plugin_init(cio_provider_descriptor_t *provider, gchar *content, gssiz
 }
 
 static void
+_provider_plugin_destroy(struct cio_provider_descriptor_t *self)
+{
+  js_provider_t *js;
+
+  js = self->opaque;
+
+  js_freestate(js->state);
+  g_free(js);
+
+  g_free(self->id);
+  g_free(self->name);
+  g_free(self->description);
+  g_free(self->copyright);
+  g_free(self->homepage);
+
+  g_free(self);
+}
+
+static void
 _provider_plugin_search_proxy(struct cio_provider_descriptor_t *self,
 			      gchar *keywords,
 			      cio_provider_search_on_item_callback_t callback,
@@ -410,6 +429,7 @@ cio_provider_plugin_new(struct cio_service_t *service, const gchar *filename)
 
   /* setup provider proxy functions */
   provider->service = service;
+  provider->destroy = _provider_plugin_destroy;
   provider->search = _provider_plugin_search_proxy;
   provider->items = _provider_plugin_items_proxy;
 
