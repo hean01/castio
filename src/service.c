@@ -160,6 +160,7 @@ _service_configuration_defaults(cio_service_t *self)
 			    "Port were the service listens for web api requests."
 			    " Requires a restart of the service.",
 			    value, &err);
+  json_node_free(value);
 
   /* intialize plugin directory */
   g_clear_error(&err),
@@ -170,6 +171,7 @@ _service_configuration_defaults(cio_service_t *self)
 			    "Specifies were the service searchs for plugins to be loaded."
 			    " Requires a restart of the service.",
 			    value, &err);
+  json_node_free(value);
 
   /* intialize digest */
   g_clear_error(&err),
@@ -180,7 +182,7 @@ _service_configuration_defaults(cio_service_t *self)
 			    "Authentication digest",
 			    "The encoded authentication digest used for accessing the web api.",
 			    value, &err);
-
+  json_node_free(value);
 }
 
 /** Initialize providers internal and plugins */
