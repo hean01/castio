@@ -4,7 +4,7 @@
 	"description": "The definitive guide to C64 remakes",
 	"copyright": "2014 - CAST.IO Development Team",
 	"version": [0, 0, 1],
-	"url": "http://http://remix.kwed.org/",
+	"url": "http://remix.kwed.org/",
 	"icon": "kwed.png",
 	"plugin": "kwed.js"
 }
