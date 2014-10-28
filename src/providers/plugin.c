@@ -206,6 +206,7 @@ _provider_plugin_destroy(struct cio_provider_descriptor_t *self)
   js = self->opaque;
 
   js_freestate(js->state);
+  g_list_free_full(js->paths, g_free);
   g_free(js);
 
   g_free(self->id);
