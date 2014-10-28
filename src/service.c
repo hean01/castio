@@ -241,6 +241,7 @@ _service_initialize_providers(cio_service_t *self)
     g_hash_table_insert(self->providers, provider->id, provider);
   }
 
+  g_dir_close(dir);
   g_free(plugindir);
 }
 
