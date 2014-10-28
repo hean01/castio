@@ -456,7 +456,7 @@ cio_settings_create_value(cio_settings_t *self,
   json_object_set_object_member(settings, id, setting);
   json_object_set_string_member(setting, "name", name);
   json_object_set_string_member(setting, "description", description);
-  json_object_set_member(setting, "value", value);
+  json_object_set_member(setting, "value", json_node_copy(value));
 
   g_log(DOMAIN, G_LOG_LEVEL_INFO,
 	"Created setting '%s' in section '%s'.", id, section);

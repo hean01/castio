@@ -48,12 +48,16 @@ _js_settings_define(js_State *state)
 	  "[%s.settings.define]: Define setting '%s' failed: unsupported value type",
 	  js->provider->id, id);
     js_pushundefined(state);
+    return;
   }
 
   cio_settings_create_value(js->provider->service->settings,
 			    js->provider->id,
 			    id, name, description,
 			    value, NULL);
+
+  json_node_free(value);
+
   /* return value */
   js_pushundefined(state);
 }
