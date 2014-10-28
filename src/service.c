@@ -394,7 +394,7 @@ _service_backlog_request_handler(SoupServer *server, SoupMessage *msg, const cha
 static void
 _service_initialize_handler(cio_service_t *self)
 {
-  GList *item;
+  GList *list, *item;
   cio_provider_descriptor_t *provider;
   gchar path[512];
 
@@ -420,7 +420,7 @@ _service_initialize_handler(cio_service_t *self)
 			  self, NULL);
 
   /* add handlers for each provider plugin */
-  item = g_hash_table_get_values(self->providers);
+  list = item = g_hash_table_get_values(self->providers);
   while(item)
   {
     provider = item->data;
@@ -434,6 +434,7 @@ _service_initialize_handler(cio_service_t *self)
 
     item = g_list_next(item);
   }
+  g_list_free(list);
 }
 
 /** handler for auth domain */
