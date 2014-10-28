@@ -483,6 +483,9 @@ cleanup:
   archive_read_close(ar);
   archive_read_free(ar);
 
+  g_free(icon);
+  g_free(plugin);
+
   if (provider == NULL)
   {
     g_log(DOMAIN, G_LOG_LEVEL_WARNING,
