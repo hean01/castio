@@ -124,6 +124,8 @@ cio_search_new()
 void
 cio_search_destroy(cio_search_t *self)
 {
+  g_hash_table_destroy(self->jobs);
+  g_free(self);
 }
 
 void
