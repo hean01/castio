@@ -490,6 +490,7 @@ void
 cio_service_destroy(struct cio_service_t *self)
 {
   g_object_unref(self->priv->server);
+  g_object_unref(self->priv->domain);
 
   if (self->settings)
     cio_settings_destroy(self->settings);
