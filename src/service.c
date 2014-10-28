@@ -489,6 +489,8 @@ cio_service_new()
 void
 cio_service_destroy(struct cio_service_t *self)
 {
+  g_object_unref(self->priv->server);
+
   if (self->settings)
     cio_settings_destroy(self->settings);
 
