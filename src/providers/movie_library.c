@@ -73,6 +73,12 @@ _movie_library_items(cio_provider_descriptor_t *provider,
 }
 
 static void
+_movie_library_destroy(cio_provider_descriptor_t *self)
+{
+  g_free(self);
+}
+
+static void
 _movie_library_search(cio_provider_descriptor_t *provider,
 		      gchar *keywords,
 		      cio_provider_search_on_item_callback_t callback,
@@ -110,7 +116,7 @@ _movie_library_descriptor =
   "http://github.com/hean01/castio",
   "http://raw.githubusercontent.com/hean01/castio/master/images/movie_library_provider.png",
 
-  NULL,
+  _movie_library_destroy,
 
   /* api */
   _movie_library_items,
