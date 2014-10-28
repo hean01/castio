@@ -498,6 +498,8 @@ cio_service_destroy(struct cio_service_t *self)
   if (self->cache)
     g_object_unref(self->cache);
 
+  g_queue_free_full(self->priv->backlog, json_node_free);
+
   g_free(self->priv);
   g_free(self);
 }
