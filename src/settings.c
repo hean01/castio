@@ -34,8 +34,8 @@ static GQuark _quark;
 static gboolean
 _settings_validate(cio_settings_t *self, GError **err)
 {
-  GList *sections;
-  GList *members;
+  GList *sections, *sit;
+  GList *members, *mit;
   JsonObject *object;
   JsonObject *settings;
   JsonObject *setting;
@@ -52,85 +52,92 @@ _settings_validate(cio_settings_t *self, GError **err)
   }
 
   /* if object is empty consider it as valid */
-  sections = json_object_get_members(object);
+  sit = sections = json_object_get_members(object);
   if (sections == NULL)
     return TRUE;
 
   /* validate each section */
   do
   {
-    settings = json_object_get_object_member(object, sections->data);
+    settings = json_object_get_object_member(object, sit->data);
     g_assert(settings != NULL);
 
     /* verify that section has settings defined */
-    members = json_object_get_members(settings);
+    mit = members = json_object_get_members(settings);
     if (!members)
     {
       g_log(DOMAIN, G_LOG_LEVEL_WARNING,
-	    "section '%s' is empty, removing it.", (gchar *)sections->data);
-      json_object_remove_member(object, sections->data);
+	    "section '%s' is empty, removing it.", (gchar *)sit->data);
+      json_object_remove_member(object, sit->data);
       continue;
     }
 
     /* verify that each setting has members; name, description, value */
     do {
 
-      setting = json_object_get_object_member(settings, members->data);
+      setting = json_object_get_object_member(settings, mit->data);
 
       /* verify name exists and that it is a string */
       if (!json_object_has_member(setting, "name"))
       {
 	g_set_error(err, _quark, 3, "Setting '%s' in section '%s' doesn't have a \"name\" member.",
-		    (gchar *)sections->data, (gchar *)members->data);
-	return FALSE;
+		    (gchar *)sit->data, (gchar *)mit->data);
+	goto bail_out;
       }
 
       value = json_object_get_member(setting, "name");
       if (!g_type_is_a(json_node_get_value_type(value), G_TYPE_STRING))
       {
 	g_set_error(err, _quark, 3, "Setting '%s' value in section '%s' is not a string.",
-		    (gchar *)sections->data, (gchar *)members->data);
-	return FALSE;
-
+		    (gchar *)sit->data, (gchar *)mit->data);
+	goto bail_out;
       }
 
       /* verify description exists and that it is a string */
       if (!json_object_has_member(setting, "description"))
       {
 	g_set_error(err, _quark, 3, "Setting '%s' in section '%s' doesn't have a \"description\" member.",
-		    (gchar *)sections->data, (gchar *)members->data);
-	return FALSE;
+		    (gchar *)sit->data, (gchar *)mit->data);
+	goto bail_out;
       }
 
       value = json_object_get_member(setting, "description");
       if (!g_type_is_a(json_node_get_value_type(value), G_TYPE_STRING))
       {
 	g_set_error(err, _quark, 3, "Setting '%s' value in section '%s' is not a string.",
-		    (gchar *)sections->data, (gchar *)members->data);
-	return FALSE;
-
+		    (gchar *)sit->data, (gchar *)mit->data);
+	goto bail_out;
       }
 
       /* verify value exists and that the node holds a value */
       if (!json_object_has_member(setting, "value"))
       {
 	g_set_error(err, _quark, 3, "Setting '%s' in section '%s' doesn't have a \"value\" member.",
-		    (gchar *)sections->data, (gchar *)members->data);
-	return FALSE;
+		    (gchar *)sit->data, (gchar *)mit->data);
+	goto bail_out;
       }
       value = json_object_get_member(setting, "value");
       if (!JSON_NODE_HOLDS_VALUE(value))
       {
 	g_set_error(err, _quark, 3, "Setting '%s' value in section '%s' is not a JSON value.",
-		    (gchar *)sections->data, (gchar *)members->data);
-	return FALSE;
+		    (gchar *)sit->data, (gchar *)mit->data);
+	goto bail_out;
       }
 
-    } while ((members = g_list_next(members)) != NULL);
+    } while ((mit = g_list_next(mit)) != NULL);
 
-  } while ((sections = g_list_next(sections)) != NULL);
+    g_list_free(members);
+    members = NULL;
 
+  } while ((sit = g_list_next(sit)) != NULL);
+
+  g_list_free(sections);
   return TRUE;
+
+bail_out:
+  g_list_free(members);
+  g_list_free(sections);
+  return FALSE;
 }
 
 cio_settings_t *
