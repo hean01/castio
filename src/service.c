@@ -491,6 +491,12 @@ cio_service_destroy(struct cio_service_t *self)
   if (self->search)
     cio_search_destroy(self->search);
 
+  if (self->blobcache)
+    cio_blobcache_destroy(self->blobcache);
+
+  if (self->cache)
+    g_object_unref(self->cache);
+
   g_free(self->priv);
   g_free(self);
 }
