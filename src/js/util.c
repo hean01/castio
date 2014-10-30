@@ -57,7 +57,7 @@ js_util_tojsonnode(js_State *state, int idx)
 
   if (js_isstring(state, idx))
   {
-    json_node_init_string(node, g_strdup(js_tostring(state, idx)));
+    json_node_init_string(node, js_tostring(state, idx));
   }
 
   else if (js_isnumber(state, idx))
@@ -87,6 +87,8 @@ js_util_tojsonnode(js_State *state, int idx)
 
       js_pop(state, 1);
     }
+
+    json_array_unref(array);
   }
 
   else if (js_isobject(state, idx))
@@ -108,6 +110,8 @@ js_util_tojsonnode(js_State *state, int idx)
     }
 
     js_pop(state, 1);
+
+    json_object_unref(object);
   }
 
   else
