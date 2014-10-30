@@ -210,6 +210,7 @@ _service_initialize_providers(cio_service_t *self)
   {
     g_log(DOMAIN, G_LOG_LEVEL_WARNING,
 	  "No plugin directory specified in configuration.\n");
+    g_clear_error(&err);
     return;
   }
 
@@ -219,6 +220,7 @@ _service_initialize_providers(cio_service_t *self)
     g_log(DOMAIN, G_LOG_LEVEL_WARNING,
 	  "Failed to load plugins from directory: %s\n", err->message);
     g_free(plugindir);
+    g_clear_error(&err);
     return;
   }
 
@@ -439,14 +441,12 @@ static char *
 _service_auth_domain_handler(SoupAuthDomain *domain, SoupMessage *msg,
 			     const char *username, gpointer user_data)
 {
-  GError *err;
   gchar *digest;
   cio_service_t *service;
 
   service = (cio_service_t *)user_data;
-  err = NULL;
-
-  digest = cio_settings_get_string_value(service->settings, "service", "auth_digest", &err);
+  digest = cio_settings_get_string_value(service->settings,
+					 "service", "auth_digest", NULL);
   if (digest == NULL)
     return NULL;
 
