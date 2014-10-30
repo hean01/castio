@@ -109,7 +109,7 @@ _js_http_get(js_State *state)
   SoupMessage *msg;
   SoupMessageHeadersIter iter;
   const gchar *name, *value;
-  GList *keys;
+  GList *keys, *kit;
   JsonNode *headers;
   JsonObject *object;
   GHashTable *params;
@@ -144,14 +144,15 @@ _js_http_get(js_State *state)
   if (headers)
   {
     object = json_node_get_object(headers);
-    keys = json_object_get_members(object);
-    while (keys)
+    keys = kit = json_object_get_members(object);
+    while (kit)
     {
       value = json_object_get_string_member(object, keys->data);
       if (value)
         soup_message_headers_replace(msg->request_headers, (char *)keys->data, value);
-      keys = g_list_next(keys);
+      kit = g_list_next(kit);
     }
+    g_list_free(keys);
     json_node_free(headers);
   }
 
