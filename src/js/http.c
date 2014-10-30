@@ -183,6 +183,7 @@ _js_http_get(js_State *state)
 	    "Failed to convert: %s", err->message);
     content = temp;
   };
+  g_hash_table_destroy(params);
 
   /* push result object */
   js_newobject(state);
