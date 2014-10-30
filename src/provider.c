@@ -101,12 +101,13 @@ cio_provider_request_handler(SoupServer *server, SoupMessage *msg, const char *p
 
   service = (cio_service_t *)user_data;
   err = NULL;
+  components = NULL;
 
   /* this handler only supports GET methods */
   if (msg->method != SOUP_METHOD_GET)
   {
     soup_message_set_status(msg, SOUP_STATUS_BAD_REQUEST);
-    return;
+    goto finished;
   }
 
   /* lookup provider by id */
@@ -115,7 +116,7 @@ cio_provider_request_handler(SoupServer *server, SoupMessage *msg, const char *p
   if (provider == NULL)
   {
     soup_message_set_status(msg, SOUP_STATUS_NOT_FOUND);
-    return;
+    goto finished;
   }
 
   /* bail out if provider doesn't support items */
@@ -124,7 +125,7 @@ cio_provider_request_handler(SoupServer *server, SoupMessage *msg, const char *p
     g_log(DOMAIN, G_LOG_LEVEL_WARNING,
 	  "Provider '%s' does not provide items.", provider->id);
     soup_message_set_status(msg, SOUP_STATUS_NOT_FOUND);
-    return;
+    goto finished;
   }
 
   /* bail out if provider is disabled */
@@ -136,7 +137,7 @@ cio_provider_request_handler(SoupServer *server, SoupMessage *msg, const char *p
     g_log(DOMAIN, G_LOG_LEVEL_INFO,
 	  "Provider '%s' is disabled.", provider->id);
     soup_message_set_status(msg, SOUP_STATUS_NOT_FOUND);
-    return;
+    goto finished;
   }
 
   /* get offset and limit from query */
@@ -177,4 +178,8 @@ cio_provider_request_handler(SoupServer *server, SoupMessage *msg, const char *p
   }
   else
     soup_message_set_status(msg, SOUP_STATUS_NOT_FOUND);
+
+finished:
+  if (components)
+    g_strfreev(components);
 }
