@@ -146,11 +146,8 @@ _service_log_handler(const gchar *log_domain,
 static void
 _service_configuration_defaults(cio_service_t *self)
 {
-  GError *err;
   char *digest;
   JsonNode *value;
-
-  err = NULL;
 
   /* intialize listen port */
   value = json_node_alloc();
@@ -159,29 +156,27 @@ _service_configuration_defaults(cio_service_t *self)
 			    "Service port",
 			    "Port were the service listens for web api requests."
 			    " Requires a restart of the service.",
-			    value, &err);
+			    value, NULL);
   json_node_free(value);
 
   /* intialize plugin directory */
-  g_clear_error(&err),
   value = json_node_alloc();
   value = json_node_init_string(value, CASTIO_DATA_DIR"/plugins");
   cio_settings_create_value(self->settings, "service", "plugin_dir",
 			    "Plugin directory",
 			    "Specifies were the service searchs for plugins to be loaded."
 			    " Requires a restart of the service.",
-			    value, &err);
+			    value, NULL);
   json_node_free(value);
 
   /* intialize digest */
-  g_clear_error(&err),
   digest = soup_auth_domain_digest_encode_password("admin", AUTH_REALM, "password");
   value = json_node_alloc();
   value = json_node_init_string(value, digest);
   cio_settings_create_value(self->settings, "service", "auth_digest",
 			    "Authentication digest",
 			    "The encoded authentication digest used for accessing the web api.",
-			    value, &err);
+			    value, NULL);
   json_node_free(value);
 }
 
