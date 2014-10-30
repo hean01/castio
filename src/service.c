@@ -607,6 +607,7 @@ cio_service_main(cio_service_t *self)
   /* start running main loop */
   self->priv->loop = g_main_loop_new(NULL, FALSE);
   g_main_loop_run(self->priv->loop);
+  g_main_loop_unref(self->priv->loop);
 
   /* Store configuration from memory to file. */
   if (!cio_settings_save(self->settings, &err))
