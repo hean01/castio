@@ -68,7 +68,7 @@ playback of content from providers. It should be a simple task to
 create a new native client for another platform using the open and
 welldocumented _CAST.IO_ web API.
 
-[android client][]: https://github.com/hean01/castio-android
+[android client]: https://github.com/hean01/castio-android
 
 
 ## Version 1.0
