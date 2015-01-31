@@ -1,7 +1,7 @@
 /*
  * This file is part of cast.io
  *
- * Copyright 2014 Henrik Andersson <henrik.4e@gmail.com>
+ * Copyright 2014-2015 Henrik Andersson <henrik.4e@gmail.com>
  *
  * cast.io is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -198,7 +198,7 @@ _js_http_get(js_State *state)
     while (soup_message_headers_iter_next(&iter, &name, &value))
     {
       js_pushstring(state, value);
-      js_defproperty(state, -2, name, JS_READONLY);
+      js_defproperty(state, -2, name, 0);
     }
     js_defproperty(state, -2, "headers", JS_READONLY);
 
