@@ -86,12 +86,12 @@ js_settings_init(js_State *state, js_provider_t *instance)
   js_newobject(state);
   {
     js_getproperty(state, 0, "prototype");
-    js_newuserdata(state, "instance", instance);
+    js_newuserdata(state, "instance", instance, NULL);
 
-    js_newcfunction(state, _js_settings_define, 4);
+    js_newcfunction(state, _js_settings_define, "define", 4);
     js_defproperty(state, -2, "define", JS_READONLY);
 
-    js_newcfunction(state, _js_settings_get, 1);
+    js_newcfunction(state, _js_settings_get, "get", 1);
     js_defproperty(state, -2, "get", JS_READONLY);
   }
 }

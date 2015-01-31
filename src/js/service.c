@@ -59,12 +59,12 @@ js_service_init(js_State *state, js_provider_t *instance)
   {
     /* add user data to service */
     js_getproperty(state, 0, "prototype");
-    js_newuserdata(state, "instance", instance);
+    js_newuserdata(state, "instance", instance, NULL);
 
-    js_newcfunction(state, _js_service_info, 1);
+    js_newcfunction(state, _js_service_info, "info", 1);
     js_defproperty(state, -2, "info", JS_READONLY);
 
-    js_newcfunction(state, _js_service_warning, 1);
+    js_newcfunction(state, _js_service_warning, "warning", 1);
     js_defproperty(state, -2, "warning", JS_READONLY);
 
   }

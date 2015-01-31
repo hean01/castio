@@ -314,15 +314,15 @@ js_http_init(js_State *state, js_provider_t *instance)
   {
     /* add user data to service */
     js_getproperty(state, 0, "prototype");
-    js_newuserdata(state, "instance", instance);
+    js_newuserdata(state, "instance", instance, NULL);
 
-    js_newcfunction(state, _js_http_get, 2);
+    js_newcfunction(state, _js_http_get, "get", 2);
     js_defproperty(state, -2, "get", JS_READONLY);
 
-    js_newcfunction(state, _js_http_post, 3);
+    js_newcfunction(state, _js_http_post, "post", 3);
     js_defproperty(state, -2, "post", JS_READONLY);
 
-    js_newcfunction(state, _js_http_unescape_html, 1);
+    js_newcfunction(state, _js_http_unescape_html, "unescapeHTML", 1);
     js_defproperty(state, -2, "unescapeHTML", JS_READONLY);
   }
 }

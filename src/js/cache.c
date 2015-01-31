@@ -76,12 +76,12 @@ js_cache_init(js_State *state, js_provider_t *instance)
   {
     /* add user data to service */
     js_getproperty(state, 0, "prototype");
-    js_newuserdata(state, "instance", instance);
+    js_newuserdata(state, "instance", instance, NULL);
 
-    js_newcfunction(state, _js_cache_store, 2);
+    js_newcfunction(state, _js_cache_store, "store",  2);
     js_defproperty(state, -2, "store", JS_READONLY);
 
-    js_newcfunction(state, _js_cache_get, 1);
+    js_newcfunction(state, _js_cache_get, "get", 1);
     js_defproperty(state, -2, "get", JS_READONLY);
   }
 }

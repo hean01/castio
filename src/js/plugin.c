@@ -80,7 +80,7 @@ js_plugin_init(js_State *state, js_provider_t *instance)
   js_newobject(state);
   {
     js_getproperty(state, 0, "prototype");
-    js_newuserdata(state, "instance", instance);
+    js_newuserdata(state, "instance", instance, NULL);
 
     js_pushstring(state, uri_prefix);
     js_defproperty(state, -2, "URI_PREFIX", JS_READONLY);
@@ -102,9 +102,9 @@ js_plugin_init(js_State *state, js_provider_t *instance)
      }
     js_defproperty(state, -2, "item", JS_READONLY);
 
-    js_newcfunction(state, _js_plugin_search, 0);
+    js_newcfunction(state, _js_plugin_search, "search", 0);
     js_defproperty(state, -2, "search", 0);
-    js_newcfunction(state, _js_plugin_register, 0);
+    js_newcfunction(state, _js_plugin_register, "register", 0);
     js_defproperty(state, -2, "register", 0);
 
   }
