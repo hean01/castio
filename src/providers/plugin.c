@@ -149,7 +149,7 @@ _provider_plugin_init(cio_provider_descriptor_t *provider, gchar *content, gssiz
   js = g_malloc(sizeof(js_provider_t));
   memset(js, 0, sizeof(js_provider_t));
   js->provider = provider;
-  js->state = js_newstate(NULL, NULL);
+  js->state = js_newstate(NULL, NULL, JS_STRICT);
 
   /* service object added to global scope */
   js_service_init(js->state, js);
