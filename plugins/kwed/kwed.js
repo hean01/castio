@@ -20,7 +20,7 @@
     function scrape_page(doc, offset, limit)
     {
 	var result = [];
-	cnt = 0;
+	var cnt = 0;
 
 	while(1 && limit != 0)
 	{
@@ -75,21 +75,21 @@
     };
 
     function get_items(uri, offset, limit) {
-	result = [];
-	start_page = 1 + Math.floor(offset / constants.items_per_page);
-	end_page = 1 + Math.floor((offset + limit) / constants.items_per_page);
-	page_offset = offset - ((start_page - 1) * constants.items_per_page);
+	var result = [];
+	var start_page = 1 + Math.floor(offset / constants.items_per_page);
+	var end_page = 1 + Math.floor((offset + limit) / constants.items_per_page);
+	var page_offset = offset - ((start_page - 1) * constants.items_per_page);
 
-	for (page = start_page; page <= end_page; page++) {
+	for (var page = start_page; page <= end_page; page++) {
 
-	    res = http.get(uri + "&page=" + page);
+	    var res = http.get(uri + "&page=" + page);
 	    if (res.status != 200)
 		return result;
 
 	    if (page != start_page)
 		page_offset = 0;
 
-	    r = scrape_page(res.body, page_offset, limit - result.length);
+	    var r = scrape_page(res.body, page_offset, limit - result.length);
 
 	    Array.prototype.push.apply(result, r);
 
@@ -100,13 +100,13 @@
     }
 
     plugin.search(function(keywords, limit) {
-	res = http.get(constants.base_uri + "/index.php?search=" + keywords.join("+"));
+	var res = http.get(constants.base_uri + "/index.php?search=" + keywords.join("+"));
 	if (res.status != 200) return [];
 	return scrape_page(res.body, 0, limit);
     });
 
     plugin.register("/", function(offset, limit) {
-	result = [];
+	var result = [];
 
 	result.push({
 	    type: "folder",
@@ -130,12 +130,12 @@
     });
 
     plugin.register("/latest", function(offset, limit) {
-	uri = constants.base_uri + "/?view=date";
+	var uri = constants.base_uri + "/?view=date";
 	return get_items(uri, offset, limit);
     });
 
     plugin.register("/toprated", function(offset, limit) {
-	uri = constants.base_uri + "/?view=rating";
+	var uri = constants.base_uri + "/?view=rating";
 	return get_items(uri, offset, limit);
     });
 
