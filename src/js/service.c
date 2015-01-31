@@ -1,7 +1,7 @@
 /*
  * This file is part of cast.io
  *
- * Copyright 2014 Henrik Andersson <henrik.4e@gmail.com>
+ * Copyright 2014-2015 Henrik Andersson <henrik.4e@gmail.com>
  *
  * cast.io is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,21 @@
 #include "js/js.h"
 
 #define DOMAIN "provider"
+
+static void
+_js_service_debug(js_State *state)
+{
+  js_provider_t *js;
+  const char *message;
+
+  js = js_touserdata(state, 0, "instance");
+  message = js_tostring(state, 1);
+
+  g_log(DOMAIN, G_LOG_LEVEL_DEBUG,
+	"[%s.service.log]: %s", js->provider->id, message);
+
+  js_pushundefined(state);
+}
 
 static void
 _js_service_info(js_State *state)
@@ -60,6 +75,9 @@ js_service_init(js_State *state, js_provider_t *instance)
     /* add user data to service */
     js_getproperty(state, 0, "prototype");
     js_newuserdata(state, "instance", instance, NULL);
+
+    js_newcfunction(state, _js_service_debug, "debug", 1);
+    js_defproperty(state, -2, "debug", JS_READONLY);
 
     js_newcfunction(state, _js_service_info, "info", 1);
     js_defproperty(state, -2, "info", JS_READONLY);

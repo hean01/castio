@@ -48,6 +48,7 @@ The following properties and methods can be used with service object
 
 | Property / Method       | Description                          |
 |-------------------------|--------------------------------------|
+| service.debug(string)   | Adds an debug entry to service log   |
 | service.info(string)    | Adds an info entry to service log    |
 | service.warning(string) | Adds a warning  entry to service log |
 
