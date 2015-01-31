@@ -176,9 +176,15 @@
 		    // todo: get correct video uri
 		    item.uri = plugin.URI_PREFIX + "/episode/" + show_id;
 		    item.metadata.title = episode.title_slug;
-		    item.metadata.length = episode.length;
+		    if (episode.length && !episode.length.equal(""))
+			item.metadata.length = episode.length;
 		    item.metadata.image = episode.thumbnail_url;
-		    item.metadata.air_date = episode.date_broadcasted;
+
+		    var date = Date.parse(episode.date_broadcasted);
+		    if (date)
+			item.metadata.air_date = (date / 1000);
+		    else
+			service.warning("Failed to parse date '" + episode.date_broadcasted + "' to unix timestamp.");
 
 		} catch (e) {
 		    service.warning("Failed to parse show: " + e.message);
