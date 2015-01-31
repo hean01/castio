@@ -175,19 +175,25 @@
 
 		    // todo: get correct video uri
 		    item.uri = plugin.URI_PREFIX + "/episode/" + show_id;
-		    item.metadata.title = episode.title_slug;
-		    if (episode.length && !episode.length.equal(""))
-			item.metadata.length = episode.length;
-		    item.metadata.image = episode.thumbnail_url;
-
-		    var date = Date.parse(episode.date_broadcasted);
-		    if (date)
-			item.metadata.air_date = (date / 1000);
+		    if (episode.title)
+			item.metadata.title = episode.title;
 		    else
-			service.warning("Failed to parse date '" + episode.date_broadcasted + "' to unix timestamp.");
+			item.metadata.title = episode.title_slug;
+
+		    if (episode.description)
+			item.metadata.description = episode.description;
+
+		    if (episode.length)
+			item.metadata.length = episode.length;
+
+		    if (episode.thumbnail_url)
+			item.metadata.image = episode.thumbnail_url;
+
+		    if (episode.date_broadcasted)
+			item.metadata.air_date = episode.data_broadcasted;
 
 		} catch (e) {
-		    service.warning("Failed to parse show: " + e.message);
+		    service.warning("Failed to parse episode: " + e.message);
 		    continue;
 		}
 
@@ -196,7 +202,7 @@
 	    }
 
 	} catch (e) {
-	    service.warning("Failed to parse shows: " + e.message);
+	    service.warning("Failed to get episodes for show: " + e.message);
 	}
 
 	return result;
