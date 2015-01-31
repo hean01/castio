@@ -17,8 +17,8 @@
 
 
     function scrape_page(doc, limit) {
-	first = true;
-	result = [];
+	var first = true;
+	var result = [];
 
 	while(1) {
 
@@ -29,7 +29,7 @@
 	    var str = "<li data-channel-id=\"";
 	    var s = doc.indexOf(str, 2);
 	    if (s < 0) break;
-	    doc = doc.slice(s);
+	    var doc = doc.slice(s);
 
 	    /* skip first occurence */
 	    if (first) {
@@ -53,7 +53,7 @@
     }
 
     plugin.register("/", function(path, offest, limit) {
-	res = http.get(constants.base_uri);
+	var res = http.get(constants.base_uri);
 	if (res.status != 200) return [];
 	return scrape_page(res.body, limit);
     });
