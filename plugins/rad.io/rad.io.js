@@ -19,9 +19,9 @@
     }
 
     function get_data(path, args) {
-	query = constants.base_uri + "/info" + path + make_args(args);
+	var query = constants.base_uri + "/info" + path + make_args(args);
 
-	res = http.get(query, {
+	var res = http.get(query, {
 	    'User-Agent':'radio.de 1.9.1 rv:37 (iPhone; iPhone OS 5.0; de_DE)'});
 
 	if (res.status != 200)
@@ -36,7 +36,7 @@
 	if (data == undefined)
 	    return result;
 
-	list = JSON.parse(data);
+	var list = JSON.parse(data);
 	list.forEach(function(station) {
 	    //service.info("Name: " + JSON.stringify(station));
 	    var item = {
@@ -64,12 +64,11 @@
 
 	    // parse station info
 	    try {
-		bce = JSON.parse(data);
+		var bce = JSON.parse(data);
 		cache.store(plugin.URI_PREFIX+"/item"+station.id, data);
 	    } catch(e) {
 		service.warning("Failed to parse station info: " + e.message);
-		service.info("Object: " + res);
-		return;
+		return [];
 	    }
 
 	    item.metadata.description = bce.description;
@@ -107,7 +106,7 @@
     });
 
     plugin.register("/nearest", function(offset, limit) {
-	data = get_data("/menu/broadcastsofcategory", {
+	var data = get_data("/menu/broadcastsofcategory", {
 	    category: "_country",
 	    value: "Sweden",
 	    start: offset,
