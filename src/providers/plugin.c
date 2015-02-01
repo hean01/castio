@@ -1,7 +1,7 @@
 /*
  * This file is part of cast.io
  *
- * Copyright 2014 Henrik Andersson <henrik.4e@gmail.com>
+ * Copyright 2014-2015 Henrik Andersson <henrik.4e@gmail.com>
  *
  * cast.io is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,8 @@
 
 #include "js/js.h"
 #include "plugin.h"
+#include "service.h"
+#include "blobcache.h"
 
 #define DOMAIN "plugin"
 
@@ -455,6 +457,7 @@ cio_provider_plugin_new(struct cio_service_t *service, const gchar *filename)
     if (res != ARCHIVE_OK)
       break;
 
+    /* read the provider script */
     if (plugin && strcmp(archive_entry_pathname(entry), plugin) == 0)
     {
       len = archive_entry_size(entry);
@@ -470,6 +473,28 @@ cio_provider_plugin_new(struct cio_service_t *service, const gchar *filename)
 	goto cleanup;
       }
     }
+
+    /* read the icon and store into blobcache with mimetype + size header */
+    if (plugin && strcmp(archive_entry_pathname(entry), icon) == 0)
+    {
+      char uri[512];
+      cio_blobcache_resource_header_t hdr;
+      memset(&hdr, 0, sizeof(hdr));
+      snprintf(hdr.mime, sizeof(hdr.mime), "image/png");
+      hdr.size = archive_entry_size(entry);
+
+      content = malloc(hdr.size + sizeof(hdr));
+      memset(content, 0, hdr.size + sizeof(hdr));
+      memcpy(content, &hdr, sizeof(hdr));
+
+      archive_read_data(ar, content + sizeof(hdr), hdr.size);
+
+      // store icon to blob cache
+      snprintf(uri, sizeof(uri), "%s://%s", provider->id, icon);
+      provider->icon = g_strdup(uri);
+      cio_blobcache_store(service->blobcache, 0, g_str_hash(uri), content, hdr.size + sizeof(hdr));
+    }
+
   }
 
   if (provider->opaque == NULL)
