@@ -1,7 +1,7 @@
 /*
  * This file is part of cast.io
  *
- * Copyright 2014 Henrik Andersson <henrik.4e@gmail.com>
+ * Copyright 2014-2015 Henrik Andersson <henrik.4e@gmail.com>
  *
  * cast.io is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -389,6 +389,71 @@ _service_backlog_request_handler(SoupServer *server, SoupMessage *msg, const cha
   soup_message_set_status(msg, 200);
 }
 
+/** handler for /cache api request */
+static void
+_service_cache_request_handler(SoupServer *server, SoupMessage *msg, const char *path,
+			       GHashTable *query, SoupClientContext *client, gpointer user_data)
+{
+  cio_service_t *service;
+  gchar *resource;
+  gchar *data;
+  size_t size;
+
+  service = (cio_service_t *)user_data;
+
+  if (msg->method != SOUP_METHOD_GET)
+  {
+    soup_message_set_status(msg, SOUP_STATUS_BAD_REQUEST);
+    return;
+  }
+
+  if (!query)
+  {
+    soup_message_set_status(msg, SOUP_STATUS_BAD_REQUEST);
+    return;
+  }
+
+  /* Get the resource url from query and unescape it */
+  resource = g_hash_table_lookup(query, "resource");
+  if (!resource)
+  {
+    soup_message_set_status(msg, SOUP_STATUS_BAD_REQUEST);
+    return;
+  }
+
+  resource = g_uri_unescape_string(resource, NULL);
+  if (!resource)
+  {
+    soup_message_set_status(msg, SOUP_STATUS_BAD_REQUEST);
+    return;
+  }
+
+  /* lookup resource in cache */
+  if (cio_blobcache_get(service->blobcache, g_str_hash(resource), (void **)&data, &size) == 0)
+  {
+    char *image;
+    cio_blobcache_resource_header_t *hdr;
+
+    hdr = (cio_blobcache_resource_header_t *)data;
+
+    image = g_malloc(hdr->size);
+    memcpy(image, data + sizeof(cio_blobcache_resource_header_t), hdr->size);
+
+    soup_message_set_response(msg, hdr->mime,
+			      SOUP_MEMORY_TAKE,
+			      image, size);
+
+    soup_message_set_status(msg, 200);
+
+    g_free(data);
+    g_free(resource);
+    return;
+  }
+
+  /* TODO: resource not found in cache, lets download and add it to cache */
+  soup_message_set_status(msg, SOUP_STATUS_NOT_FOUND);
+}
+
 
 static void
 _service_initialize_handler(cio_service_t *self)
@@ -434,6 +499,12 @@ _service_initialize_handler(cio_service_t *self)
     item = g_list_next(item);
   }
   g_list_free(list);
+
+
+  /* add handler for cache */
+  soup_server_add_handler(self->priv->server, "/cache",
+			  _service_cache_request_handler,
+			  self, NULL);
 }
 
 /** handler for auth domain */

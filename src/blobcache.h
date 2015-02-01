@@ -25,6 +25,12 @@
 
 struct cio_blobcache_t;
 
+typedef struct cio_blobcache_resource_header_t
+{
+  char mime[64];
+  uint32_t size;
+} cio_blobcache_resource_header_t;
+
 struct cio_blobcache_t *cio_blobcache_new();
 void cio_blobcache_destroy(struct cio_blobcache_t *self);
 

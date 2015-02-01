@@ -394,3 +394,25 @@ Retreives a list of last _N_ _log_entry_ objects from the service backlog.
 **accepted_verbs:** GET
 
 **returns:** A json array with _log_entry_ objects.
+
+# /cache
+
+Retreives a resource through the internal service cache.
+
+The service will get the resource request from it's internal blob
+cache. If the requested resource is not found in cache it will
+download and add it for future requests.
+
+There are also a special case were urls of provider icons are handle
+as well. These special urls uses scheme named as provider id, here
+follows an example of a provider icon uri; _di://di.png_.
+
+**Attributes:**
+
+| attribute | description                                                  |
+|-----------|--------------------------------------------------------------|
+| uri       | An escaped url of the resource to retreive                   |
+
+**accepted_verbs:** GET
+
+**returns:** The requested resource
