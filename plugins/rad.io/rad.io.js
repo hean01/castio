@@ -102,7 +102,7 @@
 	    uri: plugin.URI_PREFIX + "/nearest"
 	});
 
-	return result;
+	return result.slice(offset, offset + limit);
     });
 
     plugin.register("/nearest", function(offset, limit) {
