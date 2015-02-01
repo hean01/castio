@@ -5,40 +5,40 @@
 	'items_per_page': 20
     };
 
-    var genres = [
-	"80s",
-	"Alternative",
-	"Ambient",
-	"Breaks",
-	"Chillout",
-	"Dance",
-	"Dubstep",
-	"Drumnbass",
-	"Electronic",
-	"Funk",
-	"Gothic",
-	"Harcore",
-	"Hardstyle",
-	"Hardtrance",
-	"Hip Hop",
-	"House",
-	"Jazz",
-	"Jungle",
-	"Lounge",
-	"Metal",
-	"Minimal",
-	"Mixed",
-	"Pop",
-	"Progressive",
-	"Punk",
-	"Radio",
-	"Rock",
-	"Techno",
-	"Top40",
-	"Trance",
-	"Tribal",
-	"Various"
-    ];
+    var genres = [];
+    genres.push("80s");
+    genres.push("Alternative");
+    genres.push("Ambient");
+    genres.push("Breaks");
+    genres.push("Chillout");
+    genres.push("Dance");
+    genres.push("Dubstep");
+    genres.push("Drumnbass");
+    genres.push("Electronic");
+    genres.push("Funk");
+    genres.push("Gothic");
+    genres.push("Harcore");
+    genres.push("Hardstyle");
+    genres.push("Hardtrance");
+    genres.push("Hip Hop");
+    genres.push("House");
+    genres.push("Jazz");
+    genres.push("Jungle");
+    genres.push("Lounge");
+    genres.push("Metal");
+    genres.push("Minimal");
+    genres.push("Mixed");
+    genres.push("Pop");
+    genres.push("Progressive");
+    genres.push("Punk");
+    genres.push("Radio");
+    genres.push("Rock");
+    genres.push("Techno");
+    genres.push("Top40");
+    genres.push("Trance");
+    genres.push("Tribal");
+    genres.push("Various");
+
 
     function getValue(content, start, end) {
 	var s = content.indexOf(start);
@@ -55,7 +55,7 @@
     function scrape_page(doc, offset, limit)
     {
 	var result = [];
-	cnt = 0;
+	var cnt = 0;
 
 	while(1 && limit != 0)
 	{
@@ -103,21 +103,21 @@
     };
 
     function get_items(uri, offset, limit) {
-	result = [];
-	start_page = Math.floor(offset / constants.items_per_page);
-	end_page = Math.floor((offset + limit) / constants.items_per_page);
-	page_offset = offset - (start_page * constants.items_per_page);
+	var result = [];
+	var start_page = Math.floor(offset / constants.items_per_page);
+	var end_page = Math.floor((offset + limit) / constants.items_per_page);
+	var page_offset = offset - (start_page * constants.items_per_page);
 
-	for (page = start_page; page <= end_page; page++) {
+	for (var page = start_page; page <= end_page; page++) {
 
-	    res = http.get(uri + "?page=" + page);
+	    var res = http.get(uri + "?page=" + page);
 	    if (res.status != 200)
 		return result;
 
 	    if (page != start_page)
 		page_offset = 0;
 
-	    r = scrape_page(res.body, page_offset, limit - result.length);
+	    var r = scrape_page(res.body, page_offset, limit - result.length);
 
 	    Array.prototype.push.apply(result, r);
 
@@ -140,17 +140,17 @@
 	    result.push(item);
 	});
 
-	return result;
+	return result.slice(offset, offset + limit);
     });
 
     /* add handler for genres */
     plugin.register("/*", function(offset, limit, genre) {
-	uri = constants.base_uri + "/by_genre/" + genre;
+	var uri = constants.base_uri + "/by_genre/" + genre;
 	return get_items(uri, offset, limit);
     });
 
     plugin.search(function(keywords, limit) {
-	res = http.get(constants.base_uri + "/search?search=" + keywords.join("+"));
+	var res = http.get(constants.base_uri + "/search?search=" + keywords.join("+"));
 	return scrape_page(res.body, 0, limit);
     });
 
