@@ -428,6 +428,8 @@ _service_cache_request_handler(SoupServer *server, SoupMessage *msg, const char 
     return;
   }
 
+  g_log(DOMAIN, G_LOG_LEVEL_INFO, "Retreiving '%s' through service cache.", resource);
+
   /* lookup resource in cache */
   if (cio_blobcache_get(service->blobcache, g_str_hash(resource), (void **)&data, &size) == 0)
   {
@@ -435,6 +437,13 @@ _service_cache_request_handler(SoupServer *server, SoupMessage *msg, const char 
     cio_blobcache_resource_header_t *hdr;
 
     hdr = (cio_blobcache_resource_header_t *)data;
+
+    /* resource not available return not found... */
+    if (hdr->mime[0] == 0 && hdr->size == 0)
+    {
+      soup_message_set_status(msg, SOUP_STATUS_NOT_FOUND);
+      return;
+    }
 
     image = g_malloc(hdr->size);
     memcpy(image, data + sizeof(cio_blobcache_resource_header_t), hdr->size);
@@ -451,7 +460,68 @@ _service_cache_request_handler(SoupServer *server, SoupMessage *msg, const char 
   }
 
   /* TODO: resource not found in cache, lets download and add it to cache */
-  soup_message_set_status(msg, SOUP_STATUS_NOT_FOUND);
+  {
+    guint status;
+    gchar *mime;
+    GHashTable *params;
+    SoupSession *session;
+    SoupMessage *gmsg;
+    SoupMessageHeadersIter iter;
+
+    session = soup_session_new_with_options(SOUP_SESSION_ADD_FEATURE,
+					    SOUP_SESSION_FEATURE(service->cache),
+					    NULL);
+
+    gmsg = soup_message_new("GET", resource);
+    soup_message_headers_replace(gmsg->request_headers, "Accept-Charset", "utf-8");
+    status = soup_session_send_message(session, gmsg);
+    mime = soup_message_headers_get_content_type(gmsg->response_headers, &params);
+    soup_cache_flush(service->cache);
+
+    if (status != 200)
+    {
+      /* resource not availble create a empty cache item to prevent
+	 subsequential fetches for a short time, 30 minutes... */
+      cio_blobcache_resource_header_t hdr;
+      memset(&hdr, 0, sizeof(hdr));
+
+      cio_blobcache_store(service->blobcache, 60 * 30, g_str_hash(resource), &hdr, sizeof(hdr));
+      soup_message_set_status(msg, SOUP_STATUS_NOT_FOUND);
+      return;
+    }
+
+    /* create blob and store in blobcache */
+    cio_blobcache_resource_header_t *hdr;
+    size_t blob_size = gmsg->response_body->length + sizeof(cio_blobcache_resource_header_t);
+    uint8_t *blob = g_malloc(blob_size);
+    memset(blob, 0, sizeof(blob_size));
+
+    hdr = blob;
+    hdr->size = gmsg->response_body->length;
+    snprintf(hdr->mime, sizeof(hdr->mime), mime);
+
+    memcpy(blob + sizeof(cio_blobcache_resource_header_t),
+	   gmsg->response_body->data, gmsg->response_body->length);
+
+    /* FIXME: get cache liftime and use it probably when puttin
+       resource in internal blob cache. */
+    cio_blobcache_store(service->blobcache, 0, g_str_hash(resource), blob, blob_size);
+
+    /* send content to client */
+    char *data;
+    data = malloc(hdr->size);
+    memcpy(data, gmsg->response_body->data, gmsg->response_body->length);
+    g_object_unref(session);
+    g_object_unref(gmsg);
+
+    soup_message_set_response(msg, hdr->mime,
+			    SOUP_MEMORY_TAKE,
+			    data, hdr->size);
+    soup_message_set_status(msg, 200);
+
+    g_free(blob);
+  }
+
 }
 
 
