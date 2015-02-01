@@ -126,7 +126,7 @@
 	    uri: plugin.URI_PREFIX + "/toprated"
 	});
 
-	return result;
+	return result.slice(offset, offset + limit);
     });
 
     plugin.register("/latest", function(offset, limit) {
