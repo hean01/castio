@@ -283,7 +283,7 @@ _service_backlog_to_json(cio_service_t *self, gsize *length)
 
 /** create json array of available providers */
 static gchar *
-_service_providers_to_json(cio_service_t *self, gsize *length)
+_service_providers_to_json(cio_service_t *self, gsize *length, gsize offset, gsize limit)
 {
   cio_provider_descriptor_t *provider;
   JsonGenerator *gen;
@@ -291,13 +291,27 @@ _service_providers_to_json(cio_service_t *self, gsize *length)
   JsonNode *root;
   GList *item;
   gchar *content;
+  gsize cnt;
 
   item = g_hash_table_get_values(self->providers);
 
   builder = json_builder_new();
   builder = json_builder_begin_array(builder);
+  cnt = 0;
   while (item)
   {
+    /* continue if offset not reached */
+    if (offset > cnt)
+    {
+      cnt++;
+      item = g_list_next(item);
+      continue;
+    }
+
+    /* break out if limit is reached */
+    if (cnt >= offset+limit)
+      break;
+
     provider = item->data;
 
     /* create provider object */
@@ -321,6 +335,7 @@ _service_providers_to_json(cio_service_t *self, gsize *length)
 
     builder = json_builder_end_object(builder);
     item = g_list_next(item);
+    cnt++;
   }
   builder = json_builder_end_array(builder);
 
@@ -352,7 +367,23 @@ _service_providers_request_handler(SoupServer *server, SoupMessage *msg, const c
     return;
   }
 
-  content = _service_providers_to_json(service, &length);
+  /* get offset and limit from query */
+  gchar *value;
+  gsize offset = 0;
+  gsize limit = 100;
+  if (query)
+  {
+    value = g_hash_table_lookup(query, "offset");
+    if (value)
+      offset = g_ascii_strtoll(value, NULL, 10);
+
+    value = g_hash_table_lookup(query, "limit");
+    if (value)
+      limit = g_ascii_strtoll(value, NULL, 10);
+
+  }
+
+  content = _service_providers_to_json(service, &length, offset, limit);
   soup_message_set_response(msg,
 			    "application/json; charset=utf-8",
 			    SOUP_MEMORY_TAKE,
