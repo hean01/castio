@@ -648,7 +648,7 @@ cio_service_new()
   service->priv->backlog = g_queue_new();
 
   /* initialize soup cache for plugin http requests */
-  service->cache = soup_cache_new(CASTIO_INSTALL_PREFIX"/var/cache/castio",
+  service->cache = soup_cache_new(CASTIO_INSTALL_PREFIX"/var/cache/castio/http",
 				  SOUP_CACHE_SINGLE_USER);
   soup_cache_set_max_size(service->cache, 200L*1024L*1024L);
   soup_cache_load(service->cache);
