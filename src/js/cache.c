@@ -41,7 +41,7 @@ _js_cache_store(js_State *state)
 	"[%s.cache.store]: %s", js->provider->id, key);
 
   cio_blobcache_store(js->provider->service->blobcache, 0, g_str_hash(key),
-		      data, strlen(data));
+		      data, strlen(data) + 1);
 
   js_pushundefined(state);
 }
