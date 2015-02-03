@@ -112,7 +112,7 @@ _movie_library_descriptor =
   "Movie Library",
   "Provides movies from a local storage, scans and updates movie items with metadata from themoviedb.org.",
   "2014 - CAST.IO Development Team",
-  "0.1b",
+  0,0,1,
   "http://github.com/hean01/castio",
   "http://raw.githubusercontent.com/hean01/castio/master/images/movie_library_provider.png",
 

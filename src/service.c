@@ -324,8 +324,14 @@ _service_providers_to_json(cio_service_t *self, gsize *length, gsize offset, gsi
     builder = json_builder_add_string_value(builder, provider->name);
     builder = json_builder_set_member_name(builder, "description");
     builder = json_builder_add_string_value(builder, provider->description);
+
     builder = json_builder_set_member_name(builder, "version");
-    builder = json_builder_add_string_value(builder, provider->version);
+    builder = json_builder_begin_array(builder);
+    builder = json_builder_add_int_value(builder, provider->version[0]);
+    builder = json_builder_add_int_value(builder, provider->version[1]);
+    builder = json_builder_add_int_value(builder, provider->version[2]);
+    builder = json_builder_end_array(builder);
+
     builder = json_builder_set_member_name(builder, "copyright");
     builder = json_builder_add_string_value(builder, provider->copyright);
     builder = json_builder_set_member_name(builder, "homepage");

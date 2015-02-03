@@ -1,7 +1,7 @@
 /*
  * This file is part of cast.io
  *
- * Copyright 2014 Henrik Andersson <henrik.4e@gmail.com>
+ * Copyright 2014-2015 Henrik Andersson <henrik.4e@gmail.com>
  *
  * cast.io is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

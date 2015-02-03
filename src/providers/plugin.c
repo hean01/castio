@@ -86,6 +86,7 @@ _provider_plugin_manifest_parse(gchar *manifest, gssize len, gchar **icon, gchar
   JsonParser *parser;
   JsonNode *node;
   JsonObject *object;
+  JsonArray *version;
   cio_provider_descriptor_t *provider;
 
   provider = NULL;
@@ -131,6 +132,27 @@ _provider_plugin_manifest_parse(gchar *manifest, gssize len, gchar **icon, gchar
   provider->description = g_strdup(json_object_get_string_member(object, "description"));
   provider->copyright = g_strdup(json_object_get_string_member(object, "copyright"));
   provider->homepage = g_strdup(json_object_get_string_member(object, "url"));
+
+  /* get version from object and verify that it is a JsonArray of
+     three integers */
+  version = json_object_get_array_member(object, "version");
+  if (!version
+      || json_array_get_length(version) != 3
+      || !g_type_is_a(json_node_get_value_type(json_array_get_element(version, 0)), G_TYPE_INT64)
+      || !g_type_is_a(json_node_get_value_type(json_array_get_element(version, 1)), G_TYPE_INT64)
+      || !g_type_is_a(json_node_get_value_type(json_array_get_element(version, 2)), G_TYPE_INT64)
+	  )
+  {
+    g_log(DOMAIN, G_LOG_LEVEL_WARNING,
+	  "Failed to parse plugin manifest: version specified is not an array of three integers.");
+    return NULL;
+  }
+
+  /* store version into provider descriptor */
+  provider->version[0] = json_array_get_int_element(version, 0);
+  provider->version[1] = json_array_get_int_element(version, 1);
+  provider->version[2] = json_array_get_int_element(version, 2);
+
   *icon = g_strdup(json_object_get_string_member(object, "icon"));
   *plugin = g_strdup(json_object_get_string_member(object, "plugin"));
 

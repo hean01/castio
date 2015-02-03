@@ -46,7 +46,7 @@ typedef struct cio_provider_descriptor_t
   gchar *name;
   gchar *description;
   gchar *copyright;
-  gchar *version;
+  gint64 version[3];
   gchar *homepage;
   gchar *icon;
 
