@@ -1,7 +1,7 @@
 /*
  * This file is part of cast.io
  *
- * Copyright 2014 Henrik Andersson <henrik.4e@gmail.com>
+ * Copyright 2014-2015 Henrik Andersson <henrik.4e@gmail.com>
  *
  * cast.io is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@ _movie_library_items(cio_provider_descriptor_t *provider,
   GError *err;
   JsonNode *node;
   JsonObject *object;
+  JsonObject *metadata;
   JsonArray *array;
 
   const gchar *fn;
@@ -64,8 +65,12 @@ _movie_library_items(cio_provider_descriptor_t *provider,
       continue;
 
     object = json_object_new();
-    json_object_set_string_member(object, "title", fn);
+    metadata = json_object_new();
     json_object_set_string_member(object, "uri", fn);
+
+    json_object_set_object_member(object, "metadata", metadata);
+    json_object_set_string_member(metadata, "title", fn);
+
     json_array_add_object_element(array, object);
   }
 
