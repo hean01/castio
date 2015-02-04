@@ -81,7 +81,7 @@
 
     plugin.search(function(keywords, limit) {
 	var result = [];
-	data = get_data("/index/searchembeddedbroadcast", {
+	var data = get_data("/index/searchembeddedbroadcast", {
 	    'q': keywords.join("+"),
 	    'start': 0,
 	    'rows': limit
