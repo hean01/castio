@@ -92,7 +92,7 @@ js_plugin_init(js_State *state, js_provider_t *instance)
       js_pushstring(state, "radiostation");
       js_defproperty(state, -2, "TYPE_RADIO_STATION", JS_READONLY);
       js_pushstring(state, "musictrack");
-      js_defproperty(state, -2, "TYPE_MUSICTRACK", JS_READONLY);
+      js_defproperty(state, -2, "TYPE_MUSIC_TRACK", JS_READONLY);
       js_pushstring(state, "video");
       js_defproperty(state, -2, "TYPE_VIDEO", JS_READONLY);
       js_pushstring(state, "movie");
