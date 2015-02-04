@@ -77,6 +77,20 @@
 	    return this._performRequest("/app/mobileapps/suggestions/tracks/categories/" + category,
 					headers, params);
 	}
+
+	this.searchTracks = function(keywords, offset, limit) {
+	    var params = {};
+	    var headers = {'Accept': "application/json"};
+	    params.offset = offset;
+	    params.limit = limit;
+	    params.q = keywords.join("+");
+
+	    service.debug("Keywords " + keywords.length);
+
+	    service.debug(JSON.stringify(params));
+
+	    return this._performRequest("/search/sounds", headers, params);
+	}
     };
 
 
@@ -178,6 +192,31 @@
 
 	    result.push(item);
 
+	});
+
+	return result;
+    });
+
+    plugin.search(function(keywords, limit) {
+	var result = [];
+	var tracks = sc.searchTracks(keywords, 0, limit);
+
+	tracks.collection.forEach(function(track) {
+
+	    var item = {};
+	    item.metadata = {};
+
+	    item.uri = track.stream_url;
+	    item.type = plugin.item.TYPE_MUSIC_TRACK;
+	    item.metadata.title = track.title;
+	    item.metadata.description = track.description;
+	    item.metadata.length = durationToString(track.duration);
+	    item.metadata.image = track.artwork_url;
+	    item.metadata.artist = track.user.username;
+	    item.metadata.likes = track.likes_count;
+	    item.metadata.plays = track.playback_count;
+
+	    result.push(item);
 	});
 
 	return result;
