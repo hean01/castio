@@ -19,7 +19,7 @@
 		arr.push(key + "=" + parameters[key]);
 	    }
 
-	    if (arr.length() == 0)
+	    if (arr.length == 0)
 		return "";
 
 	    return "?" + arr.join("&");
@@ -36,7 +36,7 @@
 	    params.client_id = this.constants.client_id;
 
 	    var url = this.constants.api_uri + path
-		+ this._paramsToQuery();;
+		+ this._paramsToQuery(params);
 
 	    var response = http.get(url, headers);
 	    if (response.status != 200) {
