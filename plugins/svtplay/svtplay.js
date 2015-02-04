@@ -127,6 +127,28 @@
 	return result;
     }
 
+    function getVideoStream(url) {
+	var stream_url = "";
+	var response = http.get(url + "?output=json");
+	if (response.status != 200)
+	    return stream_url;
+
+	var content = JSON.parse(response.body);
+
+	// find ios stream url
+	content.video.videoReferences.forEach(function(ref) {
+	    stream_url = ref.url;
+	    if (ref.playerType == "ios")
+		return stream_url;
+	});
+
+	// if ios stream url not found try to produce one, it might exists..
+	stream_url = stream_url.replace("/z/", "/i/");
+	stream_url = stream_url.replace("/manifest.f4m", "/master.m3u8");
+
+	return stream_url;
+    }
+
     function getEpisodes(show_id, offset, limit) {
 	var result = [];
 	var response = http.get(constants.base_uri
@@ -174,7 +196,7 @@
 		    var episode = JSON.parse(data);
 
 		    // todo: get correct video uri
-		    item.uri = plugin.URI_PREFIX + "/episode/" + show_id;
+		    item.uri = getVideoStream(episode.url);
 		    if (episode.title)
 			item.metadata.title = episode.title;
 		    else
