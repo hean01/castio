@@ -79,15 +79,10 @@
 	}
 
 	this.searchTracks = function(keywords, offset, limit) {
-	    var params = {};
+	    var params = {'offset': offset, 'limit': limit};
 	    var headers = {'Accept': "application/json"};
-	    params.offset = offset;
-	    params.limit = limit;
+
 	    params.q = keywords.join("+");
-
-	    service.debug("Keywords " + keywords.length);
-
-	    service.debug(JSON.stringify(params));
 
 	    return this._performRequest("/search/sounds", headers, params);
 	}
