@@ -1,0 +1,10 @@
+{
+	"id": "shoutcast",
+	"name": "SHOUTcast",
+	"description": "Enjoy thousands of online radio stations featuring all styles",
+	"copyright": "2015 - CAST.IO Development Team",
+	"version": [0, 0, 1],
+	"url": "http://www.shoutcast.com",
+	"icon": "shoutcast.png",
+	"plugin": "shoutcast.js"
+}
