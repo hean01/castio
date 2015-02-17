@@ -373,6 +373,12 @@ _service_providers_request_handler(SoupServer *server, SoupMessage *msg, const c
     return;
   }
 
+  if (g_strcmp0(path, "/providers") != 0)
+  {
+    soup_message_set_status(msg, SOUP_STATUS_NOT_FOUND);
+    return;
+  }
+
   /* get offset and limit from query */
   gchar *value;
   gsize offset = 0;
@@ -416,6 +422,12 @@ _service_backlog_request_handler(SoupServer *server, SoupMessage *msg, const cha
     return;
   }
 
+  if (g_strcmp0(path, "/backlog") != 0)
+  {
+    soup_message_set_status(msg, SOUP_STATUS_NOT_FOUND);
+    return;
+  }
+
   content = _service_backlog_to_json(service, &length);
   soup_message_set_response(msg,
 			    "application/json; charset=utf-8",
@@ -441,6 +453,12 @@ _service_cache_request_handler(SoupServer *server, SoupMessage *msg, const char 
   if (msg->method != SOUP_METHOD_GET)
   {
     soup_message_set_status(msg, SOUP_STATUS_BAD_REQUEST);
+    return;
+  }
+
+  if (g_strcmp0(path, "/cache") != 0)
+  {
+    soup_message_set_status(msg, SOUP_STATUS_NOT_FOUND);
     return;
   }
 
