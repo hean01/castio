@@ -35,17 +35,22 @@ typedef struct cio_search_t
 
 typedef struct _search_job_t
 {
-  gchar *keywords;
+
+  gchar **types;
   gint providers;
   JsonObject *result;
 } _search_job_t;
 
 static _search_job_t *
-_search_job_ctor()
+_search_job_ctor(const char *types)
 {
   _search_job_t *job;
   job = g_new0(_search_job_t, 1);
   job->result = json_object_new();
+
+  if (types)
+    job->types = g_strsplit(types, "+", -1);
+
   return job;
 }
 
@@ -57,16 +62,48 @@ typedef struct _search_provider_job_t
 } _search_provider_job_t;
 
 
-static void
+static int
 _search_on_item_callback(cio_provider_descriptor_t *provider, JsonNode *item, gpointer user_data)
 {
+  int keep;
+  gchar **it;
   JsonArray *array;
+  JsonObject *object;
+  const gchar *item_type;
   _search_job_t *job;
 
   job = (_search_job_t *)user_data;
+  keep = 0;
 
   if (item == NULL)
-    return;
+    return 1;
+
+  /* verify that item is of requested type */
+  if (job->types != NULL)
+  {
+    object = json_node_get_object(item);
+    if (!json_object_has_member(object, "type"))
+    {
+      g_log(DOMAIN, G_LOG_LEVEL_WARNING,
+	    "Item from provider %s do not have a 'type' field.", provider->name);
+      return 1;
+    }
+
+    item_type = json_object_get_string_member(object, "type");
+    it = job->types;
+    while(*it)
+    {
+      if (strcmp(*it, item_type) == 0)
+      {
+	keep = 1;
+	break;
+      }
+      it++;
+    }
+
+    if (!keep)
+      return 0;
+  }
 
   /* add provide object if not exists */
   if (!json_object_has_member(job->result, provider->id))
@@ -78,6 +115,8 @@ _search_on_item_callback(cio_provider_descriptor_t *provider, JsonNode *item, gp
   /* add item to provider result array */
   array = json_object_get_array_member(job->result, provider->id);
   json_array_add_element(array, item);
+
+  return 0;
 }
 
 static _search_provider_job_t *
@@ -101,7 +140,6 @@ _search_provider_job(gpointer user_data)
 			_search_on_item_callback, job->sj);
 
   job->sj->providers--;
-
   g_free(job->keywords);
   g_free(job);
   return FALSE;
@@ -141,6 +179,7 @@ cio_search_request_handler(SoupServer *server, SoupMessage *msg,
   _search_job_t *job;
   GList *iter;
   gchar *keywords;
+  gchar *types;
   gchar *providers;
   gchar *key;
   gchar location[512];
@@ -205,6 +244,7 @@ cio_search_request_handler(SoupServer *server, SoupMessage *msg,
     }
 
     providers = g_hash_table_lookup(query, "providers");
+    types = g_hash_table_lookup(query, "types");
 
     do
     {
@@ -230,7 +270,7 @@ cio_search_request_handler(SoupServer *server, SoupMessage *msg,
 	continue;
 
       if (job == NULL)
-	job = _search_job_ctor();
+	job = _search_job_ctor(types);
 
       job->providers++;
 
@@ -301,6 +341,8 @@ cio_search_request_handler(SoupServer *server, SoupMessage *msg,
     if (job->providers == 0)
     {
       g_hash_table_remove(service->search->jobs, components[2]);
+      if (job->types)
+	g_strfreev(job->types);
       g_free(job);
       soup_message_set_status(msg, SOUP_STATUS_OK);
       return;

@@ -28,8 +28,8 @@
 struct cio_service_t;
 struct cio_provider_descriptor_t;
 
-typedef void (*cio_provider_search_on_item_callback_t)(struct cio_provider_descriptor_t *self,
-						       JsonNode *item, gpointer user_data);
+typedef int (*cio_provider_search_on_item_callback_t)(struct cio_provider_descriptor_t *self,
+						      JsonNode *item, gpointer user_data);
 
 typedef enum cio_provider_type_t
 {

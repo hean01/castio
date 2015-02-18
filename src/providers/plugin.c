@@ -307,7 +307,12 @@ _provider_plugin_search_proxy(struct cio_provider_descriptor_t *self,
   l = it = json_array_get_elements(array);
   while (it)
   {
-    callback(js->provider, it->data, user_data);
+    if (callback(js->provider, it->data, user_data) != 0)
+    {
+      g_log(DOMAIN, G_LOG_LEVEL_ERROR,
+	    "[%s.search] aborted.", self->id);
+      break;
+    }
     it = g_list_next(it);
   }
 
