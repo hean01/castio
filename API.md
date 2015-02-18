@@ -166,31 +166,6 @@ A json object which represents a provider.
 | icon        | string   | read        | uri for the provider icon      |
 
 
-## front
-
-A json object with each stream result as a list of of _item_ref_'s.
-
-See the following example:
-
-    {
-		"Latest": [
-			"/provider/movies/item/23011289"
-			"/provider/movies/item/82727611"
-			"/provider/icecast/stream/1981287"
-		],
-
-		"Top Rated": [
-			"/provider/movies/item/23011289"
-			"/provider/youtube/item/28728"
-			"/provider/icecast/stream/1981287"
-		],
-
-		"Favorites": [
-			"/provider/icecast/stream/1981287"
-		]
-    }
-
-
 ## search_result
 
 A json object with each providers search result as list of _item_ref_'s.
@@ -239,20 +214,6 @@ A log entry for the CAST.IO service.
 
 This section will provide specification for each resource uri
 available and how to operate with them.
-
-
-## /front
-
-This resource is fetched to get the front view of the service. The
-front view host streams like _Latest_, _Top Rated_, _Favorites_,
-_Watch Later_.
-
-Streams are populated by provider's that implements support for each
-stream type. _Favorites_ is handled internally by the service.
-
-**accepted verbs:** GET
-
-**returns:** A _front_ object.
 
 
 ## /settings/[resource]
