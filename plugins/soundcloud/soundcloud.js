@@ -176,7 +176,7 @@
 
 	    var item = {};
 	    item.metadata = {};
-	    item.uri = track.stream_url;
+	    item.uri = track.stream_url + "?client_id=" + sc.constants.client_id;
 	    item.type = plugin.item.TYPE_MUSIC_TRACK;
 	    item.metadata.title = track.title;
 	    item.metadata.length = durationToString(track.duration);
@@ -201,7 +201,7 @@
 	    var item = {};
 	    item.metadata = {};
 
-	    item.uri = track.stream_url;
+	    item.uri = track.stream_url + "?client_id=" + sc.constants.client_id;
 	    item.type = plugin.item.TYPE_MUSIC_TRACK;
 	    item.metadata.title = track.title;
 	    item.metadata.description = track.description;
