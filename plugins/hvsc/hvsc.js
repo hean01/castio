@@ -48,14 +48,14 @@
 	    // artist
 	    var str = getValue(doc, "<td>", "</td>");
 	    if (str == null) continue;
-	    item.metadata.artist = str;
+	    if (str != "&lt;?&gt;") item.metadata.artist = str;
 	    s = doc.indexOf(str);
 	    doc = doc.slice(s);
 
 	    // copyright
 	    var str = getValue(doc, "<td>", "</td>");
 	    if (str == null) continue;
-	    item.metadata.copyright = str;
+	    if (str != "&lt;?&gt;") item.metadata.copyright = str;
 
 	    result.push(item);
 	    limit = limit - 1;
@@ -65,7 +65,7 @@
     };
 
     plugin.search(function(keywords, limit) {
-	res = http.get(constants.base_uri + "/dosearch.htm?searchQuery=" + keywords.join("+"));
+	var res = http.get(constants.base_uri + "/dosearch.htm?searchQuery=" + keywords.join("+"));
 	if (res.status != 200) return [];
 	return scrape_page(res.body, limit);
     });
