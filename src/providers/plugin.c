@@ -29,7 +29,7 @@
 
 #define DOMAIN "plugin"
 
-inline gboolean
+static inline gboolean
 _provider_plugin_match(const char *l, const char *r, const char **arg)
 {
   const gchar *pl, *pr;
