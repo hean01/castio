@@ -1,7 +1,7 @@
 /*
  * This file is part of cast.io
  *
- * Copyright 2014 Henrik Andersson <henrik.4e@gmail.com>
+ * Copyright 2014-2018 Henrik Andersson <henrik.4e@gmail.com>
  *
  * cast.io is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,7 +66,7 @@ cio_blobcache_store(cio_blobcache_t *self, time_t expire, uint32_t hash,
 {
   int fh;
   int res;
-  char file[512];
+  char file[1024];
   char path[512];
   _cache_item_t item;
 

@@ -113,19 +113,19 @@ static cio_provider_descriptor_t
 _movie_library_descriptor =
 {
   /* properties */
-  "movies",
-  "Movie Library",
-  "Provides movies from a local storage, scans and updates movie items with metadata from themoviedb.org.",
-  "2014 - CAST.IO Development Team",
-  0,0,1,
-  "http://github.com/hean01/castio",
-  "http://raw.githubusercontent.com/hean01/castio/master/images/movie_library_provider.png",
+  .id = "movies",
+  .name = "Movie Library",
+  .description = "Provides movies from a local storage, scans and updates movie items with metadata from themoviedb.org.",
+  .copyright = "2014 - CAST.IO Development Team",
+  .version = {0,0,1},
+  .homepage = "http://github.com/hean01/castio",
+  .icon = "http://raw.githubusercontent.com/hean01/castio/master/images/movie_library_provider.png",
 
-  _movie_library_destroy,
+  .destroy = _movie_library_destroy,
 
   /* api */
-  _movie_library_items,
-  _movie_library_search,
+  .items = _movie_library_items,
+  .search = _movie_library_search,
 };
 
 cio_provider_descriptor_t *

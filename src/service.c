@@ -1,7 +1,7 @@
 /*
  * This file is part of cast.io
  *
- * Copyright 2014-2015 Henrik Andersson <henrik.4e@gmail.com>
+ * Copyright 2014-2018 Henrik Andersson <henrik.4e@gmail.com>
  *
  * cast.io is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -517,11 +517,10 @@ _service_cache_request_handler(SoupServer *server, SoupMessage *msg, const char 
   /* TODO: resource not found in cache, lets download and add it to cache */
   {
     guint status;
-    gchar *mime;
+    const gchar *mime;
     GHashTable *params;
     SoupSession *session;
     SoupMessage *gmsg;
-    SoupMessageHeadersIter iter;
 
     session = soup_session_new_with_options(SOUP_SESSION_ADD_FEATURE,
 					    SOUP_SESSION_FEATURE(service->cache),
@@ -551,9 +550,9 @@ _service_cache_request_handler(SoupServer *server, SoupMessage *msg, const char 
     uint8_t *blob = g_malloc(blob_size);
     memset(blob, 0, sizeof(blob_size));
 
-    hdr = blob;
+    hdr = (cio_blobcache_resource_header_t *)blob;
     hdr->size = gmsg->response_body->length;
-    snprintf(hdr->mime, sizeof(hdr->mime), mime);
+    snprintf(hdr->mime, sizeof(hdr->mime), "%s", mime);
 
     memcpy(blob + sizeof(cio_blobcache_resource_header_t),
 	   gmsg->response_body->data, gmsg->response_body->length);
@@ -662,7 +661,7 @@ cio_service_new()
 
   g_log_set_default_handler(_service_log_handler, service);
 
-  service->providers = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, cio_provider_destroy);
+  service->providers = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, (GDestroyNotify)cio_provider_destroy);
   service->priv->backlog = g_queue_new();
 
   /* initialize soup cache for plugin http requests */
@@ -720,7 +719,6 @@ gboolean
 cio_service_initialize(struct cio_service_t *self,
 		       int argc, char **argv)
 {
-  guint port;
   GOptionContext *option;
   GError *err;
 
@@ -758,24 +756,13 @@ cio_service_initialize(struct cio_service_t *self,
   soup_auth_domain_digest_set_auth_callback(self->priv->domain, _service_auth_domain_handler, self, NULL);
   soup_auth_domain_add_path(self->priv->domain, "/");
 
-  port = cio_settings_get_int_value(self->settings, "service", "port", &err);
-  if (err)
-  {
-    g_log(DOMAIN, G_LOG_LEVEL_CRITICAL,
-	  "Failed to get service port from settings: %s", err->message);
-    return FALSE;
-  }
-
-  self->priv->server = soup_server_new(SOUP_SERVER_PORT, port, NULL);
+  self->priv->server = g_object_new(SOUP_TYPE_SERVER, NULL);
   if (self->priv->server == NULL)
   {
     g_log(DOMAIN, G_LOG_LEVEL_CRITICAL,
 	  "Failed to instantiate HTTP server.");
     return FALSE;
   }
-
-  g_log(DOMAIN, G_LOG_LEVEL_INFO,
-	"Using port %d for connections.", port);
 
   soup_server_add_auth_domain(self->priv->server, self->priv->domain);
   g_signal_connect(self->priv->server, "request-read",
@@ -790,6 +777,7 @@ cio_service_initialize(struct cio_service_t *self,
 void
 cio_service_main(cio_service_t *self)
 {
+  guint port;
   GError *err;
 
   err = NULL;
@@ -798,7 +786,23 @@ cio_service_main(cio_service_t *self)
 	"Web service ready for handling clients.");
 
   /* start run the soup server */
-  soup_server_run_async(self->priv->server);
+  port = cio_settings_get_int_value(self->settings, "service", "port", &err);
+  if (err)
+  {
+    g_log(DOMAIN, G_LOG_LEVEL_CRITICAL,
+	  "Failed to get service port from settings: %s", err->message);
+    return;
+  }
+
+  soup_server_listen_all(self->priv->server, port, 0, &err);
+  if (err)
+  {
+    g_log(DOMAIN, G_LOG_LEVEL_CRITICAL,
+	  "Failed to listen for connections: %s", err->message);
+    return;
+  }
+
+  g_log(DOMAIN, G_LOG_LEVEL_INFO, "Using port %d for connections.", port);
 
   /* start running main loop */
   self->priv->loop = g_main_loop_new(NULL, FALSE);
