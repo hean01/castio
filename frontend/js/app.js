@@ -15,18 +15,28 @@ class Api {
     }
 }
 
-class ProviderDetails extends Inferno.Component {
+class ProviderCard extends Inferno.Component {
     constructor(props) {
 	super(props);
     }
 
     render(props, state) {
-	return Inferno.h('div', {style: 'padding: 1rem;'}, [
-	    Inferno.h('strong', {}, props.provider.name),
-	    Inferno.h('img', {style: 'padding: 1rem;', src: 'api/v1/cache/' + encodeURIComponent(props.provider.icon)}),
-	    Inferno.h('div', {}, props.provider.description),
-	    Inferno.h('small', {},
-		      Inferno.h('a', {href: props.provider.homepage}, props.provider.homepage)),
+	return Inferno.h('div', {class: 'container', style: 'background-color: #e0e0e0; margin: 1rem; padding: 1rem;'}, [
+	    Inferno.h('div', {class: 'row'}, [
+		Inferno.h('div', {class: 'column column-10'}, [
+		    Inferno.h('img', {
+			style: 'padding: 1rem;', src: 'api/v1/cache?resource=' + encodeURIComponent(props.provider.icon)
+		    })
+		]),
+
+		Inferno.h('div', {class: 'column'}, [
+		    Inferno.h('strong', {}, [
+			Inferno.h('a', {href: props.provider.homepage}, props.provider.name),
+			", "
+		    ]),
+		    props.provider.description,
+		]),
+	    ]),
 	])
     }
 }
@@ -61,7 +71,7 @@ class Application extends Inferno.Component {
 			 Inferno.h('div', {},
 				   state.providers.map(provider => {
 				       return Inferno.h('div', {},
-							Inferno.h(ProviderDetails, {provider: provider})
+							Inferno.h(ProviderCard, {provider: provider})
 						       )
 				   })
 				  )
