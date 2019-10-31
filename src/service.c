@@ -527,6 +527,14 @@ _service_cache_request_handler(SoupServer *server, SoupMessage *msg, const char 
 					    NULL);
 
     gmsg = soup_message_new("GET", resource);
+    if (!gmsg)
+    {
+      g_log(DOMAIN, G_LOG_LEVEL_WARNING, "Failed to fetch resource uri '%s' into cache", resource);
+      g_object_unref(session);
+      return;
+    }
+
+
     soup_message_headers_replace(gmsg->request_headers, "Accept-Charset", "utf-8");
     status = soup_session_send_message(session, gmsg);
     mime = soup_message_headers_get_content_type(gmsg->response_headers, &params);
