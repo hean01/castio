@@ -21,15 +21,19 @@ class ProviderCard extends Inferno.Component {
     }
 
     render(props, state) {
-	return Inferno.h('div', {class: 'container', style: 'background-color: #e0e0e0; margin: 1rem; padding: 1rem;'}, [
-	    Inferno.h('div', {class: 'row'}, [
-		Inferno.h('div', {class: 'column column-10'}, [
+	return Inferno.h('div', {
+	}, [
+	    Inferno.h('div', {
+	    }, [
+		Inferno.h('div', {
+		}, [
 		    Inferno.h('img', {
-			style: 'padding: 1rem;', src: 'api/v1/cache?resource=' + encodeURIComponent(props.provider.icon)
+			src: 'api/v1/cache?resource=' + encodeURIComponent(props.provider.icon)
 		    })
 		]),
 
-		Inferno.h('div', {class: 'column'}, [
+		Inferno.h('div', {
+		}, [
 		    Inferno.h('strong', {}, [
 			Inferno.h('a', {href: props.provider.homepage}, props.provider.name),
 			", "
@@ -49,12 +53,12 @@ class Application extends Inferno.Component {
 
 	this.state = {
 	    authenticated: false,
-	    providers: ['dino'],
+	    providers: [],
 	}
     }
 
     componentDidMount() {
-	console.log('Mount')
+
 	this.api.getProviders()
 	    .then((providers) => {
 		this.setState({
@@ -66,8 +70,9 @@ class Application extends Inferno.Component {
     }
 
     render(props, state) {
-	//console.log('Render' + JSON.stringify(this.state))
-        return Inferno.h('div', {class: 'container'},
+
+        return Inferno.h('div', {
+	},
 			 Inferno.h('div', {},
 				   state.providers.map(provider => {
 				       return Inferno.h('div', {},
@@ -80,4 +85,4 @@ class Application extends Inferno.Component {
     }
 }
 
-Inferno.render(Inferno.h(Application, {test: 'test'}), document.getElementById('app'));
+Inferno.render(Inferno.h(Application, {}), document.getElementById('app'));
