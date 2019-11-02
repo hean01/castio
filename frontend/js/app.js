@@ -125,9 +125,14 @@ class EntryItem extends Inferno.Component {
 	super(props);
     }
 
+    on_click(props, event) {
+	console.log('Onclick' + props.entry.metadata.title);
+    }
+
     render(props, state) {
 	return Inferno.h('div', {
-	    class: 'entry'
+	    class: 'entry',
+	    onclick: Inferno.linkEvent(props, this.on_click)
 	}, [
 	    Inferno.h('h3', {}, props.entry.metadata.title),
 	    Inferno.h('p', {}, props.entry.metadata.description),
