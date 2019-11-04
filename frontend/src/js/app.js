@@ -64,7 +64,7 @@ class ProviderItem extends Component {
     render(props, state) {
 
 	return (
-	    <li class='media' style='margin: 2rem;'>
+	    <li class='media' style='margin: 1rem;'>
 		<img class='media-image' src={'api/v1/cache?resource=' + encodeURIComponent(props.provider.icon)}></img>
 		<div class="media-body">
 		<h5 class='mr-3'>{ props.provider.name }</h5>
@@ -529,7 +529,7 @@ class Application extends Component {
 		</ul>
 		</div>
 		</nav>
-		<div class='container' style='margin: 1rem;'>
+		<div class='container' style='padding: 1rem;'>
 		<Route exact path='/' component={SearchForm} />
 		<Route exact path='/providers' component={ProviderCollection} />
 		<Route path='/providers/*' component={Browser} />
