@@ -56,7 +56,7 @@ class Api {
     }
 }
 
-class ProviderCard extends Component {
+class ProviderItem extends Component {
     constructor(props) {
 	super(props);
     }
@@ -64,19 +64,26 @@ class ProviderCard extends Component {
     render(props, state) {
 
 	return (
-	    <div class='card' style='margin: 2rem; width: 18rem;'>
-		<img class='card-img-top' src={'api/v1/cache?resource=' + encodeURIComponent(props.provider.icon)}></img>
-		<div class="card-body">
-		<div class='card-title'>
-		<strong>{ props.provider.name }</strong>
-		</div>
-		<div class='cart-text'>
-		{ props.provider.description }
-	    </div>
+	    <li class='media' style='margin: 2rem;'>
+		<img class='media-image' src={'api/v1/cache?resource=' + encodeURIComponent(props.provider.icon)}></img>
+		<div class="media-body">
+		<h5 class='mr-3'>{ props.provider.name }</h5>
+		<p>{ props.provider.description } </p>
+		<p>
+		{ props.provider.version &&
+		  <NameValue name='Version' value={ props.provider.version[0] + '.' + props.provider.version[1] + '.' + props.provider.version[2]} />
+		}
+		{ props.provider.copyright &&
+		  <NameValue name='Copyright' value={ props.provider.copyright } />
+		}
+	    { props.provider.homepage &&
+	      <NameValue name='Homepage' value={ props.provider.homepage } />
+	    }
+		</p>
 		<Link class='card-link' to={ '/providers/' + props.provider.id }>Browse</Link>
 		<Link class='card-link' to={ '/settings/' + props.provider.id }>Settings</Link>
 		</div>
-		</div>
+		</li>
 	)
     }
 }
@@ -102,13 +109,13 @@ class ProviderCollection extends Component {
 
     render(props, state) {
 	return (
-		<div class='row'>
+		<ul class='list-unstyled'>
 		{
 		    state.providers.map(provider =>
-					<ProviderCard provider={provider} />
+					<ProviderItem provider={provider} />
 				       )
 		}
-		</div>
+		</ul>
 	)
     }
 }
@@ -121,8 +128,8 @@ class NameValue extends Component {
     render(props, state) {
 
 	return (
-		<div class='row'>
-		<b>{ props.name + ':'}</b>
+		<div>
+		<b>{ props.name + ': '}</b>
 		<span>{ props.value }</span>
 		</div>
 	)
