@@ -2,38 +2,19 @@ a {
     color: black;
 }
 
-img {
-    width: 100%;
-}
-
-img.logo {
-    width: 10rem;
-}
-
-.container {
-    display: flex;
-}
-
-.row {
-    display: flex;
-    flex-direction: row;
-    padding: 1rem;
-}
-
-.card {
-    padding: 1rem;
-    width: 10rem;
-    display: flex;
-    flex-direction: column;
+img.media-image {
+    width: 4rem;
 }
 
 .entry {
-    margin: 1rem;
-    padding: 1rem;
+    margin: 0.5rem;
+    padding: 0.5rem;
     color: #e0e0e0;
     background-color: #203040;
 }
 
-.browser {
-    style: 'display: flex; flex-direction: column;',
+.setting {
+    margin-bottom: 2rem;
 }
+
+
