@@ -149,6 +149,38 @@ class Metadata extends Component {
     }
 }
 
+class MediaPlayer extends Component {
+    constructor(props) {
+	super(props);
+    }
+
+    player(entry) {
+	switch(entry.type) {
+	case 'radiostation':
+	case 'musictrack':
+	    return (
+		    <audio src={ entry.uri } controls/>
+	    )
+
+	case 'movie':
+	case 'video':
+	case 'tvserie':
+	    return (
+		    <video src={ entry.uri } controls />
+	    )
+
+	default:
+	    return undefined
+	}
+    }
+
+    render(props, state) {
+	return (
+		this.player(props.entry)
+	)
+    }
+}
+
 class EntryItem extends Component {
     constructor(props) {
 	super(props);
@@ -191,7 +223,8 @@ class EntryItem extends Component {
 	        { props.entry.metadata &&
 		  <Metadata metadata={props.entry.metadata} />
 		}
-	    </div>
+		<MediaPlayer entry={ props.entry } />
+		</div>
 		</li>
 	)
     }
