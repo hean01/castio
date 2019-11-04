@@ -6,7 +6,6 @@ class Api {
     constructor(username, password) {
     }
 
-
     getProviders() {
 	var url = '/api/v1/providers'
 	return fetch(url, {mode: 'same-origin'})
@@ -507,12 +506,19 @@ class Application extends Component {
 	return (
 		<BrowserRouter>
 		<nav class='navbar navbar-expand-lg navbar-light bg-light'>
-		<div class='collapse navbar-collapse'>
-		<ul class='navbar-nav'>
-		<li class='nav-item nav-link'><Link to='/'>Home</Link></li>
-		<li class='nav-item nav-link'><Link to='/providers'>Providers</Link></li>
-		<li class='nav-item nav-link'><Link to='/settings/service'>Settings</Link></li>
-		<li class='nav-item nav-link'><Link to='/backlog'>Backlog</Link></li>
+		<a class="navbar-brand mb-0 h1" href="#">CAST.IO</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse"
+	    data-target="#navbar" aria-controls="navbar"
+	    aria-expanded="false" aria-label="Toggle navigation">
+		<span class="navbar-toggler-icon"></span>
+		</button>
+
+		<div id='navbar' class="collapse navbar-collapse">
+		<ul class='navbar-nav mr-auto'>
+		<li class='nav-item'><Link class='nav-link' to='/'>Home</Link></li>
+		<li class='nav-item'><Link class='nav-link' to='/providers'>Providers</Link></li>
+		<li class='nav-item'><Link class='nav-link' to='/settings/service'>Settings</Link></li>
+		<li class='nav-item'><Link class='nav-link' to='/backlog'>Backlog</Link></li>
 		</ul>
 		</div>
 		</nav>
