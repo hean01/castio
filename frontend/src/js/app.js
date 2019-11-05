@@ -1,23 +1,200 @@
 import { render, linkEvent, Component } from 'inferno'; 
-import {BrowserRouter, Route, Link} from 'inferno-router';
+import { BrowserRouter, Route, Link } from 'inferno-router';
+import * as md5 from 'md5';
 
-class Api {
+if(typeof(String.prototype.strip) === "undefined")
+{
+    String.prototype.strip = function(ch)
+    {
+	switch (ch) {
+	    case ' ':
+	    return String(this).replace(/^\s+|\s+$/g, '');
+	    case '"':
+	    return String(this).replace(/^\"+|\"+$/g, '');
+	}
+    };
+}
 
-    constructor(username, password) {
+class DigestFetch {
+    constructor(username, password, url_rewrite_func) {
+	this.username = username;
+	this.password = password;
+	this.url_rewrite_func = url_rewrite_func
+	this.have_challenge = false
+	this.cnonce_counter = 0
     }
 
-    getProviders() {
-	var url = '/api/v1/providers'
-	return fetch(url, {mode: 'same-origin'})
+    _name_value_string_to_object(string) {
+	let nv_pairs = string.split(',')
+	nv_pairs = nv_pairs.map((item) => {
+	    let nv_pair = item.split('=');
+	    let pair={}
+	    let name = nv_pair[0].strip(' ')
+	    let value = nv_pair[1].strip('"')
+	    pair[name] = value;
+	    return pair;
+	})
+
+	return nv_pairs.reduce((result, item) => {
+	    let res = {}
+	    Object.assign(res, result)
+	    Object.assign(res, item)
+	    return res;
+	})
+    }
+
+    authenticate(url) {
+	return new Promise((resolve, reject) => {
+
+	    // If we area already authenticated, just resolve
+	    if (this.have_challenge == true) {
+		return resolve()
+	    }
+
+	    // Perform a digest authenticate handshake
+	    console.log('Perform digest challenge')
+	    fetch(url, {
+		credentials: 'omit',
+	    })
+		.then((response) => {
+
+		    if (response.status != 401) {
+			resolve()
+		    }
+
+		    let challenge = response.headers.get('www-authenticate')
+		    if (challenge.slice(0,6).toLowerCase() != 'digest') {
+			reject('unexpected www-authenticate: ' + auth_header)
+		    }
+
+		    let digest_challenge = challenge.slice(6)
+		    let auth = this._name_value_string_to_object(digest_challenge)
+
+		    if (auth.qop != 'auth') {
+			reject('expected qop "auth" got ' + auth.qop)
+		    }
+
+		    let A1 = this.username + ":" + auth.realm + ':' + this.password;
+		    this.HA1 = md5.default(A1)
+		    this.auth = auth
+		    this.cnonce = 'deadbeef'
+		    this.have_challenge = true;
+
+		    return resolve()
+
+		}).catch((err) => {
+		    return reject(err)
+		})
+	});
+    }
+
+    _authorization(url, method) {
+	let authorization = 'Digest'
+	if (method == undefined)
+	    method = 'GET'
+
+	url = this.url_rewrite_func(url)
+
+	this.cnonce_counter++;
+	let cnonce_counter = (''+this.cnonce_counter).padStart(8, '0')
+
+	let A2 = method.toUpperCase() + ':' + url
+	let HA2 = md5.default(A2)
+	let resp = this.HA1 + ':' + this.auth.nonce + ':' + cnonce_counter + ':' + this.cnonce + ':' + this.auth.qop + ':' + HA2
+	let response = md5.default(resp)
+
+	authorization += ' username="' + this.username + '"'
+	authorization += ', realm="' + this.auth.realm + '"'
+	authorization += ', nonce="' + this.auth.nonce + '"'
+	authorization += ', uri="' + url + '"'
+	authorization += ', qop=' + this.auth.qop
+	authorization += ', nc=' + cnonce_counter
+	authorization += ', cnonce="' + this.cnonce + '"'
+	authorization += ', response="' + response + '"'
+
+	return authorization;
+    }
+
+    fetch(url, options) {
+	return this.authenticate(url)
+	    .then(() => {
+		let internal_options = {
+		    credentials: 'omit',
+		}
+		Object.assign(internal_options, options)
+
+		if (internal_options.headers == undefined)
+		    internal_options.headers = {}
+
+		Object.assign(internal_options.headers, {
+		    'Authorization': this._authorization(url, options.method)
+		})
+
+		return fetch(url, internal_options);
+	    }).catch((err) => {
+		console.log('Failed digest authentication: ' + err)
+		throw err
+	    })
+    }
+}
+
+class Api extends DigestFetch {
+
+    constructor(username, password) {
+	super(username, password, (url) => {
+	    return url.slice(this.API_BASE_URI.length)
+	})
+	this.API_BASE_URI = '/api/v1'
+    }
+
+    get(uri) {
+	var url = this.API_BASE_URI + uri;
+	return this.fetch(url, {
+	    mode: 'same-origin'
+	})
 	    .then((response) => response.json())
 	    .catch((err) => {
-		console.log('Failed to get providers: ', err);
+		console.log('Failed to get entries: ', err);
 		throw err
 	    });
     }
 
+    _response_to_data_uri(response) {
+
+	return response.arrayBuffer()
+	    .then((buffer) => {
+		let datauri = 'data:'
+		datauri += response.headers.get('content-type')
+		datauri += ';base64,'
+		datauri += btoa(String.fromCharCode(...new Uint8Array(buffer)));
+		console.log(datauri)
+		return datauri;
+	    });
+
+    }
+
+    cache(resource) {
+	var url = this.API_BASE_URI + '/cache?resource=' + resource;
+	return this.fetch(url, {
+	    mode: 'same-origin'
+	}).then((response) => {
+
+	    console.log(response)
+
+	    if (response.status != 200) {
+		throw 'expected status 200, got ' + response.status
+	    }
+
+	    return this._response_to_data_uri(response)
+
+	}).catch((err) => {
+	    console.log('get resource ' + resource + ' from cache failed with: ', err);
+	    throw err
+	});
+    }
+
     search(providers, types, keywords) {
-	var url = '/api/v1/search?'
+	var url = this.API_BASE_URI + '/search?'
         url += 'keywords=' + keywords.join('+')
 
 	if (providers) {
@@ -28,44 +205,49 @@ class Api {
 	    url += '&type=' + types.join('+')
 	}
 
-	return fetch(url, {mode: 'same-origin'})
-	    .then((response) => {
-		let location = response.url;
-		let more_data = (response.status == 206);
+	return this.fetch(url, {
+	    mode: 'same-origin',
+	}) .then((response) => {
 
-		response.json()
-		    .then((entries)=>{
-			return {
-			    location: location,
-			    have_more_data: more_data,
-			    entries: entries,
-			};
-		    })
-	    })
-    }
+	    let location = response.url;
+	    let more_data = (response.status == 206);
 
-    get(uri) {
-	var url = '/api/v1/' + uri;
-	console.log('Fetching ' + url)
-	return fetch(url, {mode: 'same-origin'})
-	    .then((response) => response.json())
-	    .catch((err) => {
-		console.log('Failed to get entries: ', err);
-		throw err
-	    });
+	    console.log(response)
+
+	    return response.json()
+		.then((entries) => {
+		    return {
+			location: location,
+			have_more_data: more_data,
+			entries: entries,
+		    };
+		})
+	})
     }
 }
 
+const api = new Api('admin', 'password')
+
 class ProviderItem extends Component {
+
     constructor(props) {
 	super(props);
+	this.state = {
+	    icon: ''
+	}
+    }
+
+    componentDidMount(dom) {
+	api.cache(this.props.provider.icon).then((datauri) => {
+	    this.setState({icon: datauri});
+	})
     }
 
     render(props, state) {
 
 	return (
 	    <li class='media' style='margin: 1rem;'>
-		<img class='media-image' src={'api/v1/cache?resource=' + encodeURIComponent(props.provider.icon)}></img>
+		<img class='media-image' src={ state.icon }></img>
 		<div class="media-body">
 		<h5 class='mr-3'>{ props.provider.name }</h5>
 		<p>{ props.provider.description } </p>
@@ -91,14 +273,13 @@ class ProviderItem extends Component {
 class ProviderCollection extends Component {
     constructor(props) {
 	super(props)
-	this.api = new Api('admin', 'password')
 	this.state = {
 	    providers: [],
 	}
     }
 
     componentDidMount() {
-	this.api.getProviders()
+	api.get('/providers')
 	    .then((providers) => {
 		this.setState({
 		    providers: providers
@@ -266,8 +447,7 @@ class BrowserNavigation extends Component {
 class Browser extends Component {
     constructor(props) {
 	super(props);
-	this.api = new Api('admin', 'password');
-	
+		
 	this.state = {
 	    entries: []
 	};
@@ -275,8 +455,8 @@ class Browser extends Component {
 
     componentDidMount() {
 	// fetch uri and set state
-	const uri = 'providers/' + this.props.match.params[0];
-	this.api.get(uri)
+	const uri = '/providers/' + this.props.match.params[0];
+	api.get(uri)
 	    .then((entries) => {
 		this.setState({
 		    entries: entries
@@ -321,7 +501,6 @@ class SearchForm extends Component {
     constructor(props) {
 	super(props);
 
-	this.api = new Api('admin', 'password');	
 	this.handleChange= this.handleChange.bind(this);
 	this.handleSubmit = this.handleSubmit.bind(this);
 	this.state = {
@@ -345,8 +524,10 @@ class SearchForm extends Component {
 
     handleSubmit(event) {
 	let data = this.processQuery(this.state.value)
-	this.api.search(data.providers, data.types, data.keywords)
+	api.search(data.providers, data.types, data.keywords)
 	    .then((result) => {
+		console.log(result)
+		
 		this.setState({
 		    uri: result,
 		})
@@ -394,16 +575,15 @@ class LogItem extends Component {
 }
 
 class Backlog extends Component {
-       constructor(props) {
+    constructor(props) {
 	super(props);
-	this.api = new Api('admin', 'password')
 	this.state = {
 	    entries: []
-	}
+	};
     }
 
     componentDidMount() {
-	this.api.get('/backlog')
+	api.get('/backlog')
 	    .then((entries) => {
 		this.setState({
 		    entries: entries
@@ -457,16 +637,15 @@ class SettingsItem extends Component {
 class Settings extends Component {
     constructor(props) {
 	super(props);
-	this.api = new Api('admin', 'password')
 	this.state = {
 	    entries: []
 	}
     }
 
     componentDidMount() {
-	const uri = 'settings/' + this.props.match.params.component;
+	const uri = '/settings/' + this.props.match.params.component;
 
-	this.api.get(uri)
+	api.get(uri)
 	    .then((entries) => {
 		let entries_list = []
 
