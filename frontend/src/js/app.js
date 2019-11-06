@@ -1,4 +1,4 @@
-import { render, linkEvent, Component } from 'inferno'; 
+import { render, Component } from 'inferno';
 import { BrowserRouter, Route, Link } from 'inferno-router';
 import * as md5 from 'md5';
 
