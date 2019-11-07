@@ -1,4 +1,4 @@
-import { render, Component } from 'inferno';
+import { render, Component, Fragment} from 'inferno';
 import { BrowserRouter, Route, Link } from 'inferno-router';
 import * as md5 from 'md5';
 
@@ -309,10 +309,10 @@ class NameValue extends Component {
     render(props, state) {
 
 	return (
-		<div>
+		<li>
 		<b>{ props.name + ': '}</b>
 		<span>{ props.value }</span>
-		</div>
+		</li>
 	)
     }
 }
@@ -324,7 +324,7 @@ class Metadata extends Component {
 
     render(props, state) {
 	return (
-		<ul class='list-unstiled'>
+		<ul class='list-unstyled'>
 		{ props.metadata.artist &&
 		  <NameValue name='Artist' value={props.metadata.artist} />
 		}
@@ -467,7 +467,7 @@ class Browser extends Component {
 
     render(props, state) {
 	return (
-	    <div>
+	    <Fragment>
 	    	<BrowserNavigation path={ this.props.match.params[0].split('/') } />
 		<ul class='list-unstyled'>	
 		{ state.entries.map(entry => (
@@ -475,9 +475,8 @@ class Browser extends Component {
 			<EntryItem entry={entry} />
 			</a>
 		))}
-	    </ul>
-		</div>
-
+	        </ul>
+	    </Fragment>
 	)
     }
 }
@@ -544,7 +543,7 @@ class SearchForm extends Component {
 
     render(props, state) {
 	return (
-		<div>
+		<Fragment>
 		<form class='form-inline' onSubmit={this.handleSubmit}>
 		<input class='form-control mr-sm-2' type='text' value={this.state.value} onInput={this.handleChange} />
 		<button class='btn btn-outline-success my-2 my-sm-0' type='submit'>Search</button>
@@ -552,7 +551,7 @@ class SearchForm extends Component {
 		{ this.state.uri &&
 		  <SearchResult result={this.state.uri} />
 		}
-		</div>
+		</Fragment>
 	)
     }
 }
@@ -625,10 +624,10 @@ class SettingsItem extends Component {
 
     render(props, state) {
 	return (
-		<div class='setting'>
-		<strong>{ props.entry.name }</strong>
-		<p>{ props.entry.description }</p>
-		<input value={ props.entry.value }></input>
+		<div class='form-group'>
+		<label>{ props.entry.name }</label>
+		<small class="form-text text-muted">{ props.entry.description }</small>
+		<input class='form-control' value={ props.entry.value }></input>
 		</div>
 	)
     }
@@ -667,14 +666,14 @@ class Settings extends Component {
 
     render(props, state) {
 	return (
-		<form>
+		<Fragment>
 		<h1>Settings</h1>
-		<div class='column'>
+		<form>
 		{ state.entries.map(entry => (		    
 			<SettingsItem entry={entry} />
 		))}
-	    </div>
 		</form>
+		</Fragment>
 	)
     }
 }
