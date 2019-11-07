@@ -167,7 +167,6 @@ class Api extends DigestFetch {
 		datauri += response.headers.get('content-type')
 		datauri += ';base64,'
 		datauri += btoa(String.fromCharCode(...new Uint8Array(buffer)));
-		console.log(datauri)
 		return datauri;
 	    });
 
@@ -178,8 +177,6 @@ class Api extends DigestFetch {
 	return this.fetch(url, {
 	    mode: 'same-origin'
 	}).then((response) => {
-
-	    console.log(response)
 
 	    if (response.status != 200) {
 		throw 'expected status 200, got ' + response.status
@@ -211,8 +208,6 @@ class Api extends DigestFetch {
 
 	    let location = response.url;
 	    let more_data = (response.status == 206);
-
-	    console.log(response)
 
 	    return response.json()
 		.then((entries) => {
@@ -525,7 +520,6 @@ class SearchForm extends Component {
 	let data = this.processQuery(this.state.value)
 	api.search(data.providers, data.types, data.keywords)
 	    .then((result) => {
-		console.log(result)
 		
 		this.setState({
 		    uri: result,
