@@ -1,0 +1,27 @@
+{
+    "short_name": "CAST.IO",
+    "name": "CAST.IO Frontend",
+    "description": "A frontend for CAST.IO service.",
+    "version": "0.0.1",
+    "author": "Henrik Andersson",
+    "homepage_url": "https://github.com/hean01",
+    "icons": [
+      {
+        "src": "images/icon_512.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      },
+      {
+        "src": "images/icon_192.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      }
+
+    ],
+
+    "offline_enabled": false,
+    "start_url": "/",
+    "display": "standalone",
+    "orientation": "portrait",
+    "theme_color": "#000000"
+}
