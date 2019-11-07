@@ -246,7 +246,7 @@ class ProviderItem extends Component {
 		<div class="media-body">
 		<h5 class='mr-3'>{ props.provider.name }</h5>
 		<p>{ props.provider.description } </p>
-		<ul class='list-unstiled'>
+		<ul class='list-unstyled'>
 		{ props.provider.version &&
 		  <NameValue name='Version' value={ props.provider.version[0] + '.' + props.provider.version[1] + '.' + props.provider.version[2]} />
 		}
@@ -256,7 +256,7 @@ class ProviderItem extends Component {
 	    { props.provider.homepage &&
 	      <NameValue name='Homepage' value={ props.provider.homepage } />
 	    }
-		</ul>
+	    </ul>
 		<Link class='card-link' to={ '/providers/' + props.provider.id }>Browse</Link>
 		<Link class='card-link' to={ '/settings/' + props.provider.id }>Settings</Link>
 		</div>
