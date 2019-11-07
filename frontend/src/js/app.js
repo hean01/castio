@@ -247,11 +247,11 @@ class ProviderItem extends Component {
 
 	return (
 	    <li class='media' style='margin: 1rem;'>
-		<img class='media-image' src={ state.icon }></img>
+		<img class='media-image' alt="" src={ state.icon }></img>
 		<div class="media-body">
 		<h5 class='mr-3'>{ props.provider.name }</h5>
 		<p>{ props.provider.description } </p>
-		<p>
+		<ul class='list-unstiled'>
 		{ props.provider.version &&
 		  <NameValue name='Version' value={ props.provider.version[0] + '.' + props.provider.version[1] + '.' + props.provider.version[2]} />
 		}
@@ -261,7 +261,7 @@ class ProviderItem extends Component {
 	    { props.provider.homepage &&
 	      <NameValue name='Homepage' value={ props.provider.homepage } />
 	    }
-		</p>
+		</ul>
 		<Link class='card-link' to={ '/providers/' + props.provider.id }>Browse</Link>
 		<Link class='card-link' to={ '/settings/' + props.provider.id }>Settings</Link>
 		</div>
@@ -397,7 +397,7 @@ class EntryItem extends Component {
 	return (
 		<li class='media' style='margin: 1rem;'>
 		{ props.entry.metadata.image &&
-		  <img class='media-image align-self-start mr-3' src={ props.entry.metadata.image }></img>
+		  <img class='media-image align-self-start mr-3' alt="" src={ props.entry.metadata.image }></img>
 		}
 	    { !props.entry.metadata.image &&
 	      <i style='font-size:3.0rem;' class='align-self-start mr-3 material-icons'>{ this.material_icon(props.entry) }</i>
@@ -707,13 +707,13 @@ class Application extends Component {
 		</ul>
 		</div>
 		</nav>
-		<div class='container' style='padding: 1rem;'>
+		<main class='container' style='padding: 1rem;'>
 		<Route exact path='/' component={SearchForm} />
 		<Route exact path='/providers' component={ProviderCollection} />
 		<Route path='/providers/*' component={Browser} />
 		<Route path='/settings/:component' component={Settings} />
 		<Route exact path='/backlog' component={Backlog} />
-		</div>
+		</main>
 		</BrowserRouter>
 	)
     }
