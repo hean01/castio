@@ -1,4 +1,4 @@
-import { render, Component, Fragment} from 'inferno';
+import { render, linkEvent, Component, Fragment} from 'inferno';
 import { BrowserRouter, Route, Link } from 'inferno-router';
 import * as md5 from 'md5';
 
@@ -331,38 +331,6 @@ class Metadata extends Component {
     }
 }
 
-class MediaPlayer extends Component {
-    constructor(props) {
-	super(props);
-    }
-
-    player(entry) {
-	switch(entry.type) {
-	case 'radiostation':
-	case 'musictrack':
-	    return (
-		    <audio src={ entry.uri } controls/>
-	    )
-
-	case 'movie':
-	case 'video':
-	case 'tvserie':
-	    return (
-		    <video src={ entry.uri } controls />
-	    )
-
-	default:
-	    return undefined
-	}
-    }
-
-    render(props, state) {
-	return (
-		this.player(props.entry)
-	)
-    }
-}
-
 class EntryItem extends Component {
     constructor(props) {
 	super(props);
@@ -387,9 +355,15 @@ class EntryItem extends Component {
 	}
     }
 
+    onPlayItem(props, event) {
+	window.location = props.entry.uri
+    }
+
     render(props, state) {
 
-	return (
+	const is_folder = (props.entry.type == 'folder')
+
+	const item = (
 		<li class='media' style='margin: 1rem;'>
 		{ props.entry.metadata.image &&
 		  <img class='media-image align-self-start mr-3' alt="" src={ props.entry.metadata.image }></img>
@@ -397,20 +371,37 @@ class EntryItem extends Component {
 	    { !props.entry.metadata.image &&
 	      <i style='font-size:3.0rem;' class='align-self-start mr-3 material-icons'>{ this.material_icon(props.entry) }</i>
 	    }
-		<div class='media-body'>
+		<div style='width: 100%;'>
 		<h5 class='mt-0'>{ props.entry.metadata.title }</h5>
 		{ props.entry.metadata.description &&
 		  <p>{props.entry.metadata.description}</p>
 		}
-	        { props.entry.metadata &&
-		  <Metadata metadata={props.entry.metadata} />
+	    { props.entry.metadata &&
+	      <Metadata metadata={props.entry.metadata} />
+	    }
+	    </div>
+		{ !is_folder &&
+		  <span class='material-icons'>
+		  <button class="btn btn-material-icons" onClick={ linkEvent(props, this.onPlayItem) }>play_circle_outline</button>
+		  <button class="btn btn-material-icons">queue</button>
+		  <button class="btn btn-material-icons">favorite_border</button>
+		  </span>
 		}
-		<MediaPlayer entry={ props.entry } />
-		</div>
-		</li>
-	)
+	    </li>
+	);
+
+	if (is_folder) {
+	    return (
+		    <a class="list-item" href={ props.entry.uri }>
+		    { item }
+		</a>
+	    )
+	} else {
+	    return item;
+	}
     }
 }
+
 
 class BrowserNavigation extends Component {
     constructor(props) {
@@ -464,11 +455,9 @@ class Browser extends Component {
 	return (
 	    <Fragment>
 	    	<BrowserNavigation path={ this.props.match.params[0].split('/') } />
-		<ul class='list-unstyled'>	
-		{ state.entries.map(entry => (
-			<a href={entry.uri}>
-			<EntryItem entry={entry} />
-			</a>
+		<ul class='list-unstyled'>
+		{ state.entries.map((entry) => (
+			<EntryItem entry={ entry } />
 		))}
 	        </ul>
 	    </Fragment>
