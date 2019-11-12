@@ -19,7 +19,7 @@ div {
 }
 
 header {
-    color: #f80;
+    color: #fa0;
     background-color: #333;
     font-size: 1.5rem;
     padding: 1rem;
@@ -40,7 +40,7 @@ button {
     border-radius: 0.25rem;
     border: none;
     transition: all 0.4s ease 0s;
-    background-color: #f80;
+    background-color: #fa0;
 }
 
 input {
@@ -102,7 +102,7 @@ a:hover {
 ol.breadcrumb {
     margin: 0;
     padding: 0.5rem;
-    background-color: #f80;
+    background-color: #fa0;
     text-decoration: none;
 }
 
