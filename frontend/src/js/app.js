@@ -544,10 +544,21 @@ class LogItem extends Component {
 	super(props);
     }
 
+    timestampToDate(timestamp) {
+	let ms = timestamp*1000;
+	return new Date(ms).toLocaleString('en-US', {
+	    hour12: false
+	});
+    }
+
     render(props, state) {
+	const options = {
+	    hour12: false
+	};
+
 	return (
 		<tr>
-		<td>{ props.entry.timestamp }</td>
+		<td nowrap>{ this.timestampToDate(props.entry.timestamp) }</td>
 		<td>{ props.entry.domain }</td>
 		<td>{ props.entry.level }</td>
 		<td>{ props.entry.message }</td>
@@ -564,9 +575,19 @@ class Backlog extends Component {
 	};
     }
 
+    compareTimestamp(a, b) {
+	if (a.timestamp < b.timestamp) {
+	    return 1;
+	} else if (a.timestamp > b.timestamp) {
+	    return -1;
+	}
+	return 0;
+    }
+
     componentDidMount() {
 	api.get('/backlog')
 	    .then((entries) => {
+		entries.sort(this.compareTimestamp)
 		this.setState({
 		    entries: entries
 		})
