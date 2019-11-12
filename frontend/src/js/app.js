@@ -239,11 +239,10 @@ class ProviderItem extends Component {
     }
 
     render(props, state) {
-
 	return (
-	    <li class='media' style='margin: 1rem;'>
-		<img class='media-image' alt="" src={ state.icon }></img>
-		<div class="media-body">
+		<li class='media' style='margin: 1rem;'>
+		<img class='media' alt="" src={ state.icon }></img>
+		<div class="media">
 		<h5 class='mr-3'>{ props.provider.name }</h5>
 		<p>{ props.provider.description } </p>
 		<ul class='list-unstyled'>
