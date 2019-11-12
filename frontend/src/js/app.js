@@ -241,7 +241,7 @@ class ProviderItem extends Component {
     render(props, state) {
 	return (
 		<li class='media' style='margin: 1rem;'>
-		<img class='media' alt="" src={ state.icon }></img>
+		<img class='media' style='width: 6rem;' alt="" src={ state.icon }></img>
 		<div class="media">
 		<h5 class='mr-3'>{ props.provider.name }</h5>
 		<p>{ props.provider.description } </p>
@@ -368,12 +368,12 @@ class EntryItem extends Component {
 	const item = (
 		<li class='row' style='margin: 1rem;'>
 		{ props.entry.metadata.image &&
-		  <img class='col-sm-2' alt="" src={ props.entry.metadata.image }></img>
+		  <img class='media' style='width: 8rem;' alt="" src={ props.entry.metadata.image }></img>
 		}
 	    { !props.entry.metadata.image &&
-	      <center style='font-size:3.0rem;' class='col-sm-2 material-icons'>{ this.material_icon(props.entry) }</center>
+	      <center class='icon material-icons'>{ this.material_icon(props.entry) }</center>
 	    }
-		<div class='col-sm-10'>
+		<div class='column' style='padding-left: 0.5rem;'>
 		<h2>{ props.entry.metadata.title }</h2>
 		{ props.entry.metadata.description &&
 		  <p>{props.entry.metadata.description}</p>
@@ -704,7 +704,7 @@ class Application extends Component {
 		<Link class='button' to='/backlog'>Backlog</Link>
 		</header>
 
-		<main class='container' style='padding: 1rem;'>
+		<main class='container'>
 		<Route exact path='/' component={SearchForm} />
 		<Route exact path='/providers' component={ProviderCollection} />
 		<Route path='/providers/*' component={Browser} />

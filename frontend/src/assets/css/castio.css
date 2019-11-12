@@ -18,13 +18,11 @@ header {
     color: #fa0;
     background-color: #333;
     font-size: 1.5rem;
-    padding: 1rem;
+    padding: 1.5rem;
 }
 
 main {
-    width: 80%;
-    margin: auto;
-    padding: 0;
+    width: 100%;
 }
 
 button {
@@ -66,24 +64,34 @@ tr:nth-of-type(odd) {
     background-color: #eee;
 }
 
+h1, h2, h3, h4, h5 {
+    margin: 0;
+    padding: 0;
+}
+
 h1 {
     font-size: 2rem;
+    margin: 0;
 }
 
 h2 {
     font-size: 1.6rem;
+    margin: 0;
 }
 
 h3 {
     font-size: 1.5rem;
+    margin: 0;
 }
 
 h4 {
     font-size: 1.30rem;
+    margin: 0;
 }
 
 h5 {
     font-size: 1.20rem;
+    margin: 0;
 }
 
 ul.list-unstyled {
@@ -123,16 +131,37 @@ button.btn-material-icons {
     background-color: transparent;
 }
 
+.row {
+    display: flex;
+    flex-direction: row;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+}
+
 li.media {
     display: flex;
     flex-direction: row;
 }
 
 img.media {
-    padding: 1rem;
-    width: 4rem;
+    padding: 0;
+    width: auto;
     height: auto;
+    max-width: 6rem;
+    max-height: 6rem;
     object-fit: scale-down;
+}
+
+.icon {
+    font-size: 3rem;
+    padding: 1.5rem;
+    width: 3rem;
+    height: 3rem;
+    color: #f80;
+    background-color: #333;
 }
 
 .logo {
