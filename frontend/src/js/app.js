@@ -285,13 +285,16 @@ class ProviderCollection extends Component {
 
     render(props, state) {
 	return (
+		<Fragment>
+		<h1>Providers</h1>
 		<ul class='list-unstyled'>
 		{
 		    state.providers.map(provider =>
 					<ProviderItem provider={provider} />
 				       )
 		}
-		</ul>
+	    </ul>
+		</Fragment>
 	)
     }
 }
@@ -364,29 +367,30 @@ class EntryItem extends Component {
 	const is_folder = (props.entry.type == 'folder')
 
 	const item = (
-		<li class='media' style='margin: 1rem;'>
+		<li class='row' style='margin: 1rem;'>
 		{ props.entry.metadata.image &&
-		  <img class='media-image align-self-start mr-3' alt="" src={ props.entry.metadata.image }></img>
+		  <img class='col-sm-2' alt="" src={ props.entry.metadata.image }></img>
 		}
 	    { !props.entry.metadata.image &&
-	      <i style='font-size:3.0rem;' class='align-self-start mr-3 material-icons'>{ this.material_icon(props.entry) }</i>
+	      <center style='font-size:3.0rem;' class='col-sm-2 material-icons'>{ this.material_icon(props.entry) }</center>
 	    }
-		<div style='width: 100%;'>
-		<h5 class='mt-0'>{ props.entry.metadata.title }</h5>
+		<div class='col-sm-10'>
+		<h2>{ props.entry.metadata.title }</h2>
 		{ props.entry.metadata.description &&
 		  <p>{props.entry.metadata.description}</p>
 		}
 	    { props.entry.metadata &&
 	      <Metadata metadata={props.entry.metadata} />
 	    }
-	    </div>
-		{ !is_folder &&
-		  <span class='material-icons'>
-		  <button class="btn btn-material-icons" onClick={ linkEvent(props, this.onPlayItem) }>play_circle_outline</button>
-		  <button class="btn btn-material-icons">queue</button>
-		  <button class="btn btn-material-icons">favorite_border</button>
+	    { !is_folder &&
+		  <span nowrap>
+		  <button class="primary material-icons" onClick={ linkEvent(props, this.onPlayItem) }>play_circle_outline</button>
+		  <button class="primary material-icons">queue</button>
+		  <button class="primary material-icons">favorite_border</button>
 		  </span>
 		}
+
+	    </div>
 	    </li>
 	);
 
@@ -410,22 +414,20 @@ class BrowserNavigation extends Component {
 
     render(props, stats) {
 	return (
-	    	<nav aria-label='breadcrumb'>
 		<ol class='breadcrumb'>
 		{ props.path.map((entry) => {
 		    const idx = props.path.indexOf(entry);
 		    const uri = '/providers/' + props.path.slice(0, idx + 1).join('/');
 		    const is_active = (props.path.length == idx+1);
-		    return is_active ? (	
-		    	    <li class='breadcrumb-item active'>{ entry }</li>
+		    return is_active ? (
+			    <li class='active'>{ entry }</li>
 		    ) : (
-			    <li class='breadcrumb-item'>
-			    <Link to={uri}>{ entry }</Link>
+			    <li>
+			    <Link class='breadcrumb' to={uri}>{ entry }</Link>
 			    </li>
 		    );
 		})}
 		</ol>
-		</nav>
 	)
     }
 }
@@ -453,9 +455,9 @@ class Browser extends Component {
 
     render(props, state) {
 	return (
-	    <Fragment>
+		<Fragment>
 	    	<BrowserNavigation path={ this.props.match.params[0].split('/') } />
-		<ul class='list-unstyled'>
+		<ul style="width: 100%;" class='container list-unstyled'>
 		{ state.entries.map((entry) => (
 			<EntryItem entry={ entry } />
 		))}
@@ -527,9 +529,10 @@ class SearchForm extends Component {
     render(props, state) {
 	return (
 		<Fragment>
+		<h1>Search</h1>
 		<form class='form-inline' onSubmit={this.handleSubmit}>
 		<input class='form-control mr-sm-2' type='text' value={this.state.value} onInput={this.handleChange} />
-		<button class='btn btn-outline-success my-2 my-sm-0' type='submit'>Search</button>
+		<button class='primary' type='submit'>Search</button>
 		</form>
 		{ this.state.uri &&
 		  <SearchResult result={this.state.uri} />
@@ -597,7 +600,7 @@ class Backlog extends Component {
 
     render(props, state) {
 	return (
-	    <div>
+	    <Fragment>
 		<h1>Backlog</h1>
 		<table class='table'>
 		<thead>
@@ -616,7 +619,7 @@ class Backlog extends Component {
 		}
 	    </tbody>
 		</table>
-		</div>
+		</Fragment>
 	)
     }
 }
@@ -694,23 +697,14 @@ class Application extends Component {
     render(props, state) {
 	return (
 		<BrowserRouter>
-		<nav class='navbar navbar-expand-lg navbar-light bg-light'>
-		<a class="navbar-brand mb-0 h1" href="#">CAST.IO</a>
-		<button class="navbar-toggler" type="button" data-toggle="collapse"
-	    data-target="#navbar" aria-controls="navbar"
-	    aria-expanded="false" aria-label="Toggle navigation">
-		<span class="navbar-toggler-icon"></span>
-		</button>
+		<header>
+		<Link class="logo" to="#">CAST.IO</Link>
+		<Link class='button' to='/'>Home</Link>
+		<Link class='button' to='/providers'>Providers</Link>
+		<Link class='button' to='/settings/service'>Settings</Link>
+		<Link class='button' to='/backlog'>Backlog</Link>
+		</header>
 
-		<div id='navbar' class="collapse navbar-collapse">
-		<ul class='navbar-nav mr-auto'>
-		<li class='nav-item'><Link class='nav-link' to='/'>Home</Link></li>
-		<li class='nav-item'><Link class='nav-link' to='/providers'>Providers</Link></li>
-		<li class='nav-item'><Link class='nav-link' to='/settings/service'>Settings</Link></li>
-		<li class='nav-item'><Link class='nav-link' to='/backlog'>Backlog</Link></li>
-		</ul>
-		</div>
-		</nav>
 		<main class='container' style='padding: 1rem;'>
 		<Route exact path='/' component={SearchForm} />
 		<Route exact path='/providers' component={ProviderCollection} />
