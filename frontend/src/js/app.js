@@ -1,5 +1,7 @@
 import { render, linkEvent, Component, Fragment} from 'inferno';
 import { BrowserRouter, Route, Link } from 'inferno-router';
+import createInfernoContext from 'create-inferno-context';
+
 import * as md5 from 'md5';
 
 if(typeof(String.prototype.strip) === "undefined")
@@ -357,45 +359,48 @@ class EntryItem extends Component {
 	}
     }
 
-    onPlayItem(props, event) {
-	window.location = props.entry.uri
-    }
-
     render(props, state) {
 
 	const is_folder = (props.entry.type == 'folder')
 
 	const item = (
-		<li class='row' style='margin: 1rem;'>
-		{ props.entry.metadata.image &&
-		  <img class='media' style='width: 8rem;' alt="" src={ props.entry.metadata.image }></img>
-		}
-	    { !props.entry.metadata.image &&
-	      <center class='icon material-icons'>{ this.material_icon(props.entry) }</center>
-	    }
-		<div class='column' style='padding-left: 0.5rem;'>
-		<h2>{ props.entry.metadata.title }</h2>
-		{ props.entry.metadata.description &&
-		  <p>{props.entry.metadata.description}</p>
-		}
-	    { props.entry.metadata &&
-	      <Metadata metadata={props.entry.metadata} />
-	    }
-	    { !is_folder &&
-		  <span nowrap>
-		  <button class="primary material-icons" onClick={ linkEvent(props, this.onPlayItem) }>play_circle_outline</button>
-		  <button class="primary material-icons">queue</button>
-		  <button class="primary material-icons">favorite_border</button>
-		  </span>
-		}
+		<PlaylistContext.Consumer>
+		{context => (
+			<li class='row' style='margin: 1rem;'>
+			{ props.entry.metadata.image &&
+			  <img class='media' style='width: 8rem;' alt="" src={ props.entry.metadata.image }></img>
+			}
+		    { !props.entry.metadata.image &&
+		      <center class='icon material-icons'>{ this.material_icon(props.entry) }</center>
+		    }
+			<div class='column' style='padding-left: 0.5rem;'>
+			<h2>{ props.entry.metadata.title }</h2>
+			{ props.entry.metadata.description &&
+			  <p>{props.entry.metadata.description}</p>
+			}
+		    { props.entry.metadata &&
+		      <Metadata metadata={props.entry.metadata} />
+		    }
+		    { !is_folder &&
+		      <span nowrap>
+		      <button class="primary material-icons" onClick={event => {
+			  context.addEntry(props.entry)}}>
+		          play_circle_outline
+		      </button>
+		      <button class="primary material-icons">queue</button>
+		      <button class="primary material-icons">favorite_border</button>
+		      </span>
+		    }
 
-	    </div>
-	    </li>
+		    </div>
+			</li>
+		)}
+		 </PlaylistContext.Consumer>
 	);
 
 	if (is_folder) {
 	    return (
-		    <a class="list-item" href={ props.entry.uri }>
+		<a class="list-item" href={ props.entry.uri }>
 		    { item }
 		</a>
 	    )
@@ -684,10 +689,64 @@ class Settings extends Component {
     }
 }
 
-class Application extends Component {
+const PlaylistContext = createInfernoContext({
+    entries: [],
+    addEntry: () => {}
+}) 
+
+class PlaylistProvider extends Component {
     constructor(props) {
 	super(props);
 
+	this.addEntry = this.addEntry.bind(this);
+
+	this.state = {
+	    entries: [],
+	    addEntry: this.addEntry
+	};
+    }
+
+    addEntry(entry) {
+	const entries = this.state.entries.slice(0);
+	entries.push(entry);
+	this.setState({
+	    entries: entries,
+	});
+    }
+
+    render(props, state) {
+	return (
+	    <PlaylistContext.Provider value={ this.state }>
+		{this.props.children}
+	    </PlaylistContext.Provider>
+	)
+    }
+}
+
+class AudioPlayer extends Component {
+    constructor(props) {
+	super(props);
+    }
+
+    render(props, state) {
+	return (
+	    <PlaylistContext.Consumer>
+	    { context => (
+	        <audio autoplay>
+		{
+		    context.entries.map(entry => ( <source src={ entry.uri } /> ))
+		}
+		</audio>
+	    )}
+	    </PlaylistContext.Consumer>
+	);
+    }
+}
+
+
+class Application extends Component {
+    constructor(props) {
+	super(props);
 	this.state = {
 	    authenticated: false,
 	}
@@ -696,12 +755,14 @@ class Application extends Component {
     render(props, state) {
 	return (
 		<BrowserRouter>
+		<PlaylistProvider>
 		<header>
 		<Link class="logo" to="#">CAST.IO</Link>
 		<Link class='button' to='/'>Home</Link>
 		<Link class='button' to='/providers'>Providers</Link>
 		<Link class='button' to='/settings/service'>Settings</Link>
 		<Link class='button' to='/backlog'>Backlog</Link>
+		<AudioPlayer />
 		</header>
 
 		<main class='container'>
@@ -711,6 +772,7 @@ class Application extends Component {
 		<Route path='/settings/:component' component={Settings} />
 		<Route exact path='/backlog' component={Backlog} />
 		</main>
+		</PlaylistProvider>
 		</BrowserRouter>
 	)
     }

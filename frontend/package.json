@@ -11,10 +11,12 @@
     "author": "Henrik Andersson",
     "license": "GPL-3.0-or-later",
     "dependencies": {
+        "create-inferno-context": "^0.2.4",
         "inferno": "^7.3.2",
         "inferno-router": "^7.3.2",
         "material-design-icons": "^3.0.1",
-        "md5": "^2.2.1"
+        "md5": "^2.2.1",
+        "prop-types": "^15.7.2"
     },
     "devDependencies": {
         "@babel/core": "^7.6.4",
