@@ -1,7 +1,8 @@
 body {
     margin: 0;
     padding: 0;
-    background-color: #eee;
+    color: #333;
+    background-color: #3f3f3f;
 }
 
 nav {
@@ -22,7 +23,9 @@ header {
 }
 
 main {
-    width: 100%;
+    background-color: #eee;
+    width: 80%;
+    margin: auto;
 }
 
 button {
@@ -35,6 +38,15 @@ button {
     border: none;
     transition: all 0.4s ease 0s;
     background-color: #fa0;
+}
+
+div.form-group {
+    margin: 1rem;
+}
+
+label {
+    font-weight: bold;
+    margin-bottom: 0.25rem;
 }
 
 input {
@@ -58,6 +70,11 @@ th {
 
 td {
     padding: 0.5rem;
+    color: #333;
+}
+
+tr {
+    background-color: #ddd;
 }
 
 tr:nth-of-type(odd) {
@@ -131,6 +148,9 @@ button.btn-material-icons {
     background-color: transparent;
 }
 
+.container {
+}
+
 .row {
     display: flex;
     flex-direction: row;
@@ -165,7 +185,8 @@ img.media {
 }
 
 .logo {
-        padding-right: 1rem;
+    font-weight: bold;
+    padding-right: 1rem;
 }
 
 .button {

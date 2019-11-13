@@ -630,7 +630,7 @@ class SettingsItem extends Component {
 
     render(props, state) {
 	return (
-		<div class='form-group'>
+		<div class='column form-group'>
 		<label>{ props.entry.name }</label>
 		<small class="form-text text-muted">{ props.entry.description }</small>
 		<input class='form-control' value={ props.entry.value }></input>
