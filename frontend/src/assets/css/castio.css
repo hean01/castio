@@ -28,6 +28,17 @@ main {
     margin: auto;
 }
 
+@media only screen and (max-width: 767px) {
+    body {
+	background-color: #eee;
+    }
+
+    main {
+	width: 100%;
+	margin: 0;
+    }
+}
+
 button {
     padding: 0.5rem;
     margin: 0.5rem;
