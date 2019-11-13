@@ -752,16 +752,28 @@ class Application extends Component {
 	}
     }
 
+    toggler(event) {
+	const header = document.getElementById('header')
+	if (header.className === '') {
+	    header.className = 'responsive'
+	} else {
+	    header.className = ''
+	}
+    }
+
     render(props, state) {
 	return (
 		<BrowserRouter>
 		<PlaylistProvider>
-		<header>
-		<Link class="logo" to="#">CAST.IO</Link>
-		<Link class='button' to='/'>Home</Link>
-		<Link class='button' to='/providers'>Providers</Link>
-		<Link class='button' to='/settings/service'>Settings</Link>
-		<Link class='button' to='/backlog'>Backlog</Link>
+		<header id='header'>
+		<Link class="logo" to="#" onClick={ this.toggler }>CAST.IO</Link>
+		<div class="pages">
+		<Link class='button' to='/' onClick={ this.toggler }>Home</Link>
+		<Link class='button' to='/providers' onClick={ this.toggler }>Providers</Link>
+		<Link class='button' to='/settings/service' onClick={ this.toggler }>Settings</Link>
+		<Link class='button' to='/backlog' onClick={ this.toggler }>Backlog</Link>
+		</div>
+		<Link class='button' to='#' onClick={ this.toggler }><span class='toggler material-icons'>view_headline</span></Link>
 		<AudioPlayer />
 		</header>
 
