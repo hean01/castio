@@ -1,0 +1,10 @@
+{
+	"id":"oppetarkiv",
+	"name": "Öppet arkiv SVT",
+	"description": "I Öppet arkiv erbjuder SVT ett gediget utbud av program handplockade ur vår svenska tv-historia.",
+	"copyright": "2019 - CAST.IO Development Team",
+	"version": [0, 0, 1],
+	"url": "http://oppetarkiv.se/",
+	"icon": "oppetarkiv.png",
+	"plugin": "oppetarkiv.js"
+}

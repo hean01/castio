@@ -30,6 +30,7 @@ endmacro (plugin)
 
 plugin("sample")
 plugin("svtplay")
+plugin("oppetarkiv")
 plugin("soundcloud")
 plugin("icecast")
 plugin("hvsc")
