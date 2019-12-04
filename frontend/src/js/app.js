@@ -303,6 +303,22 @@ class ProviderCollection extends Component {
 class NameValue extends Component {
     constructor(props) {
 	super(props);
+
+	let value = props.value;
+	if (props.type && props.type == 'duration')
+	{
+	    value = this.duration_to_string(props.value);
+	}
+
+	this.state = {
+	    value: value
+	}
+    }
+
+    duration_to_string(duration) {
+	let fields = [];
+	let minutes = Math.floor(duration / 60.0);
+	return "" + minutes + " minutes";
     }
 
     render(props, state) {
@@ -310,7 +326,7 @@ class NameValue extends Component {
 	return (
 		<li>
 		<b>{ props.name + ': '}</b>
-		<span>{ props.value }</span>
+		<span>{ state.value }</span>
 		</li>
 	)
     }
@@ -323,10 +339,27 @@ class Metadata extends Component {
 
     render(props, state) {
 	return (
-		<ul class='list-unstyled'>
-		{ props.metadata.artist &&
-		  <NameValue name='Artist' value={props.metadata.artist} />
-		}
+	    <ul class='list-unstyled'>
+
+	    { props.metadata.year &&
+	      <NameValue name='Year' value={props.metadata.year} />
+	    }
+
+	    { props.metadata.duration &&
+	      <NameValue name='Duration' type='duration' value={props.metadata.duration} />
+	    }
+
+	    { props.metadata.episode &&
+	      <NameValue name='Season' value={props.metadata.season} />
+	    }
+
+	    { props.metadata.episode &&
+	      <NameValue name='Episode' value={props.metadata.episode} />
+	    }
+
+	    { props.metadata.artist &&
+	      <NameValue name='Artist' value={props.metadata.artist} />
+	    }
 	    { props.metadata.on_air &&
 	      <NameValue name='On-air' value={props.metadata.on_air} />
 	    }
